@@ -6,7 +6,7 @@ libcresus_la_SOURCES = framework/candle.c framework/engine.c \
 		       framework/event_handler.c framework/indicator.c \
                        framework/input.c framework/module.c \
 		       math/average.c \
-		       parser/google.c parser/yahoo.c \
+		       input/google.c input/yahoo.c \
 		       indicator/atr.c indicator/bollinger.c indicator/esi.c \
                        indicator/heikin_ashi.c indicator/indicator.c \
                        indicator/macd.c indicator/mobile.c indicator/rsi.c \
