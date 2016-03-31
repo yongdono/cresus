@@ -9,8 +9,8 @@
 #ifndef __Cresus_EVO__stochastic__
 #define __Cresus_EVO__stochastic__
 
-#include "indicator.h"
-#include "average.h"
+#include "framework/indicator.h"
+#include "math/average.h"
 
 struct stochastic {
   struct indicator parent;

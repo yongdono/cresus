@@ -9,7 +9,7 @@
 #ifndef __Cresus_EVO__heikin_ashi__
 #define __Cresus_EVO__heikin_ashi__
 
-#include "indicator.h"
+#include "framework/indicator.h"
 
 typedef enum {
   HEIKIN_ASHI_DIR_NONE,

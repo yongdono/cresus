@@ -5,7 +5,7 @@
  * Stochastic Momentum Index
  */
 
-#include "candle.h"
+#include "framework/candle.h"
 #include "mobile.h"
 
 struct smi_res {

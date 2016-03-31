@@ -10,8 +10,9 @@
 #define __Cresus_EVO__module__
 
 #include "event_handler.h"
-#include "statistics.h"
-#include "position.h"
+#include "trading/statistics.h"
+#include "trading/position.h"
+#include "trading/trade.h"
 
 #define MODULE_MAX_INDICATOR 10
 #define MODULE_MAX_ACTION    2
@@ -49,6 +50,9 @@ struct module {
   
   struct module_action action[MODULE_MAX_ACTION];
   size_t actions;
+
+  /* FIXME : deprecated */
+  struct trade trade;
   
   /* FIXME : Use lists */
   struct position plong;

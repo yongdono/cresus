@@ -9,7 +9,7 @@
 #ifndef __Cresus_EVO__srsi__
 #define __Cresus_EVO__srsi__
 
-#include "indicator.h"
+#include "framework/indicator.h"
 
 struct srsi {
   struct indicator parent;

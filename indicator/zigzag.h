@@ -1,8 +1,8 @@
 #ifndef ZIGZAG_H
 #define ZIGZAG_H
 
-#include "candle.h"
-#include "indicator.h"
+#include "framework/candle.h"
+#include "framework/indicator.h"
 
 typedef enum {
    ZIGZAG_PERCENT,

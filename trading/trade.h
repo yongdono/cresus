@@ -9,7 +9,7 @@
 #ifndef __Cresus_EVO__trade__
 #define __Cresus_EVO__trade__
 
-#include "candle.h"
+#include "framework/candle.h"
 
 typedef enum {
   TRADE_NONE,

@@ -6,7 +6,7 @@
  * Find a better name, like Strength moving Average
  */
 
-#include "candle.h"
+#include "framework/candle.h"
 #include "mobile.h"
 
 struct esi {

@@ -9,7 +9,7 @@
 #ifndef __Cresus_EVO__position__
 #define __Cresus_EVO__position__
 
-#include "candle.h"
+#include "framework/candle.h"
 
 typedef enum {
   POSITION_NONE,

@@ -14,6 +14,7 @@ LT_INIT
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_CC_C99
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lm':

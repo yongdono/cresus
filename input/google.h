@@ -4,8 +4,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#include "candle.h"
-#include "input.h"
+#include "framework/input.h"
 
 struct google {
   /* Super */

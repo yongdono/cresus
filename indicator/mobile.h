@@ -7,7 +7,7 @@
  *
  */
 
-#include "indicator.h"
+#include "framework/indicator.h"
 
 typedef enum {
   MOBILE_MMA,

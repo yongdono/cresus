@@ -2,7 +2,7 @@
 #define MACD_H
 
 #include "mobile.h"
-#include "candle.h"
+#include "framework/candle.h"
 
 struct macd_result {
   double value;

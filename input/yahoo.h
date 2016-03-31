@@ -2,9 +2,7 @@
 #define YAHOO_H
 
 #include <stdio.h>
-
-#include "candle.h"
-#include "input.h"
+#include "framework/input.h"
 
 struct yahoo {
   /* Inherits from input */

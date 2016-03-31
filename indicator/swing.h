@@ -1,7 +1,7 @@
 #ifndef SWING_H
 #define SWING_H
 
-#include "candle.h"
+#include "framework/candle.h"
 
 #define SWING_MAX 3
 
