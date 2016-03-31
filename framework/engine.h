@@ -9,8 +9,8 @@
 #ifndef __Cresus_EVO__engine__
 #define __Cresus_EVO__engine__
 
-#include "input.h"
-#include "module.h"
+#include "input/input.h"
+#include "module/module.h"
 
 #define ENGINE_MAX_MODULE 4
 

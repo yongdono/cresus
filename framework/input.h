@@ -9,7 +9,7 @@
 #ifndef __Cresus_EVO__input__
 #define __Cresus_EVO__input__
 
-#include "candle.h"
+#include "base/candle.h"
 
 /* Typedefs */
 struct input;
