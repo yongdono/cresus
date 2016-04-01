@@ -5,29 +5,33 @@
  * Stochastic Momentum Index
  */
 
+#include "math/average.h"
 #include "framework/candle.h"
-#include "mobile.h"
-
-struct smi_res {
-  double value;
-  double signal;
-  double histogram;
-};
+#include "framework/indicator.h"
 
 struct smi {
+  /* Parent */
+  struct indicator parent;
 
+  /* Pool */
   int count;
   int index;
   int period;
   struct candle *pool;
 
-  struct smi_res res;
+  /* Computations */
+  struct average smpd, _smpd;
+  struct average str, _str;
+
+  double value;
 };
 
-int smi_init(struct smi *s, int period, struct candle *cdl);
+int smi_init(struct smi *s, int period, int smooth, const struct candle *c);
 void smi_free(struct smi *s);
 
-struct smi_res *smi_feed(struct smi *s, struct candle *cdl);
-struct smi_res *smi_compute(struct smi *s);
+int smi_feed(struct indicator *i, const struct candle *c);
+
+/* Indicator-specific */
+double smi_value(struct smi *s);
 
 #endif
