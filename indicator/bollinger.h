@@ -11,13 +11,13 @@ struct bollinger_value {
 };
 
 struct bollinger {
-  
+  /* Inherits from indicator */
   struct indicator parent;
   
-  struct mobile mma;
+  struct average avg;
   double stddev_factor;
   
-  /* Private */
+  /* Indicator-specific */
   struct bollinger_value value;
   char str[32]; /* FIXME */
 };
@@ -28,8 +28,9 @@ int bollinger_init(struct bollinger *b, int period, double stddev_factor,
 void bollinger_free(struct bollinger *b);
 
 int bollinger_feed(struct indicator *i, const struct candle *candle);
-struct bollinger_value *bollinger_get_value(struct bollinger *b);
 
+/* Indicator-specific */
+struct bollinger_value *bollinger_get_value(struct bollinger *b);
 const char *bollinger_str(struct bollinger *b);
 
 #endif

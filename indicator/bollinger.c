@@ -8,22 +8,23 @@ int bollinger_init(struct bollinger *b, int period,
 {
   /* super */
   indicator_init(&b->parent, value, bollinger_feed);
+  average_init(&b->avg, AVERAGE_MATH, period, get_candle_value(candle, value));
   
   b->stddev_factor = stddev_factor;
-  return mobile_init(&b->mma, MOBILE_MMA, period, value, candle);
+  return 0;
 }
 
 void bollinger_free(struct bollinger *b)
 {
-  mobile_free(&b->mma);
+  average_free(&b->avg);
 }
 
 int bollinger_feed(struct indicator *i, const struct candle *candle)
 {
   struct bollinger *b = (struct bollinger*)i;
-  b->value.mma = mobile_feed(&b->mma.parent, candle);
+  b->value.mma = average_update(&b->avg, candle);
   
-  double stddev = mobile_stddev(&b->mma);
+  double stddev = average_stddev(&b->avg);
   b->value.hi = b->value.mma + b->stddev_factor * stddev;
   b->value.lo = b->value.mma - b->stddev_factor * stddev;
   
