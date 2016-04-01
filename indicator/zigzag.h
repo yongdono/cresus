@@ -45,6 +45,8 @@ int zigzag_init(struct zigzag *z, zigzag_t type, double thres,
 void zigzag_free(struct zigzag *z);
 
 int zigzag_feed(struct indicator *i, const struct candle *candle);
+
+/* Indicator-specific */
 zigzag_dir_t zigzag_get_last_ref(struct zigzag *z, struct candle *last_ref);
 
 #endif
