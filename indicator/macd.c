@@ -21,6 +21,7 @@ int macd_init(struct macd *m, int fast_p, int slow_p, int signal_p,
 
 void macd_free(struct macd *m)
 {
+  indicator_free(&m->parent);
   average_free(&m->fast);
   average_free(&m->slow);
   average_free(&m->signal);

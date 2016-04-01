@@ -20,6 +20,7 @@ int rsi_init(struct rsi *r, int period, const struct candle *c)
 
 void rsi_free(struct rsi *r)
 {
+  indicator_free(&r->parent);
   average_free(&r->h);
   average_free(&r->b);
 }

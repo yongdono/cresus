@@ -24,30 +24,35 @@ static swing_t __swing_detect(struct swing *s)
   return SWING_NONE;
 }
 
-int swing_init(struct swing *s, struct candle *cdl)
+int swing_init(struct swing *s, const struct candle *c)
 {
+  /* Super() */
+  indicator_init(&s->parent, CANDLE_CLOSE, swing_feed);
+  
   s->index = 0;
   s->count = 1;
   s->type = SWING_NONE;
 
-  memcpy(&s->pool[s->index], cdl, sizeof *cdl);
+  memcpy(&s->pool[s->index], c, sizeof *c);
   return 0;
 }
 
 void swing_free(struct swing *s)
 {
+  indicator_free(&s->parent);
 }
 
-struct candle *swing_feed(struct swing *s, struct candle *cdl)
+int swing_feed(struct indicator *i, const struct candle *c)
 {
+  struct swing *s = (struct swing*)i;
   struct candle *cur = &s->pool[s->index];
 
-  if(cdl->high > cur->high ||
-     cdl->low < cur->low){
+  if(c->high > cur->high ||
+     c->low < cur->low){
     /* Inc */
     s->count++;
     s->index = (s->index + 1) % SWING_MAX;
-    memcpy(&s->pool[s->index], cdl, sizeof *cdl);
+    memcpy(&s->pool[s->index], c, sizeof *c);
 
     if((s->type = __swing_detect(s)) != SWING_NONE)
       return cur;

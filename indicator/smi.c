@@ -35,6 +35,8 @@ int smi_init(struct smi *s, int period, int smooth, const struct candle *c)
 
 void smi_free(struct smi *s)
 {
+  indicator_free(&s->parent);
+  
   average_free(&s->smpd);
   average_free(&s->_smpd);
   average_free(&s->str);
