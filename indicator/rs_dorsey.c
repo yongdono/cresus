@@ -9,7 +9,7 @@ int rs_dorsey_init(struct rs_dorsey *r, const struct candle *seed,
 		   const struct candle *seed_index) {
 
   /* super() */
-  indicator_init(&r->parent, CANDLE_CLOSE, rs_dorsay_feed);
+  indicator_init(&r->parent, CANDLE_CLOSE, rs_dorsey_feed);
   return 0;
 }
 

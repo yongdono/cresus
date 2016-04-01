@@ -8,7 +8,7 @@ libcresus_la_SOURCES = framework/candle.c framework/engine.c \
 		       math/average.c \
 		       input/google.c input/yahoo.c \
 		       indicator/atr.c indicator/bollinger.c \
-                       indicator/heikin_ashi.c \
+                       indicator/heikin_ashi.c indicator/rs_dorsey.c \
                        indicator/macd.c indicator/mobile.c indicator/rsi.c \
                        indicator/smi.c indicator/srsi.c \
                        indicator/stochastic.c indicator/stoploss.c \
