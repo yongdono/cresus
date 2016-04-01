@@ -4,59 +4,50 @@
 #include "rsi.h"
 #include "mobile.h"
 
-int rsi_init(struct rsi *r, int period, struct candle *cdl)
+int rsi_init(struct rsi *r, int period, const struct candle *c)
 {
-  r->count = 0;
-  r->index = 0;
-  r->period = period;
-  r->last = cdl->close;
-
-  mobile_init(&r->mma_up, MOBILE_MMA, period, 0);
-  mobile_init(&r->mma_down, MOBILE_MMA, period, 0);
-
-  r->up = 0.0;
-  r->down = 0.0;
-
+  /* Super() */
+  indicator_init(&r->parent, CANDLE_CLOSE, rsi_feed);
+  
+  r->value = 0.0;
+  r->last = candle_get_value(c, r->parent.value);
+  
+  average_init(&r->h, AVERAGE_EXP, period, 0);
+  average_init(&r->b, AVERAGE_EXP, period, 0);
+  
   return 0;
 }
 
 void rsi_free(struct rsi *r)
 {
-  mobile_free(&r->mma_up);
-  mobile_free(&r->mma_down);
+  average_free(&r->h);
+  average_free(&r->b);
 }
 
-int rsi_feed(struct rsi *r, struct candle *cdl)
+int rsi_feed(struct indicator *i, const struct candle *c)
 {
-  double val = cdl->close - r->last;
+  double h, b;
+  struct rsi *r = (struct rsi*)i;
+  double diff = candle_get_value(c, r->parent.value) - r->last;
 
-  if(r->count < r->period){
-    if(val > 0) mobile_feed(&r->mma_up, val);
-    if(val < 0) mobile_feed(&r->mma_down, fabs(val));
-  
-  }else if(r->count == r->period){
-    r->up = mobile_average(&r->mma_up);
-    r->down = mobile_average(&r->mma_down);
-    
-  }else{ /* r->count > r->period */
-    if(val > 0) r->up = (r->up * (r->period - 1) + val) / r->period;
-    if(val < 0) r->down = (r->down * (r->period - 1) + fabs(val)) / r->period;
-  }
-  
-  r->last = cdl->close;
-  return ++r->count;
+  /* RSI formula :
+   * 100.0 - (100.0 / (1 + h / b))
+   * or
+   * (h / (h + b)) * 100.0
+   * where h is the ema of ups of last n days
+   * and b is the fabs ema of downs of last n days
+   */
+  if(diff > 0) h = average_update(&r->h, diff);
+  if(diff < 0) b = average_update(&r->b, fabs(diff));
+  /* Compute RSI the esay way */
+  r->value = (h / (h + b)) * 100.0;
+
+  /* TODO : add event management */
+  r->last = candle_get_value(c, r->parent.value);
+  return 0;
 }
 
-double rsi_compute(struct rsi *r)
-{
-  /* double u = mobile_average(&r->up) / r->period; */
-  /* double d = mobile_average(&r->down) / r->period; */
+double rsi_value(struct rsi *r) {
 
-  double u = r->up / r->period;
-  double d = r->down / r->period;
-
-  if(r->count < r->period)
-    return 0.0;
-
-  return 100.0 - 100.0 / (1 + /* RS */ (u / d));
+  return r->value;
 }

@@ -2,7 +2,7 @@
 #define ESI_H
 
 /*
- * Exponential Strenhth Index
+ * Exponential Strength Index
  * Find a better name, like Strength moving Average
  */
 

@@ -7,6 +7,7 @@
  *
  */
 
+#include "math/average.h"
 #include "framework/indicator.h"
 
 typedef enum {
@@ -38,13 +39,8 @@ struct mobile {
   mobile_dir_t dir;
   mobile_pos_t pos;
 
-  int count;
-  int index;
-  int period;
-  double *pool;
-
-  double k; /* For EMA */
-  double avg; /* For stddev */
+  /* Average object */
+  struct average avg;
 };
 
 int mobile_init(struct mobile *m, mobile_t type, int period,
@@ -55,6 +51,7 @@ void mobile_free(struct mobile *m);
 
 int mobile_feed(struct indicator *i, const struct candle *candle);
 
+/* indicator-specific */
 double mobile_average(struct mobile *m);
 double mobile_stddev(struct mobile *m);
 
