@@ -44,8 +44,8 @@ int candle_init(struct candle *c);
 void candle_free(struct candle *c);
 
 /* Is that useful ? */
-double candle_get_closest_inf(struct candle *c, double value);
-double candle_get_closest_sup(struct candle *c, double value);
+double candle_get_closest_inf(struct candle *c, double value); /* TODO : Remove */
+double candle_get_closest_sup(struct candle *c, double value); /* TODO : Remove */
 
 double candle_get_value(const struct candle *c, candle_value_t value);
 int candle_get_direction(const struct candle *c);

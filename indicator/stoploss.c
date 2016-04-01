@@ -65,7 +65,7 @@ int stoploss_feed(struct indicator *i, const struct candle *candle) {
   return 0;
   
 out:
-  indicator_throw_event(i, EVENT_STOPLOSS_HIT, candle);
+  /* indicator_throw_event(i, EVENT_STOPLOSS_HIT, candle); */
   stoploss_clear(s);
   return 1;
 }

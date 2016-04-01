@@ -14,15 +14,12 @@ int indicator_init(struct indicator *i,
   
   i->value = value;
   i->feed = feed;
-  
-  i->handler = NULL;
   return 0;
 }
 
 void indicator_free(struct indicator *i) {
   
   i->feed = NULL;
-  i->handler = NULL;
 }
 
 int indicator_feed(struct indicator *i, const struct candle *candle) {
@@ -30,13 +27,17 @@ int indicator_feed(struct indicator *i, const struct candle *candle) {
   return i->feed(i, candle);
 }
 
-void indicator_register_event_handler(struct indicator *i, struct event_handler *h) {
+/*
+void indicator_register_event_handler(struct indicator *i,
+				      struct event_handler *h) {
   
   i->handler = h;
 }
 
-void indicator_throw_event(struct indicator *i, event_t event, const struct candle *candle) {
+void indicator_throw_event(struct indicator *i, event_t event,
+			   const struct candle *candle) {
   
   if(i->handler != NULL)
     event_handler_handle(i->handler, i, event, candle);
 }
+*/

@@ -28,7 +28,7 @@ int heikin_ashi_init(struct heikin_ashi *h, const struct candle *seed)
 
 void heikin_ashi_free(struct heikin_ashi *h)
 {
-  
+  indicator_free(&h->parent);
 }
 
 int heikin_ashi_feed(struct indicator *i, const struct candle *candle)
@@ -43,11 +43,13 @@ int heikin_ashi_feed(struct indicator *i, const struct candle *candle)
   /* Define new direction */
   heikin_ashi_dir_t dir = ((h->value.open - h->value.close) < 0 ?
                            HEIKIN_ASHI_DIR_UP : HEIKIN_ASHI_DIR_DOWN);
-  
+
+  /*
   if(dir != h->dir){
     h->dir = dir;
     indicator_throw_event(i, EVENT_HEIKIN_ASHI_CHDIR, candle);
   }
+  */
   
   return 1;
 }
