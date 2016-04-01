@@ -29,11 +29,11 @@ void macd_free(struct macd *m)
 int macd_feed(struct indicator *i, const struct candle *c)
 {
   struct macd *m = (struct macd*)i;
-  double fast = average_feed(&m->fast, c->close);
-  double slow = average_feed(&m->slow, c->close);
+  double fast = average_update(&m->fast, c->close);
+  double slow = average_update(&m->slow, c->close);
   
   m->result.value = fast - slow;
-  m->result.signal = average_feed(&m->signal, m->result.value);
+  m->result.signal = average_update(&m->signal, m->result.value);
   m->result.histogram = m->result.value - m->result.signal;
 
   /* State machine & events here */

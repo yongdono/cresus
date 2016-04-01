@@ -1,9 +1,14 @@
 #ifndef XTR_H
 #define XTR_H
 
-#include "candle.h"
+#include "framework/candle.h"
+#include "framework/indicator.h"
 
 struct xtr {
+
+  /* This is no indicator, just a data aggregator
+   * Dunno what to do with this thing */
+  
   int count;
   int index;
   int period;

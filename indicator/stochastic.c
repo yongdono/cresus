@@ -21,8 +21,8 @@ int stochastic_init(struct stochastic *s, int period, int k, int d,
   s->k = k;
   s->period = period;
   /* FIXME */
-  average_init(&s->d, period, 0.0);
-  average_init(&s->smooth_k, period, 0.0);
+  average_init(&s->d, AVERAGE_MATH, period, 0.0);
+  average_init(&s->smooth_k, AVERAGE_MATH, period, 0.0);
   
   if((s->array = malloc(sizeof(*s->array) * period)))
     return -1;
