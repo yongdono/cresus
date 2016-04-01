@@ -20,7 +20,7 @@ int rs_dorsey_init(struct rs_dorsey *r, const struct candle *seed,
 
 void rs_dorsey_free(struct rs_dorsey *r);
 
-int rs_dorsey_feed(struct indicator *i, const struct candle *seed);
+int rs_dorsey_feed(struct indicator *i, const struct candle *c);
 
 /* Indicator-specific */
 double rs_dorsey_value(struct rs_dorsey *r);
