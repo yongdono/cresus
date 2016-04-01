@@ -18,6 +18,7 @@ int atr_init(struct atr *a, int period, const struct candle *c)
 
 void atr_free(struct atr *a)
 {
+  indicator_free(&a->parent);
 }
 
 int atr_feed(struct atr *a, const struct candle *c)
