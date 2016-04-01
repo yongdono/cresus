@@ -32,7 +32,7 @@ int atr_feed(struct atr *a, const struct candle *c)
   tr = (l > tr ? l : tr);
 
   /* Average it */
-  a->value = (a->value * (a->period - 1) + max) / a->period;
+  a->value = (a->value * (a->period - 1) + tr) / a->period;
   
   /* Remember last candle */
   memcpy(&a->last, c, sizeof *c);
