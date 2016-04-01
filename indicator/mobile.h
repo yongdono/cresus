@@ -31,6 +31,12 @@ typedef enum {
   MOBILE_POS_BELOW
 } mobile_pos_t;
 
+/* Indicator-specific events */
+#define MOBILE_EVENT_CHDIR_UP     0
+#define MOBILE_EVENT_CHDIR_DOWN   1
+#define MOBILE_EVENT_CROSSED_DOWN 2
+#define MOBILE_EVENT_CROSSED_UP   3
+
 struct mobile {
   
   struct indicator parent;

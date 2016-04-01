@@ -38,7 +38,6 @@ int macd_feed(struct indicator *i, const struct candle *c)
   m->result.histogram = m->result.value - m->result.signal;
 
   /* State machine & events here */
-  //indicator_throw_event(&m->parent, EVENT_MOBILE_CHDIR_UP, candle);
   
   return 0;
 }

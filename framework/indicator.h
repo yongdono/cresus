@@ -27,5 +27,6 @@ int indicator_init(struct indicator *i,
 void indicator_free(struct indicator *i);
 
 int indicator_feed(struct indicator *i, const struct candle *candle);
+void indicator_set_event(struct indicator *i, struct candle *candle, int event);
 
 #endif /* defined(__Cresus_EVO__indicator__) */

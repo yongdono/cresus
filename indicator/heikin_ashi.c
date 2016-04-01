@@ -44,12 +44,14 @@ int heikin_ashi_feed(struct indicator *i, const struct candle *candle)
   heikin_ashi_dir_t dir = ((h->value.open - h->value.close) < 0 ?
                            HEIKIN_ASHI_DIR_UP : HEIKIN_ASHI_DIR_DOWN);
 
-  /*
+  /* Event management */
   if(dir != h->dir){
     h->dir = dir;
-    indicator_throw_event(i, EVENT_HEIKIN_ASHI_CHDIR, candle);
+    if(dir == HEIKIN_ASHI_DIR_UP)
+      indicator_set_event(i, candle, HEIKIN_ASHI_EVENT_CHDIR_UP);
+    else
+      indicator_set_event(i, candle, HEIKIN_ASHI_EVENT_CHDIR_DOWN);
   }
-  */
   
   return 1;
 }

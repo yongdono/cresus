@@ -17,6 +17,9 @@ typedef enum {
   STOPLOSS_DOWN
 } stoploss_t;
 
+/* Events */
+#define STOPLOSS_EVENT_HIT 0
+
 struct stoploss {
   /* Inherits from indicator */
   struct indicator parent;

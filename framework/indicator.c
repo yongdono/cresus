@@ -27,17 +27,9 @@ int indicator_feed(struct indicator *i, const struct candle *candle) {
   return i->feed(i, candle);
 }
 
-/*
-void indicator_register_event_handler(struct indicator *i,
-				      struct event_handler *h) {
+void indicator_set_event(struct indicator *i, struct candle *candle,
+			 int event) {
   
-  i->handler = h;
+  /* Nothing to do now */
+  /* Set in candle or timeline maybe */
 }
-
-void indicator_throw_event(struct indicator *i, event_t event,
-			   const struct candle *candle) {
-  
-  if(i->handler != NULL)
-    event_handler_handle(i->handler, i, event, candle);
-}
-*/

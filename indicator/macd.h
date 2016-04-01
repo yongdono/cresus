@@ -11,6 +11,12 @@ struct macd_result {
   double histogram;
 };
 
+/* Indicator events */
+#define MACD_EVENT_SIGNAL0 0 /* TODO */
+#define MACD_EVENT_SIGNAL1 0 /* TODO */
+#define MACD_EVENT_SIGNAL2 0 /* TODO */
+#define MACD_EVENT_SIGNAL3 0 /* TODO */
+
 struct macd {
   /* Parent */
   struct indicator parent;

@@ -69,7 +69,7 @@ int zigzag_feed(struct indicator *i, const struct candle *candle)
       z->direction = ZIGZAG_DIR_DOWN;
       zigzag_ref_set(z, candle);
       /* Throw event */
-      /* indicator_throw_event(i, EVENT_ZIGZAG_CHDIR, candle); */
+      indicator_set_event(i, candle, ZIGZAG_EVENT_CHDIR_DOWN);
     }
     break;
     
@@ -84,7 +84,7 @@ int zigzag_feed(struct indicator *i, const struct candle *candle)
       z->direction = ZIGZAG_DIR_UP;
       zigzag_ref_set(z, candle);
       /* Throw event */
-      /* indicator_throw_event(i, EVENT_ZIGZAG_CHDIR, candle); */
+      indicator_set_event(i, candle, ZIGZAG_EVENT_CHDIR_UP);
     }
     break;
     
@@ -93,7 +93,10 @@ int zigzag_feed(struct indicator *i, const struct candle *candle)
       z->direction = (gap > 0 ? ZIGZAG_DIR_UP : ZIGZAG_DIR_DOWN);
       zigzag_ref_set(z, candle);
       /* Throw event */
-      /* indicator_throw_event(i, EVENT_ZIGZAG_CHDIR, candle); */
+      if(z->direction == ZIGZAG_DIR_UP)
+	indicator_set_event(i, candle, ZIGZAG_EVENT_CHDIR_UP);
+      else
+	indicator_set_event(i, candle, ZIGZAG_EVENT_CHDIR_DOWN);
     }
     break;
   }

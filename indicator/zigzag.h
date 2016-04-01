@@ -23,6 +23,9 @@ typedef enum {
   ZIGZAG_REF_TYPICAL
 } zigzag_ref_t;
 
+#define ZIGZAG_EVENT_CHDIR_UP   0
+#define ZIGZAG_EVENT_CHDIR_DOWN 1
+
 struct zigzag {
   
   struct indicator parent;

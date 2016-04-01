@@ -40,18 +40,14 @@ static void mobile_manage_direction(struct mobile *m, double avg,
   
   /* Check direction change */
   if(avg > m->avg.value){
-    /*
     if(m->dir == MOBILE_DIR_DOWN)
-      indicator_throw_event(&m->parent, EVENT_MOBILE_CHDIR_UP, candle);
-    */
+      indicator_set_event(&m->parent, candle, MOBILE_EVENT_CHDIR_UP);
     
     m->dir = MOBILE_DIR_UP;
     
   }else if(avg < m->avg.value){
-    /*
     if(m->dir == MOBILE_DIR_UP)
-      indicator_throw_event(&m->parent, EVENT_MOBILE_CHDIR_DOWN, candle);
-    */
+      indicator_set_event(&m->parent, candle, MOBILE_EVENT_CHDIR_DOWN);
     
     m->dir = MOBILE_DIR_DOWN;
   }
@@ -64,18 +60,14 @@ static void mobile_manage_position(struct mobile *m, double avg,
   
   double candle_value = candle_get_value(candle, m->parent.value);
   if(avg > candle_value){
-    /*
     if(m->pos == MOBILE_POS_BELOW)
-      indicator_throw_event(&m->parent, EVENT_MOBILE_CROSSED_DOWN, candle);
-    */
+      indicator_set_event(&m->parent, candle, MOBILE_EVENT_CROSSED_DOWN);
     
     m->pos = MOBILE_POS_ABOVE;
     
   }else if(avg < candle_value) {
-    /*
     if(m->pos == MOBILE_POS_ABOVE)
-      indicator_throw_event(&m->parent, EVENT_MOBILE_CROSSED_UP, candle);
-    */
+      indicator_set_event(&m->parent, candle, MOBILE_EVENT_CROSSED_UP);
     
     m->pos = MOBILE_POS_BELOW;
   }

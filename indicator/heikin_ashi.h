@@ -18,6 +18,9 @@ typedef enum {
   HEIKIN_ASHI_DIR_DOWN,
 } heikin_ashi_dir_t;
 
+#define HEIKIN_ASHI_EVENT_CHDIR_UP   0
+#define HEIKIN_ASHI_EVENT_CHDIR_DOWN 1
+
 struct heikin_ashi {
   struct indicator parent;
   
