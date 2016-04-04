@@ -19,7 +19,7 @@
 
 struct rs_dorsey {
   /* As always, inherits from indicator */
-  struct indicator parent;
+  __inherits_from_indicator__;
   double value;
 };
 

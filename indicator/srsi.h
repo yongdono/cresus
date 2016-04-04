@@ -12,7 +12,7 @@
 #include "framework/indicator.h"
 
 struct srsi {
-  struct indicator parent;
+  __inherits_from_indicator__;
   
   int max;
   int len;

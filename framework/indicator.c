@@ -8,12 +8,14 @@
 
 #include "indicator.h"
 
-int indicator_init(struct indicator *i,
-                   candle_value_t value,
+int indicator_init(struct indicator *i, void *self, candle_value_t value,
                    indicator_feed_ptr feed) {
+
+  i->__self_indicator__ = self;
   
   i->value = value;
   i->feed = feed;
+  
   return 0;
 }
 

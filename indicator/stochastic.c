@@ -16,7 +16,7 @@ int stochastic_init(struct stochastic *s, int period, int k, int d,
                     const struct candle *seed) {
   
   /* super() */
-  indicator_init(&s->parent, 0, stochastic_feed);
+  __indicator_super__(s, 0, stochastic_feed);
   
   s->k = k;
   s->period = period;
@@ -35,13 +35,13 @@ int stochastic_init(struct stochastic *s, int period, int k, int d,
 
 void stochastic_free(struct stochastic *s) {
   
-  indicator_free(&s->parent);
+  __indicator_free__(s);
   free(s->array);
 }
 
 int stochastic_feed(struct indicator *i, const struct candle *candle) {
   
-  struct stochastic *s = (struct stochastic*)i;
+  struct stochastic *s = __indicator_self__(i);
   
   memcpy(&s->array[s->index], candle, sizeof *candle);
   s->index = (s->index + 1) % s->period;

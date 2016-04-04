@@ -35,7 +35,7 @@ static swing_t __swing_detect(struct swing *s)
 int swing_init(struct swing *s, const struct candle *c)
 {
   /* Super() */
-  indicator_init(&s->parent, CANDLE_CLOSE, swing_feed);
+  __indicator_super__(s, CANDLE_CLOSE, swing_feed);
   
   s->index = 0;
   s->count = 1;
@@ -47,12 +47,12 @@ int swing_init(struct swing *s, const struct candle *c)
 
 void swing_free(struct swing *s)
 {
-  indicator_free(&s->parent);
+  __indicator_free__(s);
 }
 
 int swing_feed(struct indicator *i, const struct candle *c)
 {
-  struct swing *s = (struct swing*)i;
+  struct swing *s = __indicator_self__(i);
   struct candle *cur = &s->pool[s->index];
 
   if(c->high > cur->high ||

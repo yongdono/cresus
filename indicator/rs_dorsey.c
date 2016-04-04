@@ -12,17 +12,18 @@ int rs_dorsey_init(struct rs_dorsey *r, const struct candle *seed,
 		   const struct candle *seed_index) {
 
   /* super() */
-  indicator_init(&r->parent, CANDLE_CLOSE, rs_dorsey_feed);
+  __indicator_super__(r, CANDLE_CLOSE, rs_dorsey_feed);
   return 0;
 }
 
 void rs_dorsey_free(struct rs_dorsey *r) {
 
-  indicator_free(&r->parent);
+  __indicator_free__(r);
 }
 
 int rs_dorsey_feed(struct indicator *i, const struct candle *c) {
 
+  struct rs_dorsey *r = __indicator_self__(i);
   /*
    * TODO : Find a way to push 2 streams of candles in this indicator
    */

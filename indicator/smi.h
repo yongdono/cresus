@@ -19,7 +19,7 @@
 
 struct smi {
   /* Parent */
-  struct indicator parent;
+  __inherits_from_indicator__;
 
   /* Pool */
   int count;

@@ -13,7 +13,7 @@
 #include "math/average.h"
 
 struct stochastic {
-  struct indicator parent;
+  __inherits_from_indicator__;
   
   int period, k;
   struct average smooth_k;

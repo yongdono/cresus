@@ -36,7 +36,7 @@ typedef enum {
 
 struct zigzag {
   
-  struct indicator parent;
+  __inherits_from_indicator__;
 
   zigzag_t type;
   double threshold;

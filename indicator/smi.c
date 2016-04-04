@@ -14,7 +14,7 @@
 int smi_init(struct smi *s, int period, int smooth, const struct candle *c)
 {
   /* Super() */
-  indicator_init(&s->parent, CANDLE_CLOSE, smi_feed);
+  __indicator_super__(s, CANDLE_CLOSE, smi_feed);
   
   s->count = 1;
   s->index = 0;
@@ -34,7 +34,7 @@ int smi_init(struct smi *s, int period, int smooth, const struct candle *c)
 
 void smi_free(struct smi *s)
 {
-  indicator_free(&s->parent);
+  __indicator_free__(s);
   
   average_free(&s->smpd);
   average_free(&s->_smpd);
@@ -49,7 +49,7 @@ int smi_feed(struct indicator *i, const struct candle *c)
 {
   double hi = 0.0;
   double lo = DBL_MAX;
-  struct smi *s = (struct smi*)i;
+  struct smi *s = __indicator_self__(i);
 
   
   memcpy(&s->pool[s->index], c, sizeof *c);

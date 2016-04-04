@@ -27,7 +27,7 @@ struct macd_result {
 
 struct macd {
   /* Parent */
-  struct indicator parent;
+  __inherits_from_indicator__;
   
   struct average fast;
   struct average slow;

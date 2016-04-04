@@ -15,10 +15,10 @@
 int rsi_init(struct rsi *r, int period, const struct candle *c)
 {
   /* Super() */
-  indicator_init(&r->parent, CANDLE_CLOSE, rsi_feed);
+  __indicator_super__(r, CANDLE_CLOSE, rsi_feed);
   
   r->value = 0.0;
-  r->last = candle_get_value(c, r->parent.value);
+  r->last = candle_get_value(c, __indicator_candle_value__(r));
   
   average_init(&r->h, AVERAGE_EXP, period, 0);
   average_init(&r->b, AVERAGE_EXP, period, 0);
@@ -28,7 +28,7 @@ int rsi_init(struct rsi *r, int period, const struct candle *c)
 
 void rsi_free(struct rsi *r)
 {
-  indicator_free(&r->parent);
+  __indicator_free__(r);
   average_free(&r->h);
   average_free(&r->b);
 }
@@ -36,8 +36,8 @@ void rsi_free(struct rsi *r)
 int rsi_feed(struct indicator *i, const struct candle *c)
 {
   double h, b;
-  struct rsi *r = (struct rsi*)i;
-  double diff = candle_get_value(c, r->parent.value) - r->last;
+  struct rsi *r = __indicator_self__(i);
+  double diff = candle_get_value(c, i->value) - r->last;
 
   /* RSI formula :
    * 100.0 - (100.0 / (1 + h / b))
@@ -52,7 +52,7 @@ int rsi_feed(struct indicator *i, const struct candle *c)
   r->value = (h / (h + b)) * 100.0;
 
   /* TODO : add event management */
-  r->last = candle_get_value(c, r->parent.value);
+  r->last = candle_get_value(c, i->value);
   return 0;
 }
 

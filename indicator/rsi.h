@@ -21,7 +21,7 @@
 
 struct rsi {
   /* Inherits from indicator */
-  struct indicator parent;
+  __inherits_from_indicator__;
   
   /* https://fr.wikipedia.org/wiki/Relative_strength_index */
   struct average h;

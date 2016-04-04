@@ -13,7 +13,7 @@
 int srsi_init(struct srsi *s, int max, const struct candle *seed) {
   
   /* super() */
-  indicator_init(&s->parent, CANDLE_CLOSE, srsi_feed);
+  __indicator_super__(s, CANDLE_CLOSE, srsi_feed);
   
   s->len = 0;
   s->max = max;
@@ -22,18 +22,19 @@ int srsi_init(struct srsi *s, int max, const struct candle *seed) {
     return -1;
   
   /* Init */
-  srsi_feed(&s->parent, seed);
+  srsi_feed(&__indicator__(s), seed);
   return 0;
 }
 
 void srsi_free(struct srsi *s) {
   
+  __indicator_free__(s);
   free(s->array);
 }
 
 int srsi_feed(struct indicator *i, const struct candle *candle) {
   
-  struct srsi *s = (struct srsi*)i;
+  struct srsi *s = __indicator_self__(i);
   int start = (candle->open < candle->close ? candle->open : candle->close);
   int end = (candle->close < candle->open ? candle->open : candle->close);
   

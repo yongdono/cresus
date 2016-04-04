@@ -15,7 +15,7 @@
 int heikin_ashi_init(struct heikin_ashi *h, const struct candle *seed)
 {
   /* Init parent */
-  indicator_init(&h->parent, CANDLE_CLOSE, heikin_ashi_feed);
+  __indicator_super__(h, CANDLE_CLOSE, heikin_ashi_feed);
   
   h->value.close = (seed->open + seed->close + seed->high + seed->low) / 4;
   h->value.open = seed->open; // Arbitrary
@@ -28,12 +28,12 @@ int heikin_ashi_init(struct heikin_ashi *h, const struct candle *seed)
 
 void heikin_ashi_free(struct heikin_ashi *h)
 {
-  indicator_free(&h->parent);
+  __indicator_free__(h);
 }
 
 int heikin_ashi_feed(struct indicator *i, const struct candle *candle)
 {
-  struct heikin_ashi *h = (struct heikin_ashi*)i;
+  struct heikin_ashi *h = __indicator_self__(i);
   
   h->value.open = (h->value.close + h->value.open) / 2;
   h->value.close = (candle->open + candle->close + candle->high + candle->low) / 4;

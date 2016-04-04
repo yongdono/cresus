@@ -12,7 +12,6 @@
 /*
  * Mobile Average
  * Exponential & Simple
- *
  */
 
 #include "math/average.h"
@@ -46,9 +45,9 @@ typedef enum {
 #define MOBILE_EVENT_CROSSED_UP   3
 
 struct mobile {
+  /* As always */
+  __inherits_from_indicator__;
   
-  struct indicator parent;
-
   mobile_t type;
   mobile_dir_t dir;
   mobile_pos_t pos;

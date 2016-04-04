@@ -22,7 +22,7 @@ typedef enum {
 
 struct swing {
   /* This is an indicator */
-  struct indicator parent;
+  __inherits_from_indicator__;
   
   int count;
   int index;

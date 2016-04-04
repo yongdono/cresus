@@ -15,7 +15,7 @@
 int atr_init(struct atr *a, int period, const struct candle *c)
 {
   /* Super() */
-  indicator_init(&a->parent, CANDLE_CLOSE, atr_feed);
+  __indicator_super__(a, CANDLE_CLOSE, atr_feed);
   
   a->period = period;
   a->value = c->high - c->low;
@@ -26,11 +26,13 @@ int atr_init(struct atr *a, int period, const struct candle *c)
 
 void atr_free(struct atr *a)
 {
-  indicator_free(&a->parent);
+  __indicator_free__(a);
 }
 
-int atr_feed(struct atr *a, const struct candle *c)
+int atr_feed(struct indicator *i, const struct candle *c)
 {
+  struct atr *a = __indicator_self__(i);
+  
   /* Compute "True Range" */
   double tr = c->high - c->low;
   double h = fabs(c->high - a->last.close);

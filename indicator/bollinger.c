@@ -15,7 +15,7 @@ int bollinger_init(struct bollinger *b, int period,
                    struct candle *candle)
 {
   /* super */
-  indicator_init(&b->parent, value, bollinger_feed);
+  __indicator_super__(b, value, bollinger_feed);
   average_init(&b->avg, AVERAGE_MATH, period,
 	       candle_get_value(candle, value));
   
@@ -25,13 +25,13 @@ int bollinger_init(struct bollinger *b, int period,
 
 void bollinger_free(struct bollinger *b)
 {
-  indicator_free(&b->parent);
+  __indicator_free__(b);
   average_free(&b->avg);
 }
 
 int bollinger_feed(struct indicator *i, const struct candle *candle)
 {
-  struct bollinger *b = (struct bollinger*)i;
+  struct bollinger *b = __indicator_self__(i);
   b->value.mma = average_update(&b->avg, candle_get_value(candle, i->value));
   
   double stddev = average_stddev(&b->avg);

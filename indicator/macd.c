@@ -16,7 +16,7 @@ int macd_init(struct macd *m, int fast_p, int slow_p, int signal_p,
 	      struct candle *seed)
 {
   /* Super */
-  indicator_init(&m->parent, CANDLE_CLOSE, macd_feed);
+  __indicator_super__(m, CANDLE_CLOSE, macd_feed);
 
   /* FIXME : use get_candle_value ? */
   average_init(&m->fast, AVERAGE_EXP, fast_p, seed->close);
@@ -29,7 +29,7 @@ int macd_init(struct macd *m, int fast_p, int slow_p, int signal_p,
 
 void macd_free(struct macd *m)
 {
-  indicator_free(&m->parent);
+  __indicator_free__(m);
   average_free(&m->fast);
   average_free(&m->slow);
   average_free(&m->signal);
@@ -37,7 +37,7 @@ void macd_free(struct macd *m)
 
 int macd_feed(struct indicator *i, const struct candle *c)
 {
-  struct macd *m = (struct macd*)i;
+  struct macd *m = __indicator_self__(i);
   double fast = average_update(&m->fast, c->close);
   double slow = average_update(&m->slow, c->close);
   

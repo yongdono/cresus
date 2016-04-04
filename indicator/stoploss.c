@@ -11,7 +11,7 @@
 int stoploss_init(struct stoploss *s, double percent) {
   
   /* Init parent */
-  indicator_init(&s->parent, CANDLE_CLOSE, stoploss_feed);
+  __indicator_super__(s, CANDLE_CLOSE, stoploss_feed);
   
   s->value = 0.0;
   s->trigger = 0;
@@ -22,7 +22,7 @@ int stoploss_init(struct stoploss *s, double percent) {
 
 void stoploss_free(struct stoploss *s) {
   
-  indicator_free(&s->parent);
+  __indicator_free__(s);
   s->value = 0.0;
   s->trigger = 0;
 }
@@ -47,7 +47,7 @@ void stoploss_clear(struct stoploss *s) {
 
 int stoploss_feed(struct indicator *i, const struct candle *candle) {
   
-  struct stoploss *s = (struct stoploss*)i;
+  struct stoploss *s = __indicator_self__(i);
   
   if(s->type == STOPLOSS_UP){
     if(candle_get_value(candle, i->value) >= s->value){

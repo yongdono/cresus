@@ -20,7 +20,7 @@ struct bollinger_value {
 
 struct bollinger {
   /* Inherits from indicator */
-  struct indicator parent;
+  __inherits_from_indicator__;
   
   struct average avg;
   double stddev_factor;

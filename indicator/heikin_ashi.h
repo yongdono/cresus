@@ -22,7 +22,7 @@ typedef enum {
 #define HEIKIN_ASHI_EVENT_CHDIR_DOWN 1
 
 struct heikin_ashi {
-  struct indicator parent;
+  __inherits_from_indicator__;
   
   struct candle value;
   heikin_ashi_dir_t dir;

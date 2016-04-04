@@ -20,7 +20,7 @@
 
 struct rs_mansfield {
   /* As always, inherits from indicator */
-  struct indicator parent;
+  __inherits_from_indicator__;
   struct average mma;
 };
 

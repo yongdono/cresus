@@ -17,7 +17,7 @@ int mobile_init(struct mobile *m, mobile_t type,
                 const struct candle *seed)
 {
   /* Super */
-  indicator_init(&m->parent, value, mobile_feed);
+  __indicator_super__(m, value, mobile_feed);
 
   m->type = type;
   m->dir = MOBILE_DIR_UP; /* FIXME */
@@ -39,7 +39,7 @@ int mobile_init(struct mobile *m, mobile_t type,
 
 void mobile_free(struct mobile *m)
 {
-  indicator_free(&m->parent);
+  __indicator_free__(m);
   average_free(&m->avg);
 }
 
@@ -49,13 +49,13 @@ static void mobile_manage_direction(struct mobile *m, double avg,
   /* Check direction change */
   if(avg > m->avg.value){
     if(m->dir == MOBILE_DIR_DOWN)
-      indicator_set_event(&m->parent, candle, MOBILE_EVENT_CHDIR_UP);
+      __indicator_set_event__(m, candle, MOBILE_EVENT_CHDIR_UP);
     
     m->dir = MOBILE_DIR_UP;
     
   }else if(avg < m->avg.value){
     if(m->dir == MOBILE_DIR_UP)
-      indicator_set_event(&m->parent, candle, MOBILE_EVENT_CHDIR_DOWN);
+      __indicator_set_event__(m, candle, MOBILE_EVENT_CHDIR_DOWN);
     
     m->dir = MOBILE_DIR_DOWN;
   }
@@ -66,16 +66,16 @@ static void mobile_manage_direction(struct mobile *m, double avg,
 static void mobile_manage_position(struct mobile *m, double avg,
                                    const struct candle *candle) {
   
-  double candle_value = candle_get_value(candle, m->parent.value);
-  if(avg > candle_value){
+  double value = candle_get_value(candle, __indicator_candle_value__(m));
+  if(avg > value){
     if(m->pos == MOBILE_POS_BELOW)
-      indicator_set_event(&m->parent, candle, MOBILE_EVENT_CROSSED_DOWN);
+      __indicator_set_event__(m, candle, MOBILE_EVENT_CROSSED_DOWN);
     
     m->pos = MOBILE_POS_ABOVE;
     
-  }else if(avg < candle_value) {
+  }else if(avg < value) {
     if(m->pos == MOBILE_POS_ABOVE)
-      indicator_set_event(&m->parent, candle, MOBILE_EVENT_CROSSED_UP);
+      __indicator_set_event__(m, candle, MOBILE_EVENT_CROSSED_UP);
     
     m->pos = MOBILE_POS_BELOW;
   }
@@ -85,7 +85,7 @@ static void mobile_manage_position(struct mobile *m, double avg,
 
 int mobile_feed(struct indicator *i, const struct candle *candle)
 {
-  struct mobile *m = (struct mobile*)i;
+  struct mobile *m = __indicator_self__(i);
   average_update(&m->avg, candle_get_value(candle, i->value));
   
   /* Check direction change */

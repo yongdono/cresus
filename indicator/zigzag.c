@@ -16,7 +16,7 @@ int zigzag_init(struct zigzag *z, zigzag_t type, double thres,
                 const struct candle *seed)
 {
   /* Super */
-  indicator_init(&z->parent, value, zigzag_feed);
+  __indicator_super__(z, value, zigzag_feed);
   
   z->type = type;
   z->threshold = (type == ZIGZAG_PERCENT ? thres / 100.0 : thres);
@@ -33,7 +33,7 @@ int zigzag_init(struct zigzag *z, zigzag_t type, double thres,
 
 void zigzag_free(struct zigzag *z)
 {
-  indicator_free(&z->parent);
+  __indicator_free__(z);
   z->ref_count = 0;
   z->direction = ZIGZAG_DIR_NONE;
 }
@@ -51,7 +51,7 @@ static void zigzag_ref_set(struct zigzag *z, const struct candle *candle)
 
 int zigzag_feed(struct indicator *i, const struct candle *candle)
 {
-  struct zigzag *z = (struct zigzag*)i;
+  struct zigzag *z = __indicator_self__(i);
   
   double threshold;
   double candle_value = candle_get_value(candle, i->value);
