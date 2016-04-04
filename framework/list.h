@@ -21,11 +21,11 @@
 #define __list_free__(self) list_free(&__list__(self));
 
 #define __list_add__(list, entry)		\
-  list_add(__list__(list), __list__(entry))
-#define __list_add_tail(list, entry)		\
-  list_add_tail(__list__(list), __list__(entry))
-#define __list_del__(list)			\
-  list_del(__list__(list))
+  list_add((list), &__list__(entry))
+#define __list_add_tail__(list, entry)		\
+  list_add_tail((list), &__list__(entry))
+#define __list_del__(entry)			\
+  list_del(&__list__(entry))
 #define __list_for_each__(list, ptr, self)				\
   for (ptr = (list)->next, self = __list_self__(ptr);  ptr != (list);	\
        ptr = ptr->next, self = __list_self__(ptr))
@@ -41,14 +41,14 @@ struct list {
 };
 
 static inline int list_init(struct list *l, void *self) {
-  s->next = s;
-  s->prev = s;
-  s->__self_list__ = self;
+  l->next = l;
+  l->prev = l;
+  l->__self_list__ = self;
 }
 
 static inline void list_free(struct list *l) {
-  s->next = NULL;
-  s->prev = NULL;
+  l->next = NULL;
+  l->prev = NULL;
 }
 
 static inline void list_add(struct list *l, struct list *new) {
@@ -62,7 +62,7 @@ static inline void list_add_tail(struct list *l, struct list *entry) {
   list_add(l->prev, entry);
 }
 
-static inline list_del(struct list *l) {
+static inline void list_del(struct list *l) {
   l->next->prev = l->prev;
   l->prev->next = l->next;
 }

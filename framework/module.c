@@ -87,7 +87,7 @@ int module_add_indicator(struct module *m, struct indicator *i) {
   
   if(m->indicators < MODULE_MAX_INDICATOR){
     m->indicator[m->indicators++] = i;
-    indicator_register_event_handler(i, &m->parent);
+    //indicator_register_event_handler(i, &m->parent);
     return 0;
   }
   

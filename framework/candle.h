@@ -12,6 +12,8 @@
 #include <time.h>
 #include <float.h>
 
+#include "list.h"
+
 #define MINUTES(m) ((m) * 60)
 #define HOURS(h) ((h) * 3600)
 #define DAYS(d) ((d) * 86400)
@@ -36,7 +38,9 @@ typedef enum {
 } candle_value_t;
 
 struct candle {
-
+  /* Inherits from list (for the moment */
+  __inherits_from_list__;
+  
   time_t timestamp; /* UTC */
   int offset; /* In minutes (google mode) */
   

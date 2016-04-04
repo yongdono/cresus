@@ -5,6 +5,7 @@ lib_LTLIBRARIES = libcresus.la
 libcresus_la_SOURCES = framework/candle.c framework/engine.c \
 		       framework/event_handler.c framework/indicator.c \
                        framework/input.c framework/module.c \
+		       framework/timeline.c \
 		       math/average.c \
 		       input/google.c input/yahoo.c \
 		       indicator/atr.c indicator/bollinger.c \

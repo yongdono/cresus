@@ -14,6 +14,9 @@
 
 int candle_init(struct candle *c)
 {
+  /* superclass */
+  __list_super__(c);
+  
   memset(c, 0, sizeof *c);
   return 0;
 }
