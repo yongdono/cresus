@@ -29,6 +29,9 @@
 #define __list_for_each__(list, ptr, self)				\
   for (ptr = (list)->next, self = __list_self__(ptr);  ptr != (list);	\
        ptr = ptr->next, self = __list_self__(ptr))
+#define __list_for_each_prev__(list, ptr, self)				\
+  for (ptr = (list)->prev, self = __list_self__(ptr);  ptr != (list);	\
+       ptr = ptr->prev, self = __list_self__(ptr))
 
 /* Basic list object */
 
