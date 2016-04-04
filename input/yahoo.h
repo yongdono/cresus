@@ -14,7 +14,7 @@
 
 struct yahoo {
   /* Inherits from input */
-  struct input parent;
+  __inherits_from_input__;
   
   FILE *fp;
 };

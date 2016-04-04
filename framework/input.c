@@ -8,9 +8,10 @@
 
 #include "input.h"
 
-int input_init(struct input *in, input_read_ptr read) {
+int input_init(struct input *in, void *self, input_read_ptr read) {
   
   in->read = read;
+  in->__self_input__ = self;
   return 0;
 }
 

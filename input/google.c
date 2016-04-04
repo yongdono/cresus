@@ -79,7 +79,7 @@ static int google_input_read(struct input *in, struct candle *candle) {
   int ret;
   
   do
-    ret = google_read((struct google*)in, candle, 1);
+    ret = google_read(__input_self__(in), candle, 1);
   while(ret == -1);
   
   return ret;
@@ -87,7 +87,8 @@ static int google_input_read(struct input *in, struct candle *candle) {
 
 int google_init(struct google *g, const char *filename)
 {
-  input_init(&g->parent, google_input_read);
+  /* super() */
+  __input_super__(g, google_input_read);
   
   if(!(g->fp = fopen(filename, "r")))
     return -1;
@@ -97,7 +98,7 @@ int google_init(struct google *g, const char *filename)
 
 void google_free(struct google *g)
 {
-  input_free(&g->parent);
+  __input_free__(g);
   if(g->fp) fclose(g->fp);
 }
 

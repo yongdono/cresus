@@ -14,7 +14,7 @@
 int yahoo_init(struct yahoo *y, const char *filename)
 {
   /* super */
-  input_init(&y->parent, yahoo_read);
+  __input_super__(y, yahoo_read);
   
   if(!(y->fp = fopen(filename, "r")))
     return -1;
@@ -24,6 +24,7 @@ int yahoo_init(struct yahoo *y, const char *filename)
 
 void yahoo_free(struct yahoo *y)
 {
+  __input_free__(y);
   if(y->fp) fclose(y->fp);
 }
 
@@ -34,8 +35,7 @@ int yahoo_read(struct input *in, struct candle *candle)
 
   struct tm tm;
   int year, month, day;
-  
-  struct yahoo *y = (struct yahoo*)in;
+  struct yahoo *y = __input_self__(in);
 
   if(!fgets(buf, sizeof buf, y->fp))
     /* End of file */

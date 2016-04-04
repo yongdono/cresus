@@ -16,7 +16,7 @@
 
 struct google {
   /* Super */
-  struct input parent;
+  __inherits_from_input__;
   
   FILE *fp;
   struct {
