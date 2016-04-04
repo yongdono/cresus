@@ -9,6 +9,7 @@
 #ifndef __Cresus_EVO__indicator__
 #define __Cresus_EVO__indicator__
 
+#include "slist.h"
 #include "candle.h"
 
 /* As it's a superclass, we want macros to manipulate this */
@@ -30,6 +31,9 @@ struct indicator;
 typedef int (*indicator_feed_ptr)(struct indicator*, const struct candle*);
 
 struct indicator {
+  /* Inherits from slist */
+  __inherits_from_slist__;
+  
   candle_value_t value;
   indicator_feed_ptr feed;
   /* For easier manipulation */
