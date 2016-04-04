@@ -10,10 +10,9 @@
 
 int indicator_init(struct indicator *i, void *self, candle_value_t value,
                    indicator_feed_ptr feed) {
-
+  
   /* Super */
   __slist_super__(i);
-  
   i->__self_indicator__ = self;
   
   i->value = value;

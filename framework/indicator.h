@@ -12,6 +12,8 @@
 #include "slist.h"
 #include "candle.h"
 
+#define INDICATOR_STR_MAX 64
+
 /* As it's a superclass, we want macros to manipulate this */
 #define __inherits_from_indicator__ struct indicator __parent_indicator__
 #define __indicator__(x) (x)->__parent_indicator__
@@ -22,8 +24,14 @@
 #define __indicator_free__(self)		\
   indicator_free(&__indicator__(self))
 
+/* Set methods */
+#define __indicator_set_string__(self, fmt, ...)			\
+  snprintf(__indicator__(self).str, INDICATOR_STR_MAX, fmt, ##__VA_ARGS__)
 #define __indicator_set_event__(self, candle, event)		\
   indicator_set_event(&__indicator__(self), candle, event)
+
+/* Internal values get */
+#define __indicator_string__(self) __indicator__(self).str
 #define __indicator_candle_value__(self) __indicator__(self).value
 
 /* Define types */
@@ -33,14 +41,20 @@ typedef int (*indicator_feed_ptr)(struct indicator*, const struct candle*);
 struct indicator {
   /* Inherits from slist */
   __inherits_from_slist__;
+  /* For easier manipulation */
+  void *__self_indicator__;
   
   candle_value_t value;
   indicator_feed_ptr feed;
-  /* For easier manipulation */
-  void *__self_indicator__;
+  char str[INDICATOR_STR_MAX];
 };
 
-int indicator_init(struct indicator *i, void *self, candle_value_t value, indicator_feed_ptr feed);
+int indicator_init(struct indicator *i,    /* Required */
+		   void *self,             /* Required */
+		   candle_value_t value,   /* Dunno what to do with this */
+		   indicator_feed_ptr feed /* Can do better */
+		   );
+
 void indicator_free(struct indicator *i);
 
 int indicator_feed(struct indicator *i, const struct candle *candle);

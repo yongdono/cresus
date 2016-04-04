@@ -16,6 +16,7 @@ int atr_init(struct atr *a, int period, const struct candle *c)
 {
   /* Super() */
   __indicator_super__(a, CANDLE_CLOSE, atr_feed);
+  __indicator_set_string__(a, "atr[%d]", period);
   
   a->period = period;
   a->value = c->high - c->low;

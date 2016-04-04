@@ -16,6 +16,8 @@ int bollinger_init(struct bollinger *b, int period,
 {
   /* super */
   __indicator_super__(b, value, bollinger_feed);
+  __indicator_set_string__(b, "boll[%d, %.1f]", period, stddev_factor);
+  
   average_init(&b->avg, AVERAGE_MATH, period,
 	       candle_get_value(candle, value));
   

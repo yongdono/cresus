@@ -36,6 +36,7 @@ int swing_init(struct swing *s, const struct candle *c)
 {
   /* Super() */
   __indicator_super__(s, CANDLE_CLOSE, swing_feed);
+  __indicator_set_string__(s, "swing");
   
   s->index = 0;
   s->count = 1;

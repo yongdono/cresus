@@ -16,6 +16,7 @@ int heikin_ashi_init(struct heikin_ashi *h, const struct candle *seed)
 {
   /* Init parent */
   __indicator_super__(h, CANDLE_CLOSE, heikin_ashi_feed);
+  __indicator_set_string__(h, "heikin-ashi");
   
   h->value.close = (seed->open + seed->close + seed->high + seed->low) / 4;
   h->value.open = seed->open; // Arbitrary

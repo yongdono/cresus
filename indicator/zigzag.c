@@ -17,6 +17,7 @@ int zigzag_init(struct zigzag *z, zigzag_t type, double thres,
 {
   /* Super */
   __indicator_super__(z, value, zigzag_feed);
+  __indicator_set_string__(z, "zigzag[%.2f]", thres);
   
   z->type = type;
   z->threshold = (type == ZIGZAG_PERCENT ? thres / 100.0 : thres);

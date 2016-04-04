@@ -15,7 +15,8 @@ int smi_init(struct smi *s, int period, int smooth, const struct candle *c)
 {
   /* Super() */
   __indicator_super__(s, CANDLE_CLOSE, smi_feed);
-  
+  __indicator_set_string__(s, "smi[%d, %d]", period, smooth);
+    
   s->count = 1;
   s->index = 0;
   s->period = period;

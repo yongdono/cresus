@@ -12,6 +12,7 @@ int stoploss_init(struct stoploss *s, double percent) {
   
   /* Init parent */
   __indicator_super__(s, CANDLE_CLOSE, stoploss_feed);
+  __indicator_set_string__(s, "stoploss[%.2f]", percent);
   
   s->value = 0.0;
   s->trigger = 0;

@@ -18,6 +18,9 @@ int mobile_init(struct mobile *m, mobile_t type,
 {
   /* Super */
   __indicator_super__(m, value, mobile_feed);
+  __indicator_set_string__(m, "%cma[%d]",
+			   ((type == MOBILE_EMA) ? 'e' : 'm'),
+			   period);
 
   m->type = type;
   m->dir = MOBILE_DIR_UP; /* FIXME */

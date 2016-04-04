@@ -16,6 +16,7 @@ int rsi_init(struct rsi *r, int period, const struct candle *c)
 {
   /* Super() */
   __indicator_super__(r, CANDLE_CLOSE, rsi_feed);
+  __indicator_set_string__(r, "rsi[%d]", period);
   
   r->value = 0.0;
   r->last = candle_get_value(c, __indicator_candle_value__(r));

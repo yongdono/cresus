@@ -17,6 +17,7 @@ int macd_init(struct macd *m, int fast_p, int slow_p, int signal_p,
 {
   /* Super */
   __indicator_super__(m, CANDLE_CLOSE, macd_feed);
+  __indicator_set_string__(m, "macd[%d, %d, %d]", fast_p, slow_p, signal_p);
 
   /* FIXME : use get_candle_value ? */
   average_init(&m->fast, AVERAGE_EXP, fast_p, seed->close);

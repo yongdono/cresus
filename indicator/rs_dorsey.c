@@ -13,6 +13,8 @@ int rs_dorsey_init(struct rs_dorsey *r, const struct candle *seed,
 
   /* super() */
   __indicator_super__(r, CANDLE_CLOSE, rs_dorsey_feed);
+  __indicator_set_string__(r, "RSD[xxx, xxx]");
+  
   return 0;
 }
 

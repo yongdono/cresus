@@ -14,6 +14,7 @@ int srsi_init(struct srsi *s, int max, const struct candle *seed) {
   
   /* super() */
   __indicator_super__(s, CANDLE_CLOSE, srsi_feed);
+  __indicator_set_string__(s, "srsi[%d]", max);
   
   s->len = 0;
   s->max = max;
