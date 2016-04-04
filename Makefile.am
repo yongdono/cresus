@@ -12,6 +12,7 @@ libcresus_la_SOURCES = framework/candle.c framework/engine.c \
                        indicator/macd.c indicator/mobile.c indicator/rsi.c \
                        indicator/smi.c indicator/srsi.c \
                        indicator/stochastic.c indicator/stoploss.c \
+		       indicator/rs_mansfield.c \
                        indicator/swing.c indicator/zigzag.c \
                        trading/portfolio.c trading/position.c \
                        trading/statistics.c trading/trade.c

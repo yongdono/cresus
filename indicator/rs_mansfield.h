@@ -24,8 +24,9 @@ struct rs_mansfield {
   struct average mma;
 };
 
-int rs_mansfield_init(struct rs_mansfield *r, const struct candle *seed,
-		   const struct candle *seed_index);
+int rs_mansfield_init(struct rs_mansfield *r, int period,
+		      const struct candle *seed,
+		      const struct candle *seed_index);
 
 void rs_mansfield_free(struct rs_mansfield *r);
 

@@ -26,7 +26,8 @@
 
 /* Set methods */
 #define __indicator_set_string__(self, fmt, ...)			\
-  snprintf(__indicator__(self).str, INDICATOR_STR_MAX, fmt, ##__VA_ARGS__)
+  snprintf(__indicator__(self).str, INDICATOR_STR_MAX,			\
+	   fmt, ##__VA_ARGS__)
 #define __indicator_set_event__(self, candle, event)		\
   indicator_set_event(&__indicator__(self), candle, event)
 
