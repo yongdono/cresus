@@ -36,7 +36,7 @@ typedef enum {
 } candle_value_t;
 
 struct candle {
-  
+
   time_t timestamp; /* UTC */
   int offset; /* In minutes (google mode) */
   

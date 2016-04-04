@@ -17,7 +17,7 @@ int stochastic_init(struct stochastic *s, int period, int k, int d,
   
   /* super() */
   __indicator_super__(s, 0, stochastic_feed);
-  __indicator_set_string__(s, "stochastic[%d, %d, %d]", period, k, d);
+  __indicator_set_string__(s, "sto[%d, %d, %d]", period, k, d);
   
   s->k = k;
   s->period = period;
