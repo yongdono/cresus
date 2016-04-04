@@ -20,12 +20,15 @@
 #define __list_super__(self) list_init(&__list__(self), self);
 #define __list_free__(self) list_free(&__list__(self));
 
-#define __list_insert__(list, entry)			\
-  list_insert(__list__(list), __list__(entry));
-
+#define __list_add__(list, entry)		\
+  list_add(__list__(list), __list__(entry))
+#define __list_add_tail(list, entry)		\
+  list_add_tail(__list__(list), __list__(entry))
+#define __list_del__(list)			\
+  list_del(__list__(list))
 #define __list_for_each__(list, ptr, self)				\
-  for(ptr = list->next, self = __list_self__(ptr); ptr->next;		\
-      ptr = ptr->next, self = __list_self__(ptr))
+  for (ptr = (list)->next, self = __list_self__(ptr);  ptr != (list);	\
+       ptr = ptr->next, self = __list_self__(ptr))
 
 /* Basic list object */
 

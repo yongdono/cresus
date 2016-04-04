@@ -17,12 +17,13 @@
 #define __slist__(x) (x)->__parent_slist__
 #define __slist_self__(x) (x)->__self_slist__
 
-#define __slist_super__(self) slist_init(&__slist__(self), self);
-#define __slist_free__(self) slist_free(&__slist__(self));
+#define __slist_super__(self) slist_init(&__slist__(self), self)
+#define __slist_free__(self) slist_free(&__slist__(self))
 
 #define __slist_insert__(slist, entry)			\
-  slist_insert(__slist__(slist), __slist__(entry));
-
+  slist_insert(__slist__(slist), __slist__(entry))
+#define __slist_del__(slist)			\
+  slist_del(__slist__(slist))
 #define __slist_for_each__(slist, ptr, self)				\
   for(ptr = slist->next, self = __slist_self__(ptr);  ptr->next;	\
       ptr = ptr->next, self = __slist_self__(ptr))
@@ -48,7 +49,7 @@ static inline void slist_insert(struct slist *s, struct slist *entry) {
   s->next = entry;
 }
 
-static inline void slist_remove(struct slist *s) {
+static inline void slist_del(struct slist *s) {
   s->next = s->next->next;
 }
 
