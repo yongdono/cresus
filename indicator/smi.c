@@ -1,11 +1,10 @@
-//
-//  smi.c
-//  Cresus EVO
-//
-//  Created by Joachim Naulet on 20/11/2014.
-//  Copyright (c) 2014 Joachim Naulet. All rights reserved.
-//
-
+/*
+ * Cresus EVO - smi.c 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 11/20/2014
+ * Copyright (c) 2014 Joachim Naulet. All rights reserved.
+ *
+ */
 
 #include <stdlib.h>
 #include <string.h>

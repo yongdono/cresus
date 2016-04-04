@@ -1,10 +1,10 @@
-//
-//  indicator.c
-//  Cresus EVO
-//
-//  Created by Joachim Naulet on 20/10/2014.
-//  Copyright (c) 2014 Joachim Naulet. All rights reserved.
-//
+/*
+ * Cresus EVO - indicator.c 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 10/20/2014
+ * Copyright (c) 2014 Joachim Naulet. All rights reserved.
+ *
+ */
 
 #include "indicator.h"
 

@@ -1,10 +1,10 @@
-//
-//  stochastic.c
-//  Cresus EVO
-//
-//  Created by Joachim Naulet on 19/11/2014.
-//  Copyright (c) 2014 Joachim Naulet. All rights reserved.
-//
+/*
+ * Cresus EVO - stochastic.c 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 11/19/2014
+ * Copyright (c) 2014 Joachim Naulet. All rights reserved.
+ *
+ */
 
 #include <stdlib.h>
 #include <string.h>

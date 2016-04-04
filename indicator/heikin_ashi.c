@@ -1,10 +1,10 @@
-//
-//  heikin_ashi.c
-//  Cresus EVO
-//
-//  Created by Joachim Naulet on 26/01/2015.
-//  Copyright (c) 2015 Joachim Naulet. All rights reserved.
-//
+/*
+ * Cresus EVO - heikin_ashi.c 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 01/26/2015
+ * Copyright (c) 2015 Joachim Naulet. All rights reserved.
+ *
+ */
 
 #include <string.h>
 #include "heikin_ashi.h"

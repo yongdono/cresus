@@ -1,10 +1,10 @@
-//
-//  stoploss.c
-//  Cresus EVO
-//
-//  Created by Joachim Naulet on 17/10/2014.
-//  Copyright (c) 2014 Joachim Naulet. All rights reserved.
-//
+/*
+ * Cresus EVO - stoploss.c 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 10/17/2014
+ * Copyright (c) 2014 Joachim Naulet. All rights reserved.
+ *
+ */
 
 #include "stoploss.h"
 

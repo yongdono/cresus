@@ -1,8 +1,11 @@
 /*
- * rs_dorsey.c
- * (c) 2016 Joachim Naulet
+ * Cresus EVO - rs_dorsey.c 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 04/04/2016
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
  *
  */
+
 #include "rs_dorsey.h"
 
 int rs_dorsey_init(struct rs_dorsey *r, const struct candle *seed,

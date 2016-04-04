@@ -1,3 +1,11 @@
+/*
+ * Cresus EVO - rs_dorsey.h 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 04/04/2016
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
+ *
+ */
+
 #ifndef RS_DORSEY_H
 #define RS_DORSEY_H
 

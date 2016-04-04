@@ -1,3 +1,11 @@
+/*
+ * Cresus EVO - mobile.h 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 04/04/2016
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
+ *
+ */
+
 #ifndef MOBILE_H
 #define MOBILE_H
 

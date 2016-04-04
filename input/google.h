@@ -1,3 +1,11 @@
+/*
+ * Cresus EVO - google.h 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 04/04/2016
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
+ *
+ */
+
 #ifndef GOOGLE_H
 #define GOOGLE_H
 

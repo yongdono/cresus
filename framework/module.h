@@ -1,10 +1,10 @@
-//
-//  module.h
-//  Cresus EVO
-//
-//  Created by Joachim Naulet on 20/10/2014.
-//  Copyright (c) 2014 Joachim Naulet. All rights reserved.
-//
+/*
+ * Cresus EVO - module.h 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 10/20/2014
+ * Copyright (c) 2014 Joachim Naulet. All rights reserved.
+ *
+ */
 
 #ifndef __Cresus_EVO__module__
 #define __Cresus_EVO__module__
