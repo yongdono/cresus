@@ -58,8 +58,9 @@ static inline time_t timeline_entry_difftime(struct timeline_entry *e,
 }
 
 /* for debug purposes */
-const char *timeline_entry_localtime_str(struct timeline_entry *e,
-					 char *buf, size_t len)
+static inline const char *
+timeline_entry_localtime_str(struct timeline_entry *e,
+			     char *buf, size_t len)
 {
   struct tm tm;
   time_t time = e->time;

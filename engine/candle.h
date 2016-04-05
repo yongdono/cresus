@@ -41,7 +41,8 @@ struct candle {
   int offset; /* In minutes (google mode) : remove ? */
 };
 
-int candle_init(struct candle *c, time_t time, double open, double close, double high, double low, double volume);
+int candle_init(struct candle *c, time_t time, double open, double close,
+		double high, double low, double volume);
 void candle_free(struct candle *c);
 
 /* Is that useful ? TODO : Remove these 2 */
