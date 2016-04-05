@@ -24,8 +24,10 @@
 #define __timeline_entry_free__(self)			\
   timeline_entry_free(&__timeline_entry__(self))
 
-#define __timeline_entry_set_time(self, time)	\
+#define __timeline_entry_set_time__(self, time)	\
   __timeline_entry__(self).time = time;
+#define __timeline_entry_difftime__(self, time)			\
+  timeline_entry_difftime(&__timeline_entry__(self), time)
 
 struct timeline_entry {
   /* parent */
@@ -46,6 +48,11 @@ static inline int timeline_entry_init(struct timeline_entry *e,
 
 static inline void timeline_entry_free(struct timeline_entry *e) {
   __list_free__(e);
+}
+
+static inline time_t timeline_entry_difftime(struct timeline_entry *e,
+					     time_t time) {
+  return (e->time - time);
 }
 
 #endif
