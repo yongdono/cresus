@@ -12,10 +12,6 @@
 #include "slist.h"
 #include "timeline_entry.h"
 
-#include "engine/candle.h"
-
-#define INDICATOR_STR_MAX 64
-
 struct indicator_timeline_entry {
   __inherits_from_timeline_entry__;
   /* Basic info */
@@ -25,6 +21,7 @@ struct indicator_timeline_entry {
 
 /* As it's a superclass, we want macros to manipulate this */
 #define __inherits_from_indicator__ struct indicator __parent_indicator__
+#define __indicator_is_superclass__ void *__self_indicator__
 #define __indicator__(x) (x)->__parent_indicator__
 #define __indicator_self__(x) (x)->__self_indicator__
 
@@ -47,15 +44,15 @@ struct indicator_timeline_entry {
 #define __indicator_candle_value__(self) __indicator__(self).value
 
 /* Define types */
-struct indicator; /* FIXME ; find something more elegant */
+struct indicator; /* FIXME : find something more elegant */
 typedef int (*indicator_feed_ptr)(struct indicator*, struct timeline_entry*);
 
 struct indicator {
   /* Inherits from slist */
   __inherits_from_slist__;
-  /* For easier manipulation */
-  void *__self_indicator__;
-  
+  __indicator_is_superclass__;
+
+#define INDICATOR_STR_MAX 64
   candle_value_t value;
   indicator_feed_ptr feed;
   char str[INDICATOR_STR_MAX];

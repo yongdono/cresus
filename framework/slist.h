@@ -14,6 +14,7 @@
 /* Inheritance system */
 
 #define __inherits_from_slist__ struct slist __parent_slist__
+#define __slist_is_superclass__ void *__self_slist__
 #define __slist__(x) (x)->__parent_slist__
 #define __slist_self__(x) (x)->__self_slist__
 
@@ -31,8 +32,8 @@
 /* Basic slist object */
 
 struct slist {
+  __slist_is_superclass__;
   struct slist *next;
-  void *__self_slist__;
 };
 
 static inline int slist_init(struct slist *s, void *self) {

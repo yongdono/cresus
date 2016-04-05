@@ -12,12 +12,14 @@
 #include "timeline_entry.h"
 
 #define __inherits_from_input__ struct input __parent_input__
+#define __input_is_superclass__ void *__self_input__
 #define __input__(x) (x)->__parent_input__
 #define __input_self__(x) (x)->__self_input__
 
 #define __input_super__(self, read) input_init(&__input__(self), self, read)
 #define __input_free__(self) input_free(&__input__(self))
 
+/* methods */
 #define __input_read__(self, entry)			\
   __input__(self)->read(&__input__(self), entry);
 
@@ -27,8 +29,8 @@ typedef int (*input_read_ptr)(struct input *in,
 			      struct timeline_entry *entry);
 
 struct input {
+  __input_is_superclass__;
   input_read_ptr read;
-  void *__self_input__;
 };
 
 static inline int input_init(struct input *in, void *self,

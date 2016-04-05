@@ -11,9 +11,10 @@
 
 #include <stdio.h>
 
-/* Inheritance system */
+/* Superclass */
 
 #define __inherits_from_list__ struct list __parent_list__
+#define __list_is_superclass__ void *__self_list__
 #define __list__(x) (x)->__parent_list__
 #define __list_self__(x) (x)->__self_list__
 
@@ -36,8 +37,8 @@
 /* Basic list object */
 
 struct list {
+  __list_is_superclass__;
   struct list *prev, *next;
-  void *__self_list__;
 };
 
 static inline int list_init(struct list *l, void *self) {
