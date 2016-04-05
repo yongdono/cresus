@@ -10,7 +10,6 @@
 #define STOPLOSS_H
 
 #include "framework/indicator.h"
-#include "framework/candle.h"
 
 typedef enum {
   STOPLOSS_UP,

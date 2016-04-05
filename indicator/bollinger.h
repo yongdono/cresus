@@ -9,9 +9,8 @@
 #ifndef BOLLINGER_H
 #define BOLLINGER_H
 
+#include "math/average.h"
 #include "framework/indicator.h"
-#include "framework/candle.h"
-#include "mobile.h"
 
 struct bollinger_value {
   double mma;

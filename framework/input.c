@@ -16,10 +16,4 @@ int input_init(struct input *in, void *self, input_read_ptr read) {
 }
 
 void input_free(struct input *in) {
-  
-}
-
-int input_read(struct input *in, struct candle *candle) {
-  
-  return in->read(in, candle);
 }

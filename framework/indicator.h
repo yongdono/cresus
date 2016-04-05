@@ -10,9 +10,18 @@
 #define __Cresus_EVO__indicator__
 
 #include "slist.h"
-#include "candle.h"
+#include "timeline_entry.h"
+
+#include "engine/candle.h"
 
 #define INDICATOR_STR_MAX 64
+
+struct indicator_timeline_entry {
+  __inherits_from_timeline_entry__;
+  /* Basic info */
+  unsigned int status;
+  void *data;
+};
 
 /* As it's a superclass, we want macros to manipulate this */
 #define __inherits_from_indicator__ struct indicator __parent_indicator__
@@ -30,6 +39,8 @@
 	   fmt, ##__VA_ARGS__)
 #define __indicator_set_event__(self, candle, event)		\
   indicator_set_event(&__indicator__(self), candle, event)
+#define __indicator_feed__(self, candle)			\
+  __indicator__(self)->feed(&__indicator__(self), candle)
 
 /* Internal values get */
 #define __indicator_string__(self) __indicator__(self).str

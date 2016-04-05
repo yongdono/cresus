@@ -9,7 +9,6 @@
 #ifndef __Cresus_EVO__module__
 #define __Cresus_EVO__module__
 
-#include "event_handler.h"
 #include "trading/statistics.h"
 #include "trading/position.h"
 #include "trading/trade.h"

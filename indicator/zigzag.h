@@ -9,7 +9,6 @@
 #ifndef ZIGZAG_H
 #define ZIGZAG_H
 
-#include "framework/candle.h"
 #include "framework/indicator.h"
 
 typedef enum {

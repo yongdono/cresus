@@ -9,7 +9,6 @@
 #ifndef ATR_H
 #define ATR_H
 
-#include "framework/candle.h"
 #include "framework/indicator.h"
 
 struct atr {
