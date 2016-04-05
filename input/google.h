@@ -29,6 +29,4 @@ struct google {
 int google_init(struct google *g, const char *filename);
 void google_free(struct google *g);
 
-int google_read(struct google *g, struct candle *cdl, size_t n);
-
 #endif

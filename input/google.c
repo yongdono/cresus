@@ -10,9 +10,14 @@
 #include <stdlib.h>
 
 #include "google.h"
+#include "engine/candle.h"
 
-static int __google_read(struct google *g, char *str,
-                         struct candle *cdl)
+static int __google_readline(struct google *g,
+			     char *str, size_t size,
+			     time_t *time,
+			     double *open, double *close,
+			     double *high, double *low,
+			     double *volume)
 {
   int off = 0;
   char buf[256];
@@ -41,48 +46,74 @@ static int __google_read(struct google *g, char *str,
     return -1; /* No useful data */
   
   /* Cut string */
-  char *time = strsep(&str, ",");
-  char *close = strsep(&str, ",");
-  char *hi = strsep(&str, ",");
-  char *lo = strsep(&str, ",");
-  char *open = strsep(&str, ",");
-  char *vol = str; /* End */
+  char *stime = strsep(&str, ",");
+  char *sclose = strsep(&str, ",");
+  char *shi = strsep(&str, ",");
+  char *slo = strsep(&str, ",");
+  char *sopen = strsep(&str, ",");
+  char *svol = str; /* End */
   
   /* Analysis */
-  if(new_day) sscanf(time, "%d", &g->parser.time);
-  else sscanf(time, "%d", &off);
-  
-  /* FIXME : check interval_s */
-  cdl->timestamp = g->parser.time + (off * g->parser.interval_s);
-  cdl->offset = g->parser.timezone_m;
+  if(new_day) sscanf(stime, "%d", &g->parser.time);
+  else sscanf(stime, "%d", &off);
   
   /* Set values */
-  sscanf(open, "%lf", &cdl->open);
-  sscanf(close, "%lf", &cdl->close);
-  sscanf(hi, "%lf", &cdl->high);
-  sscanf(lo, "%lf", &cdl->low);
-  sscanf(vol, "%lf", &cdl->volume);
-  
+  /* FIXME : check interval_s */
+  *time = g->parser.time + (off * g->parser.interval_s);
+  sscanf(sopen, "%lf", open);
+  sscanf(sclose, "%lf", close);
+  sscanf(shi, "%lf", high);
+  sscanf(slo, "%lf", low);
+  sscanf(svol, "%lf", volume);
+
+  /* TODO : make some use of these flags
   if(new_day){
     cdl->type = CANDLE_SOD;
     fprintf(stderr, "--- Parsed new day at %s ---\n",
-            candle_localtime_str(cdl, buf, sizeof buf));
+            __timeline_entry_localtime_str__(candle, buf, sizeof buf));
     
   }else
     cdl->type = CANDLE_OTHER;
+  */
   
-  return sizeof(*cdl);
+  return 1;
 }
 
-static int google_input_read(struct input *in, struct candle *candle) {
+static int __google_read(struct google *g, struct candle *candle)
+{
+# define BUFLEN 256
+  char buf[BUFLEN];
+
+  time_t time;
+  /* Set hi/lo values */
+  double high = 0.0;
+  double open = 0.0;
+  double close = 0.0;
+  double low = DBL_MAX;
+  double volume = 0.0;
+
+  for(;;){
+    if(!fgets(buf, sizeof buf, g->fp))
+      /* EOF */
+      return 0;
+
+    if(__google_readline(g, buf, sizeof buf, &time,
+			 &open, &close, &high, &low, &volume) != -1){
+      /* Set candle */
+      candle_init(candle, time, open, close, high, low, volume);
+      break;
+    }
+  }
   
-  int ret;
-  
-  do
-    ret = google_read(__input_self__(in), candle, 1);
-  while(ret == -1);
-  
-  return ret;
+  return 1;
+}
+
+static int google_input_read(struct input *in,
+			     struct timeline_entry *entry) {
+
+  /* Is that small wrapping necessary */
+  return __google_read(__input_self__(in),
+		       __timeline_entry_self__(entry));
 }
 
 int google_init(struct google *g, const char *filename)
@@ -100,48 +131,4 @@ void google_free(struct google *g)
 {
   __input_free__(g);
   if(g->fp) fclose(g->fp);
-}
-
-int google_read(struct google *g, struct candle *cdl, size_t n)
-{
-# define BUFLEN 256
-  char buf[BUFLEN];
-  struct candle tmp;
-  
-  /* Set hi/lo values */
-  cdl->high = 0.0;
-  cdl->open = 0.0;
-  cdl->close = 0.0;
-  cdl->low = DBL_MAX;
-  cdl->volume = 0.0;
-  
-  for(int i = (int)n; i--;){
-    
-    if(!fgets(buf, sizeof buf, g->fp))
-    /* End of file */
-      return 0;
-    
-    if(__google_read(g, buf, &tmp) != -1){
-      /* Get values */
-      cdl->high = (tmp.high > cdl->high ? tmp.high : cdl->high);
-      cdl->low = (tmp.low < cdl->low ? tmp.low : cdl->low);
-      cdl->volume += tmp.volume;
-      
-      /* First element */
-      if(i == (n - 1)){
-        cdl->open = tmp.open;
-        cdl->type = tmp.type;
-      }
-      /* Last element */
-      if(!i){
-        cdl->close = tmp.close;
-        cdl->timestamp = tmp.timestamp;
-        cdl->offset = tmp.offset;
-      }
-      
-    }else
-      return -1;
-  }
-  
-  return (int)n;
 }

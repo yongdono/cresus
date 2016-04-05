@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #include "yahoo.h"
+#include "engine/candle.h"
 
 static int __yahoo_read(struct input *in,
 			struct timeline_entry *entry) {
@@ -58,10 +59,10 @@ static int __yahoo_read(struct input *in,
 }
 
 
-int yahoo_init(struct yahoo *y, const char *filename)
-{
+int yahoo_init(struct yahoo *y, const char *filename) {
+  
   /* super */
-  __input_super__(y, yahoo_read);
+  __input_super__(y, __yahoo_read);
   
   if(!(y->fp = fopen(filename, "r")))
     return -1;
@@ -69,8 +70,8 @@ int yahoo_init(struct yahoo *y, const char *filename)
   return 0;
 }
 
-void yahoo_free(struct yahoo *y)
-{
+void yahoo_free(struct yahoo *y) {
+  
   __input_free__(y);
   if(y->fp) fclose(y->fp);
 }
