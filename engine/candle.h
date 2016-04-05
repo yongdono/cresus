@@ -11,17 +11,8 @@
 
 #include <time.h>
 #include <float.h>
-#include "framework/list.h"
 
-#define MINUTES(m) ((m) * 60)
-#define HOURS(h) ((h) * 3600)
-#define DAYS(d) ((d) * 86400)
-#define DAY(d) ((d) - ((d) % DAYS(1)))
-
-typedef enum {
-  CANDLE_SOD,
-  CANDLE_OTHER
-} candle_t;
+#include "framework/timeline_entry.h"
 
 typedef enum {
   CANDLE_OPEN,
@@ -37,34 +28,27 @@ typedef enum {
 } candle_value_t;
 
 struct candle {
-  /* Inherits from list (for the moment */
-  __inherits_from_list__;
-  
-  time_t timestamp; /* UTC */
-  int offset; /* In minutes (google mode) */
+  /* Inherits from timeline,
+   * so we don't need time management */
+  __inherits_from_timeline_entry__;
   
   /* Content */
-  double open, close, high, low;
+  double open, close;
+  double high, low;
   double volume;
-
+  
   /* Misc */
-  candle_t type;
+  int offset; /* In minutes (google mode) : remove ? */
 };
 
-int candle_init(struct candle *c);
+int candle_init(struct candle *c, time_t time, double open, double close, double high, double low, double volume);
 void candle_free(struct candle *c);
 
-/* Is that useful ? */
-double candle_get_closest_inf(struct candle *c, double value); /* TODO : Remove */
-double candle_get_closest_sup(struct candle *c, double value); /* TODO : Remove */
+/* Is that useful ? TODO : Remove these 2 */
+double candle_get_closest_inf(struct candle *c, double value);
+double candle_get_closest_sup(struct candle *c, double value);
 
 double candle_get_value(const struct candle *c, candle_value_t value);
 int candle_get_direction(const struct candle *c);
-
-time_t candle_localtime(const struct candle *c);
-const char *candle_localtime_str(const struct candle *c, char *buf, size_t len);
-
-int candle_localtime_match(struct candle *c, time_t min, time_t max);
-int candle_daytime_match(struct candle *c, time_t min, time_t max);
 
 #endif

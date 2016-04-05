@@ -28,6 +28,8 @@
   __timeline_entry__(self).time = time;
 #define __timeline_entry_difftime__(self, time)			\
   timeline_entry_difftime(&__timeline_entry__(self), time)
+#define __timeline_entry_localtime_str__(self, buf, len)	\
+  timeline_entry_localtime_str(&__timeline__(self), buf, len)
 
 struct timeline_entry {
   /* parent */
@@ -53,6 +55,16 @@ static inline void timeline_entry_free(struct timeline_entry *e) {
 static inline time_t timeline_entry_difftime(struct timeline_entry *e,
 					     time_t time) {
   return (e->time - time);
+}
+
+/* for debug purposes */
+const char *timeline_entry_localtime_str(struct timeline_entry *e,
+					 char *buf, size_t len)
+{
+  struct tm tm;
+  time_t time = e->time;
+  strftime(buf, len, "%c", gmtime_r(&time, &tm));
+  return buf;
 }
 
 #endif

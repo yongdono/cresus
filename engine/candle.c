@@ -12,17 +12,28 @@
 
 #include "candle.h"
 
-int candle_init(struct candle *c)
-{
-  /* superclass */
-  __list_super__(c);
+int candle_init(struct candle *c,
+		time_t time,
+		double open, double close,
+		double high, double low,
+		double volume) {
   
-  memset(c, 0, sizeof *c);
+  /* superclass */
+  __timeline_entry_super__(c, time);
+  
+  /* Set */
+  c->open = open;
+  c->close = close;
+  c->high = high;
+  c->low = low;
+  c->volume = volume;
+  
   return 0;
 }
 
 void candle_free(struct candle *c)
 {
+  __timeline_entry_free__(c);
 }
 
 double candle_get_closest_inf(struct candle *c, double value)
@@ -68,43 +79,9 @@ double candle_get_value(const struct candle *c, candle_value_t value) {
 
 int candle_get_direction(const struct candle *c)
 {
+  /*
   if(c->open > c->close) return -1;
   if(c->open < c->close) return 1;
-
-  return 0;
-}
-
-time_t candle_localtime(const struct candle *c)
-{
-  return c->timestamp + MINUTES(c->offset);
-}
-
-int candle_localtime_match(struct candle *c, time_t min, time_t max)
-{
-  time_t time = candle_localtime(c);
-  if(time >= min && time <= max)
-    return 0;
-  
-  return -1;
-}
-
-int candle_daytime_match(struct candle *c, time_t min, time_t max)
-{
-  time_t time = candle_localtime(c);
-  time -= DAY(time);
-
-  if(time >= min && time <= max)
-    return 0;
-
-  return -1;
-}
-
-/* For debug purposes */
-const char *candle_localtime_str(const struct candle *c, char *buf, size_t len)
-{
-  struct tm tm;
-  time_t time = candle_localtime(c);
-
-  strftime(buf, len, "%c", gmtime_r(&time, &tm));
-  return buf;
+  */
+  return (c->close - c->open);
 }

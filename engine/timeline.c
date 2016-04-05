@@ -34,7 +34,8 @@ int timeline_load(struct timeline *t, struct input *in) {
     struct candle *entry;
     if((entry = malloc(sizeof *entry))){
       /* Add it to the list */
-      __list_add_tail__(&__list__(&t->list_entry), entry);
+      __list_add_tail__(&__list__(&t->list_entry),
+			&__timeline_entry__(entry));
       n++;
     }
   }
