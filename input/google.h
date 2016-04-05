@@ -19,7 +19,7 @@
 struct google {
   /* Super */
   __inherits_from_input__;
-  
+  /* Loader */
   FILE *fp;
   struct {
     int interval_s;

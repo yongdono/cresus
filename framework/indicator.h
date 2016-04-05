@@ -39,16 +39,16 @@ struct indicator_timeline_entry {
 	   fmt, ##__VA_ARGS__)
 #define __indicator_set_event__(self, candle, event)		\
   indicator_set_event(&__indicator__(self), candle, event)
-#define __indicator_feed__(self, candle)			\
-  __indicator__(self)->feed(&__indicator__(self), candle)
+#define __indicator_feed__(self, entry)				\
+  __indicator__(self)->feed(&__indicator__(self), entry)
 
 /* Internal values get */
 #define __indicator_string__(self) __indicator__(self).str
 #define __indicator_candle_value__(self) __indicator__(self).value
 
 /* Define types */
-struct indicator;
-typedef int (*indicator_feed_ptr)(struct indicator*, const struct candle*);
+struct indicator; /* FIXME ; find something more elegant */
+typedef int (*indicator_feed_ptr)(struct indicator*, struct timeline_entry*);
 
 struct indicator {
   /* Inherits from slist */
