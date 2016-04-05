@@ -11,8 +11,10 @@
 
 #include <stdio.h>
 #include <sys/types.h>
-
 #include "framework/input.h"
+
+/* TODO : find a way to clearly tell what objects this input returns */
+#define __google_timeline_entry_t__(x) (struct candle*)(x)
 
 struct google {
   /* Super */

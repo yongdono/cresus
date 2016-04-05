@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include "framework/input.h"
 
+/* TODO : find a way to clearly tell what objects this input returns */
+#define __yahoo_timeline_entry_t__(x) (struct candle*)(x)
+
 struct yahoo {
   /* Inherits from input */
   __inherits_from_input__;
