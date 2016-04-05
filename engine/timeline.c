@@ -24,12 +24,16 @@ void timeline_free(struct timeline *t) {
   t->cache = &t->list_entry;
 }
 
+#if 0
+
+/* TODO : Create loader object/superclass */
+
 int timeline_load(struct timeline *t, struct input *in) {
   
   int n = 0;
   struct candle candle;
 
-  /* TODO ; Make generic ? */
+  /* TODO : Make generic ? */
   while(in->read(in, &candle) != -1){
     struct candle *entry;
     if((entry = malloc(sizeof *entry))){
@@ -42,6 +46,7 @@ int timeline_load(struct timeline *t, struct input *in) {
   
   return n;
 }
+#endif
 
 struct timeline_entry *timeline_by_date(struct timeline *t, time_t time) {
 
