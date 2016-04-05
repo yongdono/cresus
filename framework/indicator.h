@@ -12,12 +12,29 @@
 #include "slist.h"
 #include "timeline_entry.h"
 
+#define __inherits_from_indicator_timeline_entry__			\
+  struct indicator_timeline_entry __parent_indicator_timeline_entry__
+#define __indicator_timeline_entry_is_superclass__	\
+  void *__self_indicator_timeline_entry__
+#define __indicator_timeline_entry__(x)		\
+  (x)->__parent_indicator_timeline_entry__
+#define __indicator_timeline_entry_self__(x)	\
+  (x)->__self_indicator_timeline_entry__
+/* TODO : modify super() if needed */
+#define __indicator_timeline_entry_super__(self)			\
+  indicator_timeline_entry_init(&__indicator_timeline_entry__(self), self);
+#define __indicator_timeline_entry_free__(self)				\
+  indicator_timeline_entry_free(&__indicator_timeline_entry__(self));
+
 struct indicator_timeline_entry {
   __inherits_from_timeline_entry__;
+  __indicator_timeline_entry_is_superclass__;
   /* Basic info */
-  unsigned int status;
-  void *data;
+  unsigned int status; /* Maybe */
 };
+
+int indicator_timeline_entry_init(struct indicator_timeline_entry *entry, void *self);
+void indicator_timeline_entry_free(struct indicator_timeline_entry *entry);
 
 /* As it's a superclass, we want macros to manipulate this */
 #define __inherits_from_indicator__ struct indicator __parent_indicator__
