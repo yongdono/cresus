@@ -27,11 +27,6 @@ void indicator_free(struct indicator *i) {
   i->feed = NULL;
 }
 
-int indicator_feed(struct indicator *i, const struct candle *candle) {
-  
-  return i->feed(i, candle);
-}
-
 void indicator_set_event(struct indicator *i, struct candle *candle,
 			 int event) {
   

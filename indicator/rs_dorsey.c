@@ -8,13 +8,13 @@
 
 #include "rs_dorsey.h"
 
-int rs_dorsey_init(struct rs_dorsey *r, const struct candle *seed,
-		   const struct candle *seed_index) {
+int rs_dorsey_init(struct rs_dorsey *r, struct candle *ref) {
 
   /* super() */
-  __indicator_super__(r, CANDLE_CLOSE, rs_dorsey_feed);
+  __indicator_super__(r, rs_dorsey_feed);
   __indicator_set_string__(r, "rsd[]");
-  
+
+  r->ref = ref;
   return 0;
 }
 
@@ -26,9 +26,15 @@ void rs_dorsey_free(struct rs_dorsey *r) {
 int rs_dorsey_feed(struct indicator *i, const struct candle *c) {
 
   struct rs_dorsey *r = __indicator_self__(i);
-  /*
-   * TODO : Find a way to push 2 streams of candles in this indicator
-   */
+  struct candle *ref = __timeline_entry_find__(r->ref,
+					       __timeline_entry__(c).time,
+					       1);
+  
+  if(ref){
+    r->value = c->close / ref->close;
+    /* TODO : create new entry ? */
+    return 0;
+  }
   
   return -1;
 }

@@ -31,17 +31,15 @@ typedef time_t granularity_t;
 #define __timeline_entry__(x) (x)->__parent_timeline_entry__
 #define __timeline_entry_self__(x) (x)->__self_timeline_entry__
 
-#define __timeline_entry_super__(self, time)			\
-  timeline_entry_init(&__timeline_entry__(self), self, time)
+#define __timeline_entry_super__(self, time, granularity)		\
+  timeline_entry_init(&__timeline_entry__(self), self, time, granularity)
 #define __timeline_entry_free__(self)			\
   timeline_entry_free(&__timeline_entry__(self))
 
-/* Not required at the moment
-#define __timeline_entry_set_time__(self, time)	\
-  __timeline_entry__(self).time = time;
-*/
-#define __timeline_entry_timecmp__(self, time, granularity)		\
-  timeline_entry_timecmp(&__timeline_entry__(self), time, granularity)
+#define __timeline_entry_timecmp__(self, time)			\
+  timeline_entry_timecmp(&__timeline_entry__(self), time)
+#define __timeline_entry_find__(self, time, granularity)	\
+  timeline_entry_find(&__timeline_entry__(self), time)
 #define __timeline_entry_localtime_str__(self, buf, len)	\
   timeline_entry_localtime_str(&__timeline__(self), buf, len)
 
@@ -52,39 +50,15 @@ struct timeline_entry {
   
   /* Time/Date management */
   time_t time; /* Epoch */
+  granularity_t granularity; /* epoch-format, too */
 };
 
-static inline int timeline_entry_init(struct timeline_entry *e,
-				      void *self, time_t time) {
-  __list_super__(e);
-  __timeline_entry_self__(e) = self;
+int timeline_entry_init(struct timeline_entry *e, void *self, time_t time, granularity_t g);
+void timeline_entry_free(struct timeline_entry *e);
 
-  e->time = time;
-  return 0;
-}
-
-static inline void timeline_entry_free(struct timeline_entry *e) {
-  __list_free__(e);
-}
-
-#define __timeline_entry_time(time, granularity)	\
-  (time - (time % granularity))
-
-static inline time_t timeline_entry_timecmp(struct timeline_entry *e,
-					    time_t time, granularity_t g) {
-  return (__timeline_entry_time(e->time, g) -
-	  __timeline_entry_time(time, g));
-}
-
-/* for debug purposes */
-static inline const char *
-timeline_entry_localtime_str(struct timeline_entry *e,
-			     char *buf, size_t len)
-{
-  struct tm tm;
-  time_t time = e->time;
-  strftime(buf, len, "%c", gmtime_r(&time, &tm));
-  return buf;
-}
+/* Methods */
+time_t timeline_entry_timecmp(struct timeline_entry *e, time_t time);
+struct timeline_entry *timeline_entry_find(struct timeline_entry *t, time_t time);
+const char *timeline_entry_localtime_str(struct timeline_entry *e, char *buf, size_t len);
 
 #endif

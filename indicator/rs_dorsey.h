@@ -16,16 +16,17 @@
  */
 
 #include "framework/indicator.h"
+#include "framework/timeline_entry.h"
 
 struct rs_dorsey {
   /* As always, inherits from indicator */
   __inherits_from_indicator__;
+
   double value;
+  struct candle *ref;
 };
 
-int rs_dorsey_init(struct rs_dorsey *r, const struct candle *seed,
-		   const struct candle *seed_index);
-
+int rs_dorsey_init(struct rs_dorsey *r, struct candle *ref);
 void rs_dorsey_free(struct rs_dorsey *r);
 
 int rs_dorsey_feed(struct indicator *i, const struct candle *c);
