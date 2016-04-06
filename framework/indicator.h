@@ -73,7 +73,7 @@ typedef int (*indicator_feed_ptr)(struct indicator*, struct candle*);
 
 struct indicator {
   /* Inherits from slist */
-  __inherits_from_slist__;
+  /*__inherits_from_slist__;*/
   __indicator_is_superclass__;
 
 #define INDICATOR_STR_MAX 64

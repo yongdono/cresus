@@ -14,6 +14,10 @@ static int swing_feed(struct indicator *i, struct candle *c) {
   struct swing *s = __indicator_self__(i);
   struct list *l = &__list__(&__timeline_entry__(c)); /* ancestors tree */
 
+  /* TODO : back to original version
+   * Problem with inside candles
+   */
+  
   if(c->high > s->ref->high || c->low < s->ref->low){
     /* Eliminate inside candles */
     if(++s->count >= SWING_MAX){

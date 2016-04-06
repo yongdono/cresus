@@ -1,3 +1,11 @@
+/*
+ * Cresus EVO - timeline.h 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 04/06/16
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
+ *
+ */
+
 #ifndef TIMELINE_H
 #define TIMELINE_H
 
