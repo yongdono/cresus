@@ -20,7 +20,7 @@
   (x)->__parent_indicator_timeline_entry__
 #define __indicator_timeline_entry_self__(x)	\
   (x)->__self_indicator_timeline_entry__
-/* TODO : modify super() if needed */
+
 #define __indicator_timeline_entry_super__(self)			\
   indicator_timeline_entry_init(&__indicator_timeline_entry__(self), self);
 #define __indicator_timeline_entry_free__(self)				\
