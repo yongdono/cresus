@@ -10,6 +10,7 @@
 #define __Cresus_EVO__indicator__
 
 #include "slist.h"
+#include "engine/candle.h" /* FIXME : Remove this */
 #include "timeline_entry.h"
 
 #define __inherits_from_indicator_timeline_entry__			\

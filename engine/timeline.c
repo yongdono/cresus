@@ -9,7 +9,9 @@
 #include <stdlib.h>
 #include "timeline.h"
 
-int timeline_init(struct timeline *t, int granularity, struct input *in) {
+int timeline_init(struct timeline *t,
+		  granularity_t granularity,
+		  struct input *in) {
   
   timeline_entry_init(&t->list_entry, NULL, 0);
   t->granularity = granularity;
@@ -52,18 +54,16 @@ struct timeline_entry *timeline_by_date(struct timeline *t, time_t time) {
 
   struct list *ptr;
   struct timeline_entry *entry;
-  time_t diff = timeline_entry_difftime(t->cache, time);
+  time_t tm = timeline_entry_timecmp(t->cache, time, t->granularity);
 
-  /* TODO : What about granularity ? Something's missing */
-  
-  if(!diff)
+  if(!tm)
     /* time is the same */
     goto out;
   
-  if(diff < 0){
+  if(tm < 0){
     /* time is forward */
     __list_for_each__(&__list__(t->cache), ptr, entry)
-      if(timeline_entry_difftime(entry, time) < t->granularity){
+      if(!timeline_entry_timecmp(entry, time, t->granularity)){
 	t->cache = entry;
 	goto out;
       }
@@ -71,7 +71,7 @@ struct timeline_entry *timeline_by_date(struct timeline *t, time_t time) {
   }else{
     /* time is backwards*/
     __list_for_each_prev__(&__list__(t->cache), ptr, entry)
-      if(timeline_entry_difftime(entry, time) < t->granularity){
+      if(!timeline_entry_timecmp(entry, time, t->granularity)){
 	t->cache = entry;
 	goto out;
       }

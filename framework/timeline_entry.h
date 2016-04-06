@@ -26,8 +26,8 @@
 
 #define __timeline_entry_set_time__(self, time)	\
   __timeline_entry__(self).time = time;
-#define __timeline_entry_difftime__(self, time)			\
-  timeline_entry_difftime(&__timeline_entry__(self), time)
+#define __timeline_entry_timecmp__(self, time, granularity)	\
+  timeline_entry_timecmp(&__timeline_entry__(self), time, granularity)
 #define __timeline_entry_localtime_str__(self, buf, len)	\
   timeline_entry_localtime_str(&__timeline__(self), buf, len)
 
@@ -52,9 +52,14 @@ static inline void timeline_entry_free(struct timeline_entry *e) {
   __list_free__(e);
 }
 
-static inline time_t timeline_entry_difftime(struct timeline_entry *e,
-					     time_t time) {
-  return (e->time - time);
+#define __timeline_entry_time(time, granularity)	\
+  (time - (time % granularity))
+
+static inline time_t timeline_entry_timecmp(struct timeline_entry *e,
+					    time_t time,
+					    int granularity) {
+  return (__timeline_entry_time(e->time, granularity) -
+	  __timeline_entry_time(time, granularity));
 }
 
 /* for debug purposes */
