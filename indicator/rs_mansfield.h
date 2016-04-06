@@ -21,12 +21,15 @@
 struct rs_mansfield {
   /* As always, inherits from indicator */
   __inherits_from_indicator__;
+  
   struct average mma;
+  struct candle *ref;
+
+  double value;
 };
 
 int rs_mansfield_init(struct rs_mansfield *r, int period,
-		      const struct candle *seed,
-		      const struct candle *seed_index);
+		      struct candle *seed, struct candle *ref);
 
 void rs_mansfield_free(struct rs_mansfield *r);
 

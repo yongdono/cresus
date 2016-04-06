@@ -22,18 +22,14 @@ typedef enum {
 struct swing {
   /* This is an indicator */
   __inherits_from_indicator__;
-  
-  int count;
-  int index;
 
+  int count;
   swing_t type;
-  struct candle pool[SWING_MAX];
+  struct candle *ref;
 };
 
-int swing_init(struct swing *s, const struct candle *c);
+int swing_init(struct swing *s, struct candle *seed);
 void swing_free(struct swing *s);
-
-int swing_feed(struct indicator *i, const struct candle *c);
 
 /* Indicator-specific */
 swing_t swing_type_get(struct swing *s);

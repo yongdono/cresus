@@ -29,7 +29,8 @@ typedef time_t granularity_t;
   struct timeline_entry __parent_timeline_entry__
 #define __timeline_entry_is_superclass__ void *__self_timeline_entry__
 #define __timeline_entry__(x) (x)->__parent_timeline_entry__
-#define __timeline_entry_self__(x) (x)->__self_timeline_entry__
+#define __timeline_entry_self__(x)			\
+  ((struct timeline_entry*)x)->__self_timeline_entry__
 
 #define __timeline_entry_super__(self, time, granularity)		\
   timeline_entry_init(&__timeline_entry__(self), self, time, granularity)
@@ -38,7 +39,7 @@ typedef time_t granularity_t;
 
 #define __timeline_entry_timecmp__(self, time)			\
   timeline_entry_timecmp(&__timeline_entry__(self), time)
-#define __timeline_entry_find__(self, time, granularity)	\
+#define __timeline_entry_find__(self, time)		\
   timeline_entry_find(&__timeline_entry__(self), time)
 #define __timeline_entry_localtime_str__(self, buf, len)	\
   timeline_entry_localtime_str(&__timeline__(self), buf, len)

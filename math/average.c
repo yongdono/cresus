@@ -6,6 +6,7 @@
  *
  */
 
+#include <math.h>
 #include <stdlib.h>
 #include "average.h"
 
@@ -38,6 +39,15 @@ void average_free(struct average *a) {
     free(a->pool);
 }
 
+int average_is_ready(struct average *a) {
+
+  if(a->type == AVERAGE_EXP)
+    return 1;
+
+  if(a->type == AVERAGE_MATH)
+    return (a->count >= a->period);
+}
+
 static double __average_update_math(struct average *a, double value) {
   
   double sum = 0.0;
@@ -47,7 +57,7 @@ static double __average_update_math(struct average *a, double value) {
   a->count++;
   
   /* Compute simple average */
-  if(a->count >= a->period){
+  if(average_is_ready(a)){
     for(int i = a->period; i--;)
       sum += a->pool[i];
 
@@ -83,7 +93,7 @@ double average_stddev(struct average *a) {
 
   double sum = 0.0;
   
-  if(a->count >= a->period){
+  if(average_is_ready(a)){
     for(int i = a->period; i--;)
       sum += pow(a->pool[i] - a->value, 2.0);
   }

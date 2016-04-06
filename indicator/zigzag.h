@@ -39,19 +39,18 @@ struct zigzag {
 
   zigzag_t type;
   double threshold;
+  candle_value_t cvalue;
   
   int ref_count; /* Candles since last ref */
-  struct candle ref, last_ref;
+  struct candle *ref, *last_ref;
 
   zigzag_dir_t direction; /* FIXME : use int ? */
 };
 
 int zigzag_init(struct zigzag *z, zigzag_t type, double thres,
-                candle_value_t value, const struct candle *seed);
+                candle_value_t cvalue, struct candle *seed);
 
 void zigzag_free(struct zigzag *z);
-
-int zigzag_feed(struct indicator *i, const struct candle *candle);
 
 /* Indicator-specific */
 zigzag_dir_t zigzag_get_last_ref(struct zigzag *z, struct candle *last_ref);
