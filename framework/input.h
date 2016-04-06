@@ -35,8 +35,8 @@ struct input {
 
 static inline int input_init(struct input *in, void *self,
 			     input_read_ptr read) {
+  __input_self__(in) = self;
   in->read = read;
-  in->__self_input__ = self;
   return 0;
 }
 

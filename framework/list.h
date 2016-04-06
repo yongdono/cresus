@@ -42,9 +42,9 @@ struct list {
 };
 
 static inline int list_init(struct list *l, void *self) {
+  __list_self__(l) = self;
   l->next = l;
   l->prev = l;
-  l->__self_list__ = self;
 }
 
 static inline void list_free(struct list *l) {

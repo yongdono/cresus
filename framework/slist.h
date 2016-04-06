@@ -37,8 +37,8 @@ struct slist {
 };
 
 static inline int slist_init(struct slist *s, void *self) {
+  __slist_self__(s) = self;
   s->next = NULL;
-  s->__self_slist__ = self;
 }
 
 static inline void slist_free(struct slist *s) {

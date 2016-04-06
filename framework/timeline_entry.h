@@ -16,6 +16,7 @@
 
 #define __inherits_from_timeline_entry__		\
   struct timeline_entry __parent_timeline_entry__
+#define __timeline_entry_is_superclass__ void *__self_timeline_entry__
 #define __timeline_entry__(x) (x)->__parent_timeline_entry__
 #define __timeline_entry_self__(x) (x)->__self_timeline_entry__
 
@@ -34,7 +35,7 @@
 struct timeline_entry {
   /* parent */
   __inherits_from_list__;
-  void *__self_timeline_entry__;
+  __timeline_entry_is_superclass__;
   
   /* Time/Date management */
   time_t time; /* Epoch */
@@ -43,7 +44,8 @@ struct timeline_entry {
 static inline int timeline_entry_init(struct timeline_entry *e,
 				      void *self, time_t time) {
   __list_super__(e);
-  e->__self_timeline_entry__ = self;
+  __timeline_entry_self__(e) = self;
+
   e->time = time;
   return 0;
 }

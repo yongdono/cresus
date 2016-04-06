@@ -13,7 +13,7 @@ int indicator_init(struct indicator *i, void *self, candle_value_t value,
   
   /* Super */
   __slist_super__(i);
-  i->__self_indicator__ = self;
+  __indicator_self__(i) = self;
   
   i->value = value;
   i->feed = feed;
