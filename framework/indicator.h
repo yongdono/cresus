@@ -9,7 +9,7 @@
 #ifndef __Cresus_EVO__indicator__
 #define __Cresus_EVO__indicator__
 
-#include "slist.h"
+/*#include "slist.h"*/
 #include "timeline_entry.h"
 
 /* Required to force data types */

@@ -11,7 +11,7 @@
 int indicator_init(struct indicator *i, void *self, indicator_feed_ptr feed) {
   
   /* Super */
-  __slist_super__(i);
+  /*__slist_super__(i);*/
   __indicator_self__(i) = self;
   
   i->feed = feed;
@@ -20,7 +20,7 @@ int indicator_init(struct indicator *i, void *self, indicator_feed_ptr feed) {
 
 void indicator_free(struct indicator *i) {
 
-  __slist_free__(i);
+  /*__slist_free__(i);*/
   i->feed = NULL;
 }
 
