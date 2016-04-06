@@ -25,16 +25,18 @@ struct bollinger {
   double stddev_factor;
   
   /* Indicator-specific */
+  candle_value_t cvalue;
   struct bollinger_value value;
+  
   char str[32]; /* FIXME */
 };
 
-int bollinger_init(struct bollinger *b, int period, double stddev_factor,
-                   candle_value_t value, struct candle *candle);
+int bollinger_init(struct bollinger *b, int period,
+		   double stddev_factor,
+                   candle_value_t cvalue,
+		   struct candle *candle);
 
 void bollinger_free(struct bollinger *b);
-
-int bollinger_feed(struct indicator *i, const struct candle *candle);
 
 /* Indicator-specific */
 struct bollinger_value *bollinger_get_value(struct bollinger *b);

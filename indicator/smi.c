@@ -11,43 +11,8 @@
 
 #include "smi.h"
 
-int smi_init(struct smi *s, int period, int smooth, const struct candle *c)
-{
-  /* Super() */
-  __indicator_super__(s, CANDLE_CLOSE, smi_feed);
-  __indicator_set_string__(s, "smi[%d, %d]", period, smooth);
-    
-  s->count = 1;
-  s->index = 0;
-  s->period = period;
-
-  if(!(s->pool = malloc(sizeof(*s->pool) * period)))
-    return -1;
+static int smi_feed(struct indicator *i, struct candle *c) {
   
-  average_init(&s->smpd, AVERAGE_EXP, period, c->close);
-  average_init(&s->_smpd, AVERAGE_EXP, smooth, c->close);
-  average_init(&s->str, AVERAGE_EXP, period, c->close);
-  average_init(&s->_str, AVERAGE_EXP, smooth, c->close);
-  
-  memcpy(&s->pool[s->index++], c, sizeof *c);
-  return 0;
-}
-
-void smi_free(struct smi *s)
-{
-  __indicator_free__(s);
-  
-  average_free(&s->smpd);
-  average_free(&s->_smpd);
-  average_free(&s->str);
-  average_free(&s->_str);
-  
-  if(s->pool)
-    free(s->pool);
-}
-
-int smi_feed(struct indicator *i, const struct candle *c)
-{
   double hi = 0.0;
   double lo = DBL_MAX;
   struct smi *s = __indicator_self__(i);
@@ -78,6 +43,40 @@ int smi_feed(struct indicator *i, const struct candle *c)
   /* TODO : events */
 
   return 0;
+}
+
+int smi_init(struct smi *s, int period, int smooth, struct candle *seed) {
+  
+  /* Super() */
+  __indicator_super__(s, smi_feed);
+  __indicator_set_string__(s, "smi[%d, %d]", period, smooth);
+    
+  s->count = 1;
+  s->index = 0;
+  s->period = period;
+
+  if(!(s->pool = malloc(sizeof(*s->pool) * period)))
+    return -1;
+  
+  average_init(&s->smpd, AVERAGE_EXP, period, seed->close);
+  average_init(&s->_smpd, AVERAGE_EXP, smooth, seed->close);
+  average_init(&s->str, AVERAGE_EXP, period, seed->close);
+  average_init(&s->_str, AVERAGE_EXP, smooth, seed->close);
+  
+  memcpy(&s->pool[s->index++], seed, sizeof *seed);
+  return 0;
+}
+
+void smi_free(struct smi *s)
+{
+  __indicator_free__(s);
+  average_free(&s->smpd);
+  average_free(&s->_smpd);
+  average_free(&s->str);
+  average_free(&s->_str);
+  
+  if(s->pool)
+    free(s->pool);
 }
 
 double smi_value(struct smi *s) {

@@ -51,18 +51,16 @@ struct mobile {
   mobile_t type;
   mobile_dir_t dir;
   mobile_pos_t pos;
+  candle_value_t cvalue;
 
   /* Average object */
   struct average avg;
 };
 
 int mobile_init(struct mobile *m, mobile_t type, int period,
-                candle_value_t value,
-                const struct candle *seed);
+		candle_value_t cvalue, struct candle *seed);
 
 void mobile_free(struct mobile *m);
-
-int mobile_feed(struct indicator *i, const struct candle *candle);
 
 /* indicator-specific */
 double mobile_average(struct mobile *m);

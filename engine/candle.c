@@ -13,13 +13,13 @@
 #include "candle.h"
 
 int candle_init(struct candle *c,
-		time_t time,
+		time_t time, granularity_t g,
 		double open, double close,
 		double high, double low,
 		double volume) {
   
   /* superclass */
-  __timeline_entry_super__(c, time);
+  __timeline_entry_super__(c, time, g);
   
   /* Set */
   c->open = open;

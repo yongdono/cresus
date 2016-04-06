@@ -100,7 +100,8 @@ static int __google_read(struct google *g, struct candle *candle)
     if(__google_readline(g, buf, sizeof buf, &time,
 			 &open, &close, &high, &low, &volume) != -1){
       /* Set candle */
-      candle_init(candle, time, open, close, high, low, volume);
+      candle_init(candle, time, GRANULARITY_DAY, /* FIXME : use parser_interval ? */
+		  open, close, high, low, volume);
       break;
     }
   }

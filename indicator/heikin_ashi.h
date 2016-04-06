@@ -22,15 +22,15 @@ typedef enum {
 
 struct heikin_ashi {
   __inherits_from_indicator__;
-  
+
   struct candle value;
+  candle_value_t cvalue;
+  
   heikin_ashi_dir_t dir;
 };
 
-int heikin_ashi_init(struct heikin_ashi *h, const struct candle *seed);
+int heikin_ashi_init(struct heikin_ashi *h, struct candle *seed);
 void heikin_ashi_free(struct heikin_ashi *h);
-
-int heikin_ashi_feed(struct indicator *i, const struct candle *candle);
 
 /* Indicator-specific */
 int heikin_ashi_get(struct heikin_ashi *h, struct candle *candle);

@@ -12,42 +12,8 @@
 
 #include "mobile.h"
 
-int mobile_init(struct mobile *m, mobile_t type,
-                int period, candle_value_t value,
-                const struct candle *seed)
-{
-  /* Super */
-  __indicator_super__(m, value, mobile_feed);
-  __indicator_set_string__(m, "%cma[%d]",
-			   ((type == MOBILE_EMA) ? 'e' : 'm'),
-			   period);
-
-  m->type = type;
-  m->dir = MOBILE_DIR_UP; /* FIXME */
-  m->pos = MOBILE_POS_BELOW;
-
-  switch(m->type) {
-  case MOBILE_MMA :
-    average_init(&m->avg, AVERAGE_MATH, period,
-		 candle_get_value(seed, value));
-    break;
-  case MOBILE_EMA :
-    average_init(&m->avg, AVERAGE_EXP, period,
-		 candle_get_value(seed, value));
-    break;
-  }
-
-  return 0;
-}
-
-void mobile_free(struct mobile *m)
-{
-  __indicator_free__(m);
-  average_free(&m->avg);
-}
-
 static void mobile_manage_direction(struct mobile *m, double avg,
-                                    const struct candle *candle) {
+                                    struct candle *candle) {
   
   /* Check direction change */
   if(avg > m->avg.value){
@@ -67,9 +33,9 @@ static void mobile_manage_direction(struct mobile *m, double avg,
 }
 
 static void mobile_manage_position(struct mobile *m, double avg,
-                                   const struct candle *candle) {
+                                   struct candle *candle) {
   
-  double value = candle_get_value(candle, __indicator_candle_value__(m));
+  double value = candle_get_value(candle, m->cvalue);
   if(avg > value){
     if(m->pos == MOBILE_POS_BELOW)
       __indicator_set_event__(m, candle, MOBILE_EVENT_CROSSED_DOWN);
@@ -86,17 +52,51 @@ static void mobile_manage_position(struct mobile *m, double avg,
   /* If equals, do nothing */
 }
 
-int mobile_feed(struct indicator *i, const struct candle *candle)
-{
+static int mobile_feed(struct indicator *i, struct candle *c) {
+  
   struct mobile *m = __indicator_self__(i);
-  average_update(&m->avg, candle_get_value(candle, i->value));
+  average_update(&m->avg, candle_get_value(c, m->cvalue));
   
   /* Check direction change */
-  mobile_manage_direction(m, m->avg.value, candle);
+  mobile_manage_direction(m, m->avg.value, c);
   /* Check position change */
-  mobile_manage_position(m, m->avg.value, candle);
+  mobile_manage_position(m, m->avg.value, c);
   
   return m->avg.value;
+}
+
+int mobile_init(struct mobile *m, mobile_t type, int period,
+		candle_value_t cvalue, struct candle *seed) {
+  
+  /* Super */
+  __indicator_super__(m, mobile_feed);
+  __indicator_set_string__(m, "%cma[%d]",
+			   ((type == MOBILE_EMA) ? 'e' : 'm'),
+			   period);
+
+  m->type = type;
+  m->cvalue = cvalue;
+  m->dir = MOBILE_DIR_UP; /* FIXME */
+  m->pos = MOBILE_POS_BELOW;
+
+  switch(m->type) {
+  case MOBILE_MMA :
+    average_init(&m->avg, AVERAGE_MATH, period,
+		 candle_get_value(seed, cvalue));
+    break;
+  case MOBILE_EMA :
+    average_init(&m->avg, AVERAGE_EXP, period,
+		 candle_get_value(seed, cvalue));
+    break;
+  }
+
+  return 0;
+}
+
+void mobile_free(struct mobile *m)
+{
+  __indicator_free__(m);
+  average_free(&m->avg);
 }
 
 double mobile_average(struct mobile *m)

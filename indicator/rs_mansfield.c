@@ -9,8 +9,7 @@
 #include "rs_mansfield.h"
 
 int rs_mansfield_init(struct rs_mansfield *r, int period,
-		      const struct candle *seed,
-		      const struct candle *seed_index) {
+		      struct candle *seed, struct candle *ref) {
 
   __indicator_super__(r, CANDLE_CLOSE, rs_mansfield_feed);
   __indicator_set_string__(r, "rsm[%d]", period);

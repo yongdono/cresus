@@ -54,7 +54,9 @@ static int __yahoo_read(struct input *in,
   tm.tm_year = year - 1900;
 
   /* Setup candle (at last !) */
-  candle_init(candle, mktime(&tm), open, close, high, low, volume);
+  candle_init(candle, mktime(&tm), GRANULARITY_DAY, /* No intraday on yahoo */
+	      open, close, high, low, volume);
+  
   return 1;
 }
 

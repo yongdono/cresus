@@ -33,10 +33,8 @@ struct smi {
   double value;
 };
 
-int smi_init(struct smi *s, int period, int smooth, const struct candle *c);
+int smi_init(struct smi *s, int period, int smooth, struct candle *seed);
 void smi_free(struct smi *s);
-
-int smi_feed(struct indicator *i, const struct candle *c);
 
 /* Indicator-specific */
 double smi_value(struct smi *s);

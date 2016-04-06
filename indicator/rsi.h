@@ -30,10 +30,8 @@ struct rsi {
   double value;
 };
 
-int rsi_init(struct rsi *r, int period, const struct candle *c);
+int rsi_init(struct rsi *r, int period, struct candle *c);
 void rsi_free(struct rsi *r);
-
-int rsi_feed(struct indicator *i, const struct candle *c);
 
 /* Indicator-specific */
 double rsi_value(struct rsi *r);

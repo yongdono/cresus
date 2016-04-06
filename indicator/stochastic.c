@@ -12,11 +12,34 @@
 
 #include "stochastic.h"
 
-int stochastic_init(struct stochastic *s, int period, int k, int d,
-                    const struct candle *seed) {
+static int stochastic_feed(struct indicator *i, struct candle *candle) {
+  
+  struct stochastic *s = __indicator_self__(i);
+  
+  memcpy(&s->array[s->index], candle, sizeof *candle);
+  s->index = (s->index + 1) % s->period;
+  
+  /* Find top & bottom */
+  double hi = 0.0, lo = DBL_MAX;
+  for(int i = 0; i < s->period; i++){
+    hi = (s->array[i].high > hi ? s->array[i].high : hi);
+    lo = (s->array[i].low < lo ? s->array[i].low : lo);
+  }
+  
+  double pk = (candle->close - lo) / (hi - candle->close) * 100.0;
+  double avg = average_update(&s->smooth_k, pk);
+  average_update(&s->d, avg);
+  
+  return 0;
+}
+
+
+int stochastic_init(struct stochastic *s,
+		    int period, int k, int d,
+                    struct candle *seed) {
   
   /* super() */
-  __indicator_super__(s, 0, stochastic_feed);
+  __indicator_super__(s, stochastic_feed);
   __indicator_set_string__(s, "sto[%d, %d, %d]", period, k, d);
   
   s->k = k;
@@ -38,25 +61,4 @@ void stochastic_free(struct stochastic *s) {
   
   __indicator_free__(s);
   free(s->array);
-}
-
-int stochastic_feed(struct indicator *i, const struct candle *candle) {
-  
-  struct stochastic *s = __indicator_self__(i);
-  
-  memcpy(&s->array[s->index], candle, sizeof *candle);
-  s->index = (s->index + 1) % s->period;
-  
-  /* Find top & bottom */
-  double hi = 0.0, lo = DBL_MAX;
-  for(int i = 0; i < s->period; i++){
-    hi = (s->array[i].high > hi ? s->array[i].high : hi);
-    lo = (s->array[i].low < lo ? s->array[i].low : lo);
-  }
-  
-  double pk = (candle->close - lo) / (hi - candle->close) * 100.0;
-  double avg = average_update(&s->smooth_k, pk);
-  average_update(&s->d, avg);
-  
-  return 0;
 }

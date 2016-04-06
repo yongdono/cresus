@@ -30,8 +30,6 @@ int rs_mansfield_init(struct rs_mansfield *r, int period,
 
 void rs_mansfield_free(struct rs_mansfield *r);
 
-int rs_mansfield_feed(struct indicator *i, const struct candle *seed);
-
 /* Indicator-specific */
 double rs_mansfield_value(struct rs_mansfield *r);
 

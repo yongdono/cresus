@@ -29,8 +29,6 @@ struct rs_dorsey {
 int rs_dorsey_init(struct rs_dorsey *r, struct candle *ref);
 void rs_dorsey_free(struct rs_dorsey *r);
 
-int rs_dorsey_feed(struct indicator *i, const struct candle *c);
-
 /* Indicator-specific */
 double rs_dorsey_value(struct rs_dorsey *r);
 

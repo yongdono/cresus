@@ -13,7 +13,7 @@
 #include "timeline_entry.h"
 
 /* Required to force data types */
-#include "engine/candle.h" /* FIXME : Remove this ? */
+#include "engine/candle.h"
 
 #define __inherits_from_indicator_timeline_entry__			\
   struct indicator_timeline_entry __parent_indicator_timeline_entry__
@@ -65,7 +65,11 @@ void indicator_timeline_entry_free(struct indicator_timeline_entry *entry);
 
 /* Define types */
 struct indicator; /* FIXME : find something more elegant */
-typedef int (*indicator_feed_ptr)(struct indicator*, const struct candle*);
+typedef int (*indicator_feed_ptr)(struct indicator*, struct candle*);
+/* TODO : why use ony candle data (seed / current) as we could set ref candle
+ * in the init and then increment by granularity using some kind of step()
+ * function ?
+ */
 
 struct indicator {
   /* Inherits from slist */
@@ -73,7 +77,6 @@ struct indicator {
   __indicator_is_superclass__;
 
 #define INDICATOR_STR_MAX 64
-  candle_value_t value;
   indicator_feed_ptr feed;
   char str[INDICATOR_STR_MAX];
 };
