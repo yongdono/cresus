@@ -12,6 +12,17 @@
 #include <time.h>
 #include "list.h"
 
+/* Define furtherly required types */
+typedef time_t granularity_t;
+
+#define GRANULARITY_SEC   1
+#define GRANULARITY_MIN   60
+#define GRANULARITY_HOUR  3600
+#define GRANULARITY_DAY   86400
+#define GRANULARITY_WEEK  432000
+#define GRANULARITY_MONTH 1728000
+#define GRANULARITY_YEAR  20736000
+
 /* This is a superclass */
 
 #define __inherits_from_timeline_entry__		\
@@ -25,9 +36,11 @@
 #define __timeline_entry_free__(self)			\
   timeline_entry_free(&__timeline_entry__(self))
 
+/* Not required at the moment
 #define __timeline_entry_set_time__(self, time)	\
   __timeline_entry__(self).time = time;
-#define __timeline_entry_timecmp__(self, time, granularity)	\
+*/
+#define __timeline_entry_timecmp__(self, time, granularity)		\
   timeline_entry_timecmp(&__timeline_entry__(self), time, granularity)
 #define __timeline_entry_localtime_str__(self, buf, len)	\
   timeline_entry_localtime_str(&__timeline__(self), buf, len)
@@ -58,10 +71,9 @@ static inline void timeline_entry_free(struct timeline_entry *e) {
   (time - (time % granularity))
 
 static inline time_t timeline_entry_timecmp(struct timeline_entry *e,
-					    time_t time,
-					    int granularity) {
-  return (__timeline_entry_time(e->time, granularity) -
-	  __timeline_entry_time(time, granularity));
+					    time_t time, granularity_t g) {
+  return (__timeline_entry_time(e->time, g) -
+	  __timeline_entry_time(time, g));
 }
 
 /* for debug purposes */
