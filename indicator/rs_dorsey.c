@@ -24,13 +24,17 @@ static int rs_dorsey_feed(struct indicator *i, struct candle *c) {
   return -1;
 }
 
-int rs_dorsey_init(struct rs_dorsey *r, struct candle *ref) {
+int rs_dorsey_init(struct rs_dorsey *r, struct candle *seed,
+		   struct candle *ref) {
 
   /* super() */
   __indicator_super__(r, rs_dorsey_feed);
   __indicator_set_string__(r, "rsd[]");
 
   r->ref = ref;
+  /* seed */
+  rs_dorsey_feed(&__indicator__(r), seed);
+    
   return 0;
 }
 
