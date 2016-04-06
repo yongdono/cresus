@@ -19,15 +19,13 @@ static int rs_mansfield_feed(struct indicator *i, struct candle *c) {
   struct rs_mansfield *r = __indicator_self__(i);
   
   if((entry = __timeline_entry_find__(r->ref, time))){
-    struct candle *ref = __timeline_entry_self__(entry);
-    double rsd = c->close / ref->close;
-    double mma = average_update(&r->mma, rsd);
+    double rsd, mma;
+    r->ref = __timeline_entry_self__(entry);
+    rsd = c->close / r->ref->close;
+    mma = average_update(&r->mma, rsd);
     if(average_is_ready(&r->mma))
       /* Finally set value */
       r->value = ((rsd / mma) - 1) * 100.0;
-    
-    /* Update ref to speed-up things next time */
-    r->ref = ref;
   }
   
   return 0;

@@ -15,8 +15,8 @@ static int rs_dorsey_feed(struct indicator *i, struct candle *c) {
   struct rs_dorsey *r = __indicator_self__(i);
   
   if((entry = __timeline_entry_find__(r->ref, time))){
-    struct candle *ref = __timeline_entry_self__(entry);
-    r->value = c->close / ref->close;
+    r->ref = __timeline_entry_self__(entry);
+    r->value = c->close / r->ref->close;
     /* TODO : create new entry ? */
     return 0;
   }
