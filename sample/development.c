@@ -30,60 +30,43 @@ int main(int argc, char **argv) {
 
   /* Load / filter ref data */
   struct yahoo ref;
-  yahoo_init(&ref, "data/px1");
+  yahoo_init(&ref, "data/px1.yahoo");
 
   /*
-   * Example of loop read from file
+   * Timeline object
    */
-  for(;;){
-    struct candle *candle = malloc(sizeof *candle);
-    int eof = __input_read__(&ref, candle);
-    if(eof != -1){
-      __list_add_tail__(__list__(/* timeline ? */),
-			__timeline_entry__(candle));
-      continue;
-    }
-    
-    free(candle);
-    break;
-  }
-
-  /*
-   * Timeline test
-   */
-  timeline_init(&timeline, __input__(&ref));
-  timeline_load(&timeline);
-  
-  /* Load / filter some other data */
-  
-  /*
-   * Put all these datas in some kinda list
-   */
+  timeline_init(&timeline);
 
   /* 
    * Indicators
    */
-
+  
   /* Set mobile averages */
   struct mobile ema40, ema14, ema5;
   mobile_init(&ema40, MOBILE_EMA, 40, CANDLE_CLOSE, /* seed */);
   mobile_init(&ema14, MOBILE_EMA, 14, CANDLE_CLOSE, /* seed */);
   mobile_init(&ema5, MOBILE_EMA, 5, CANDLE_CLOSE, /* seed */);
-
+  
   /* MACD */
   struct macd macd;
   macd_init(&macd, 12, 26, 9, /* seed */);
-
+  
   /* RS mansfield */
   struct rs_mansfield rsm;
   rs_mansfield_init(&rsm, 14, /* seed */, /* ref */);
 
+  /* Add all these indicators */
+  timeline_add_indicator(&timeline, __indicator__(&ema40));
+  timeline_add_indicator(&timeline, __indicator__(&ema14));
+  timeline_add_indicator(&timeline, __indicator__(&ema5));
+  timeline_add_indicator(&timeline, __indicator__(&macd));
+  timeline_add_indicator(&timeline, __indicator__(&rsm));
+  
+  /* Load full data. FIXME : what about filtering ? */
+  timeline_load(&timeline, __input__(&ref));
+  
   /*
-   * Put these indicators in some kinda list
-   */
-
-  /*
-   * Set loop
+   * Step loop ?
    */
   for(;;){
     /* 
@@ -102,7 +85,7 @@ int main(int argc, char **argv) {
        * Store that candle somewhere. Store all candles in fact, we need all
        * data before applying any data treatment
        */
-			__list_for_each__(&/* list_indicator */, indicator_entry){
+      __list_for_each__(&/* list_indicator */, indicator_entry){
 	/* Populate indicators */
 	__indicator_feed__(indicator_entry, __timeline_entry__(candle));
 	/*
@@ -115,7 +98,7 @@ int main(int argc, char **argv) {
      * Store that candle in
      */
   }
-
+  
   
   return 0;
 }
