@@ -7,6 +7,8 @@
  */
 
 #include <stdlib.h>
+
+#include "candle.h"
 #include "timeline.h"
 
 int timeline_init(struct timeline *t, struct input *in) {
@@ -23,58 +25,24 @@ void timeline_free(struct timeline *t) {
   t->cache = &t->list_entry;
 }
 
-#if 0
-
-/* TODO : Create loader object/superclass */
+/* TODO : Create loader object/superclass ? */
 
 int timeline_load(struct timeline *t, struct input *in) {
   
-  int n = 0;
-  struct candle candle;
-
-  /* TODO : Make generic ? */
-  while(in->read(in, &candle) != -1){
-    struct candle *entry;
-    if((entry = malloc(sizeof *entry))){
-      /* Add it to the list */
-      __list_add_tail__(__list__(&t->list_entry),
-			__timeline_entry__(entry));
-      n++;
+  int n;
+  
+  for(n = 0;; n++){
+    struct candle *candle = malloc(sizeof *candle);
+    int eof = input_read(in, __timeline_entry__(candle));
+    if(eof != -1){
+      __list_add_tail__(&t->list_entry,
+			__timeline_entry__(candle));
+      continue;
     }
+    
+    free(candle);
+    break;
   }
   
   return n;
-}
-#endif
-
-struct timeline_entry *timeline_by_date(struct timeline *t, time_t time) {
-
-  struct timeline_entry *entry;
-  time_t tm = timeline_entry_timecmp(t->cache, time);
-  
-  if(!tm)
-    /* time is the same */
-    goto out;
-  
-  if(tm < 0){
-    /* time is forward */
-    __list_for_each__(__list__(t->cache), entry)
-      if(!timeline_entry_timecmp(entry, time)){
-	t->cache = entry;
-	goto out;
-      }
-    
-  }else{
-    /* time is backwards*/
-    __list_for_each_prev__(__list__(t->cache), entry)
-      if(!timeline_entry_timecmp(entry, time)){
-	t->cache = entry;
-	goto out;
-      }
-  }
-  
-  return NULL;
-  
- out:
-  return t->cache;
 }

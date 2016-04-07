@@ -23,6 +23,6 @@ struct timeline {
 int timeline_init(struct timeline *t, struct input *in);
 void timeline_free(struct timeline *t);
 
-/* TODO : Fill this */
+int timeline_load(struct timeline *t, struct input *in);
 
 #endif

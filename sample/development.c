@@ -30,13 +30,7 @@ int main(int argc, char **argv) {
 
   /* Load / filter ref data */
   struct yahoo ref;
-  struct candle tmp;
   yahoo_init(&ref, "data/px1");
-
-  while(__input_read__(&ref, &tmp) != EOF){
-    struct candle *candle = malloc(sizeof *candle);
-    candle_init(candle, );
-  }
 
   /*
    * Example of loop read from file

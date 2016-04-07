@@ -23,8 +23,8 @@
 #define __input_free__(self) input_free(__input__(self))
 
 /* methods */
-#define __input_read__(self, entry)			\
-  __input__(self)->read(__input__(self), entry);
+#define __input_read__(self, entry)				\
+  input_read(__input__(self), __timeline_entry__(entry))
 
 /* Typedefs */
 struct input; /* FIXME : find another way */
@@ -42,5 +42,10 @@ static inline int input_init(struct input *in, input_read_ptr read) {
 }
 
 static inline void input_free(struct input *in) {}
+
+static inline int input_read(struct input *in,
+			     struct timeline_entry *entry) {
+  in->read(in, entry);
+}
 
 #endif /* defined(__Cresus_EVO__input__) */
