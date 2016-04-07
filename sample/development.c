@@ -17,7 +17,7 @@
 #include <getopt.h>
 
 #include "input/yahoo.h"
-
+#include "engine/timeline.h"
 #include "indicator/macd.h"
 #include "indicator/mobile.h"
 #include "indicator/rs_mansfield.h"
@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
   /*
    * Timeline object
    */
+  struct timeline timeline;
   timeline_init(&timeline);
 
   /* 
@@ -64,41 +65,8 @@ int main(int argc, char **argv) {
   
   /* Load full data. FIXME : what about filtering ? */
   timeline_load(&timeline, __input__(&ref));
-  
-  /*
-   * Step loop ?
-   */
-  for(;;){
-    /* 
-     * "Read" all data 
-     */
-    struct list *ptr;
-    struct timeline *timeline;
-    __list_for_each__(__list__(timeline), timeline_entry){
-      struct candle candle;
-      struct indicator *indicator_entry;
-      __input_read__(&ref, __timeline_entry__(&candle));
-      __list_add_tail__(/* timeline_entry list */,
-			__timeline_entry__(&candle));
-      
-      /*
-       * Store that candle somewhere. Store all candles in fact, we need all
-       * data before applying any data treatment
-       */
-      __list_for_each__(&/* list_indicator */, indicator_entry){
-	/* Populate indicators */
-	__indicator_feed__(indicator_entry, __timeline_entry__(candle));
-	/*
-	 * What about the indicator's results ?
-	 */
-      }
-    }
-    
-    /*
-     * Store that candle in
-     */
-  }
-  
+
+  /* TODO : step loop ? */
   
   return 0;
 }

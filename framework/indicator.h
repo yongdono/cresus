@@ -45,7 +45,7 @@ void indicator_timeline_entry_free(struct indicator_timeline_entry *entry);
 #define __inherits_from_indicator__ struct indicator __parent_indicator__
 #define __indicator_is_superclass__ void *__self_indicator__
 #define __indicator__(x) (&(x)->__parent_indicator__)
-#define __indicator_self__(x) ((struct indicator*)(x)->__self_indicator__)
+#define __indicator_self__(x) (x)->__self_indicator__
 #define __indicator_self_init__(x, self) (x)->__self_indicator__ = self
 
 #define __indicator_super__(self, feed)			\

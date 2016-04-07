@@ -16,7 +16,7 @@
 #define __inherits_from_slist__ struct slist __parent_slist__
 #define __slist_is_superclass__ void *__self_slist__
 #define __slist__(x) (&(x)->__parent_slist__)
-#define __slist_self__(x) ((struct slist*)(x)->__self_slist__)
+#define __slist_self__(x) (x)->__self_slist__
 #define __slist_self_init__(x, self) (x)->__self_slist__ = self
 
 #define __slist_super__(self)			\

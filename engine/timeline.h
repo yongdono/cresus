@@ -32,6 +32,6 @@ int timeline_step(struct timeline *t, struct input *in);
 int timeline_load(struct timeline *t, struct input *in);
 
 #define timeline_entries(x)				\
-  __timeline_entry_self__((timeline)->list_entry);
+  __timeline_entry_self__(&(x)->list_entry)
 
 #endif

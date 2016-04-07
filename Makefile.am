@@ -1,7 +1,8 @@
-# bin_PROGRAMS = cresus
-# cresus_SOURCES = main.c
+bin_PROGRAMS = cresus
+cresus_SOURCES = sample/development.c
+cresus_LDADD = libcresus.la
 lib_LTLIBRARIES = libcresus.la
-libcresus_la_SOURCES = framework/indicator.c \
+libcresus_la_SOURCES = framework/indicator.c framework/timeline_entry.c \
 		       engine/candle.c engine/timeline.c \
                        math/average.c input/yahoo.c input/google.c \
 		       indicator/atr.c indicator/bollinger.c \

@@ -40,6 +40,6 @@ void indicator_set_event(struct indicator *i, struct candle *candle,
   
   /* Nothing to do now */
   /* Set in candle or timeline maybe */
-  __list_add_tail__(&i->list_entry,
+  __list_add_tail__(__list__(&i->list_entry),
 		    __timeline_entry__(candle));
 }
