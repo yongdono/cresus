@@ -15,6 +15,8 @@ int indicator_init(struct indicator *i, indicator_feed_ptr feed) {
   timeline_entry_init(&i->list_entry, 0, 0);
   
   i->feed = feed;
+  i->is_empty = 1;
+  
   return 0;
 }
 
@@ -23,6 +25,14 @@ void indicator_free(struct indicator *i) {
   __slist_free__(i);
   /* TODO : don't forget to free() timeline_entries */
   i->feed = NULL;
+}
+
+int indicator_feed(struct indicator *i, struct candle *c) {
+
+  int ret = i->feed(i, c);
+  i->is_empty = 0;
+
+  return ret;
 }
 
 void indicator_set_event(struct indicator *i, struct candle *candle,

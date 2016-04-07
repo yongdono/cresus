@@ -15,6 +15,15 @@
 static int heikin_ashi_feed(struct indicator *i, struct candle *c) {
   
   struct heikin_ashi *h = __indicator_self__(i);
+
+  if(i->is_empty){
+    /* First data */
+    h->value.close = (c->open + c->close + c->high + c->low) / 4;
+    h->value.open = c->open; /* FIXME : Arbitrary */
+    h->value.high = c->high;
+    h->value.low = c->low;
+    goto out;
+  }
   
   h->value.open = (h->value.close + h->value.open) / 2;
   h->value.close = (c->open + c->close + c->high + c->low) / 4;
@@ -24,7 +33,7 @@ static int heikin_ashi_feed(struct indicator *i, struct candle *c) {
   /* Define new direction */
   heikin_ashi_dir_t dir = ((h->value.open - h->value.close) < 0 ?
                            HEIKIN_ASHI_DIR_UP : HEIKIN_ASHI_DIR_DOWN);
-
+  
   /* Event management */
   if(dir != h->dir){
     h->dir = dir;
@@ -34,19 +43,22 @@ static int heikin_ashi_feed(struct indicator *i, struct candle *c) {
       indicator_set_event(i, c, HEIKIN_ASHI_EVENT_CHDIR_DOWN);
   }
   
+ out:
   return 1;
 }
 
-int heikin_ashi_init(struct heikin_ashi *h, struct candle *seed) {
+int heikin_ashi_init(struct heikin_ashi *h) {
   
   /* Init parent */
   __indicator_super__(h, heikin_ashi_feed);
   __indicator_set_string__(h, "heikin-ashi");
-  
+
+  /*
   h->value.close = (seed->open + seed->close + seed->high + seed->low) / 4;
-  h->value.open = seed->open; /* FIXME : Arbitrary */
+  h->value.open = seed->open;
   h->value.high = seed->high;
   h->value.low = seed->low;
+  */
   
   h->dir = HEIKIN_ASHI_DIR_NONE;
   return 0;

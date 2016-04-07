@@ -28,7 +28,7 @@ static int srsi_feed(struct indicator *i, struct candle *c) {
   return 0;
 }
 
-int srsi_init(struct srsi *s, int max, struct candle *seed) {
+int srsi_init(struct srsi *s, int max) {
   
   /* super() */
   __indicator_super__(s, srsi_feed);
@@ -40,8 +40,6 @@ int srsi_init(struct srsi *s, int max, struct candle *seed) {
   if((s->array = malloc(sizeof(*s->array) * max)))
     return -1;
   
-  /* Init */
-  srsi_feed(__indicator__(s), seed);
   return 0;
 }
 

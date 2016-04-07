@@ -28,7 +28,7 @@ struct swing {
   struct candle *ref;
 };
 
-int swing_init(struct swing *s, struct candle *seed);
+int swing_init(struct swing *s);
 void swing_free(struct swing *s);
 
 /* Indicator-specific */

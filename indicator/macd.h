@@ -41,10 +41,7 @@ struct macd {
   struct macd_result result;
 };
 
-int macd_init(struct macd *m,
-	      int fast_p, int slow_p, int signal_p,
-	      struct candle *seed);
-
+int macd_init(struct macd *m, int fast_p, int slow_p, int signal_p);
 void macd_free(struct macd *m);
 
 /* indicator-specific */

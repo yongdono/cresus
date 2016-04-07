@@ -23,10 +23,7 @@ struct stochastic {
   struct candle *array;
 };
 
-int stochastic_init(struct stochastic *s,
-		    int period, int k, int d,
-                    struct candle *seed);
-
+int stochastic_init(struct stochastic *s, int period, int k, int d);
 void stochastic_free(struct stochastic *s);
 
 #endif /* defined(__Cresus_EVO__stochastic__) */

@@ -28,9 +28,7 @@ struct rs_mansfield {
   double value;
 };
 
-int rs_mansfield_init(struct rs_mansfield *r, int period,
-		      struct candle *seed, struct candle *ref);
-
+int rs_mansfield_init(struct rs_mansfield *r, int period, struct candle *ref);
 void rs_mansfield_free(struct rs_mansfield *r);
 
 /* Indicator-specific */

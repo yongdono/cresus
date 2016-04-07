@@ -21,7 +21,7 @@ struct atr {
   double value;
 };
 
-int atr_init(struct atr *a, int period, struct candle *seed);
+int atr_init(struct atr *a, int period);
 void atr_free(struct atr *a);
 
 /* Indicator-specific */

@@ -26,17 +26,16 @@ static int macd_feed(struct indicator *i, struct candle *c) {
   return 0;
 }
 
-int macd_init(struct macd *m, int fast_p, int slow_p, int signal_p,
-	      struct candle *seed) {
-  
+int macd_init(struct macd *m, int fast_p, int slow_p, int signal_p) {
+
   /* Super */
   __indicator_super__(m, macd_feed);
   __indicator_set_string__(m, "macd[%d, %d, %d]", fast_p, slow_p, signal_p);
 
   /* Seed */
-  average_init(&m->fast, AVERAGE_EXP, fast_p, seed->close);
-  average_init(&m->slow, AVERAGE_EXP, slow_p, seed->close);
-  average_init(&m->signal, AVERAGE_EXP, signal_p, 0.0); /* FIXME : why 0.0 ? */
+  average_init(&m->fast, AVERAGE_EXP, fast_p);
+  average_init(&m->slow, AVERAGE_EXP, slow_p);
+  average_init(&m->signal, AVERAGE_EXP, signal_p);
   
   memset(&m->result, 0, sizeof m->result);
   return 0;

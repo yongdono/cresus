@@ -28,32 +28,30 @@ static int stochastic_feed(struct indicator *i, struct candle *candle) {
   
   double pk = (candle->close - lo) / (hi - candle->close) * 100.0;
   double avg = average_update(&s->smooth_k, pk);
-  average_update(&s->d, avg);
+  if(average_is_available(&s->smooth_k))
+    average_update(&s->d, avg);
   
   return 0;
 }
 
 
-int stochastic_init(struct stochastic *s,
-		    int period, int k, int d,
-                    struct candle *seed) {
+int stochastic_init(struct stochastic *s, int period, int k, int d) {
   
   /* super() */
   __indicator_super__(s, stochastic_feed);
   __indicator_set_string__(s, "sto[%d, %d, %d]", period, k, d);
   
   s->k = k;
+  s->index = 0;
   s->period = period;
-  /* FIXME */
-  average_init(&s->d, AVERAGE_MATH, period, 0.0);
-  average_init(&s->smooth_k, AVERAGE_MATH, period, 0.0);
+
+  average_init(&s->d, AVERAGE_MATH, period);
+  average_init(&s->smooth_k, AVERAGE_MATH, period);
   
   if((s->array = malloc(sizeof(*s->array) * period)))
     return -1;
   
-  s->index = 1;
-  memcpy(&s->array[0], seed, sizeof *seed);
-  
+  /* memcpy(&s->array[0], seed, sizeof *seed); */
   return 0;
 }
 

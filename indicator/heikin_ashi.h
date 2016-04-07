@@ -29,7 +29,7 @@ struct heikin_ashi {
   heikin_ashi_dir_t dir;
 };
 
-int heikin_ashi_init(struct heikin_ashi *h, struct candle *seed);
+int heikin_ashi_init(struct heikin_ashi *h);
 void heikin_ashi_free(struct heikin_ashi *h);
 
 /* Indicator-specific */

@@ -26,8 +26,7 @@ struct rs_dorsey {
   struct candle *ref;
 };
 
-int rs_dorsey_init(struct rs_dorsey *r, struct candle *seed,
-		   struct candle *ref);
+int rs_dorsey_init(struct rs_dorsey *r, struct candle *ref);
 void rs_dorsey_free(struct rs_dorsey *r);
 
 /* Indicator-specific */

@@ -9,34 +9,32 @@
 #include <stdio.h>
 #include "bollinger.h"
 
-static int bollinger_feed(struct indicator *i, struct candle *c)
-{
+static int bollinger_feed(struct indicator *i, struct candle *c) {
+  
   struct bollinger *b = __indicator_self__(i);
   double value = candle_get_value(c, b->cvalue);
   b->value.mma = average_update(&b->avg, value);
-  
-  double stddev = average_stddev(&b->avg);
-  b->value.hi = b->value.mma + b->stddev_factor * stddev;
-  b->value.lo = b->value.mma - b->stddev_factor * stddev;
+
+  if(average_is_available(&b->avg)){
+    double stddev = average_stddev(&b->avg);
+    b->value.hi = b->value.mma + b->stddev_factor * stddev;
+    b->value.lo = b->value.mma - b->stddev_factor * stddev;
+  }
   
   return (b->value.mma != 0.0 ? 1 : 0);
 }
 
 int bollinger_init(struct bollinger *b, int period,
                    double stddev_factor,
-                   candle_value_t cvalue,
-                   struct candle *candle)
-{
+                   candle_value_t cvalue) {
+  
   /* super */
   __indicator_super__(b, bollinger_feed);
   __indicator_set_string__(b, "boll[%d, %.1f]", period, stddev_factor);
   
   b->stddev_factor = stddev_factor;
   b->cvalue = cvalue;
-  
-  /* Seed */
-  average_init(&b->avg, AVERAGE_MATH, period,
-	       candle_get_value(candle, cvalue));
+  average_init(&b->avg, AVERAGE_MATH, period);
   
   return 0;
 }

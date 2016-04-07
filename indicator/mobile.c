@@ -65,8 +65,8 @@ static int mobile_feed(struct indicator *i, struct candle *c) {
   return m->avg.value;
 }
 
-int mobile_init(struct mobile *m, mobile_t type, int period,
-		candle_value_t cvalue, struct candle *seed) {
+int mobile_init(struct mobile *m, mobile_t type,
+		int period, candle_value_t cvalue) {
   
   /* Super */
   __indicator_super__(m, mobile_feed);
@@ -80,16 +80,10 @@ int mobile_init(struct mobile *m, mobile_t type, int period,
   m->pos = MOBILE_POS_BELOW;
 
   switch(m->type) {
-  case MOBILE_MMA :
-    average_init(&m->avg, AVERAGE_MATH, period,
-		 candle_get_value(seed, cvalue));
-    break;
-  case MOBILE_EMA :
-    average_init(&m->avg, AVERAGE_EXP, period,
-		 candle_get_value(seed, cvalue));
-    break;
+  case MOBILE_MMA : average_init(&m->avg, AVERAGE_MATH, period); break;
+  case MOBILE_EMA : average_init(&m->avg, AVERAGE_EXP, period); break;
   }
-
+  
   return 0;
 }
 

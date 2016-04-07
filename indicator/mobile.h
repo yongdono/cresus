@@ -57,9 +57,8 @@ struct mobile {
   struct average avg;
 };
 
-int mobile_init(struct mobile *m, mobile_t type, int period,
-		candle_value_t cvalue, struct candle *seed);
-
+int mobile_init(struct mobile *m, mobile_t type,
+		int period, candle_value_t cvalue);
 void mobile_free(struct mobile *m);
 
 /* indicator-specific */

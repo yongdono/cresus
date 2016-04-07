@@ -11,9 +11,14 @@
 
 #include "atr.h"
 
-static int atr_feed(struct indicator *i, struct candle *c)
-{
+static int atr_feed(struct indicator *i, struct candle *c) {
+  
   struct atr *a = __indicator_self__(i);
+
+  if(!a->ref){
+    a->value = c->high - c->low;
+    goto out;
+  }
   
   /* Compute "True Range" */
   double tr = c->high - c->low;
@@ -22,27 +27,27 @@ static int atr_feed(struct indicator *i, struct candle *c)
   
   tr = (h > tr ? h : tr);
   tr = (l > tr ? l : tr);
-
+  
   /* Average it */
   a->value = (a->value * (a->period - 1) + tr) / a->period;
   
   /* Remember last candle */
+ out:
   a->ref = c;
-  
   return 0;
 }
 
-int atr_init(struct atr *a, int period, struct candle *seed)
-{
+int atr_init(struct atr *a, int period) {
+  
   /* Super() */
   __indicator_super__(a, atr_feed);
   __indicator_set_string__(a, "atr[%d]", period);
   
-  a->ref = seed;
+  a->ref = NULL;
   a->period = period;
 
   /* First seed */
-  a->value = seed->high - seed->low;
+  /* a->value = seed->high - seed->low; */
   
   return 0;
 }

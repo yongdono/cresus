@@ -25,12 +25,12 @@ struct rsi {
   /* https://fr.wikipedia.org/wiki/Relative_strength_index */
   struct average h;
   struct average b;
-  double last;
+  struct candle *last;
 
   double value;
 };
 
-int rsi_init(struct rsi *r, int period, struct candle *c);
+int rsi_init(struct rsi *r, int period);
 void rsi_free(struct rsi *r);
 
 /* Indicator-specific */

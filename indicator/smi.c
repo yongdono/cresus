@@ -17,7 +17,6 @@ static int smi_feed(struct indicator *i, struct candle *c) {
   double lo = DBL_MAX;
   struct smi *s = __indicator_self__(i);
 
-  
   memcpy(&s->pool[s->index], c, sizeof *c);
   s->index = (s->index + 1) % s->period;
 
@@ -45,25 +44,25 @@ static int smi_feed(struct indicator *i, struct candle *c) {
   return 0;
 }
 
-int smi_init(struct smi *s, int period, int smooth, struct candle *seed) {
+int smi_init(struct smi *s, int period, int smooth) {
   
   /* Super() */
   __indicator_super__(s, smi_feed);
   __indicator_set_string__(s, "smi[%d, %d]", period, smooth);
     
-  s->count = 1;
+  s->count = 0;
   s->index = 0;
   s->period = period;
 
   if(!(s->pool = malloc(sizeof(*s->pool) * period)))
     return -1;
   
-  average_init(&s->smpd, AVERAGE_EXP, period, seed->close);
-  average_init(&s->_smpd, AVERAGE_EXP, smooth, seed->close);
-  average_init(&s->str, AVERAGE_EXP, period, seed->close);
-  average_init(&s->_str, AVERAGE_EXP, smooth, seed->close);
+  average_init(&s->smpd, AVERAGE_EXP, period);
+  average_init(&s->_smpd, AVERAGE_EXP, smooth);
+  average_init(&s->str, AVERAGE_EXP, period);
+  average_init(&s->_str, AVERAGE_EXP, smooth);
   
-  memcpy(&s->pool[s->index++], seed, sizeof *seed);
+  /* memcpy(&s->pool[s->index++], seed, sizeof *seed); */
   return 0;
 }
 

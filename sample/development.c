@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
   /*
    * Data
    */
-
+  
   /* Load / filter ref data */
   struct yahoo ref;
   yahoo_init(&ref, "data/px1.yahoo");

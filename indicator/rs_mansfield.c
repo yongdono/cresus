@@ -23,7 +23,7 @@ static int rs_mansfield_feed(struct indicator *i, struct candle *c) {
     r->ref = __timeline_entry_self__(entry);
     rsd = c->close / r->ref->close;
     mma = average_update(&r->mma, rsd);
-    if(average_is_ready(&r->mma))
+    if(average_is_available(&r->mma))
       /* Finally set value */
       r->value = ((rsd / mma) - 1) * 100.0;
   }
@@ -31,15 +31,13 @@ static int rs_mansfield_feed(struct indicator *i, struct candle *c) {
   return 0;
 }
 
-int rs_mansfield_init(struct rs_mansfield *r, int period,
-		      struct candle *seed, struct candle *ref) {
+int rs_mansfield_init(struct rs_mansfield *r,
+		      int period, struct candle *ref) {
 
   __indicator_super__(r,  rs_mansfield_feed);
   __indicator_set_string__(r, "rsm[%d]", period);
   
-  /* FIXME : how to compute first value ? */
-  double value = (seed->close / ref->close);
-  average_init(&r->mma, AVERAGE_MATH, period, value);
+  average_init(&r->mma, AVERAGE_MATH, period);
   
   r->ref = ref;
   r->value = 0.0;

@@ -32,10 +32,7 @@ struct bollinger {
 };
 
 int bollinger_init(struct bollinger *b, int period,
-		   double stddev_factor,
-                   candle_value_t cvalue,
-		   struct candle *candle);
-
+		   double stddev_factor, candle_value_t cvalue);
 void bollinger_free(struct bollinger *b);
 
 /* Indicator-specific */

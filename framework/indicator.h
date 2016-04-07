@@ -15,6 +15,8 @@
 /* Required to force data types */
 #include "engine/candle.h"
 
+/* TODO : find something for indicator data storage */
+
 #define __inherits_from_indicator_timeline_entry__			\
   struct indicator_timeline_entry __parent_indicator_timeline_entry__
 #define __indicator_timeline_entry_is_superclass__	\
@@ -58,8 +60,10 @@ void indicator_timeline_entry_free(struct indicator_timeline_entry *entry);
 	   fmt, ##__VA_ARGS__)
 #define __indicator_set_event__(self, candle, event)		\
   indicator_set_event(__indicator__(self), candle, event)
-#define __indicator_feed__(self, entry)				\
-  __indicator__(self)->feed(__indicator__(self), entry)
+#define __indicator_feed__(self, entry)		\
+  indicator_feed(__indicator__(self), entry);
+/*  __indicator__(self)->feed(__indicator__(self), entry) */
+
 
 /* Internal values get */
 #define __indicator_string__(self) __indicator__(self)->str
@@ -81,6 +85,8 @@ struct indicator {
 #define INDICATOR_STR_MAX 64
   indicator_feed_ptr feed;
   char str[INDICATOR_STR_MAX];
+  /* Status */
+  int is_empty;
   /* Data / graph */
   struct timeline_entry list_entry;
 };
@@ -88,6 +94,7 @@ struct indicator {
 int indicator_init(struct indicator *i, indicator_feed_ptr feed);
 void indicator_free(struct indicator *i);
 
+int indicator_feed(struct indicator *i, struct candle *c);
 /* TODO : fix this */
 void indicator_set_event(struct indicator *i, struct candle *candle, int event);
 

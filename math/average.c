@@ -10,10 +10,10 @@
 #include <stdlib.h>
 #include "average.h"
 
-int average_init(struct average *a, average_t type, int period, double seed) {
-
-  a->index = 1;
-  a->count = 1;
+int average_init(struct average *a, average_t type, int period) {
+  
+  a->index = 0;
+  a->count = 0;
   a->type = type;
   a->period = period;
 
@@ -22,11 +22,11 @@ int average_init(struct average *a, average_t type, int period, double seed) {
     if((a->pool = malloc(sizeof(*a->pool) * period)))
       return -1;
     
-    a->pool[0] = seed;
-    a->value = 0.0; /* FIXME : seed ? */
+    /* a->pool[0] = seed; */
+    /* a->value = 0.0; */
   }else{
     /* Exponential average */
-    a->value = seed;
+    /* a->value = seed; */
     a->k = 2.0 / (a->period + 1);
   }
   
@@ -42,7 +42,7 @@ void average_free(struct average *a) {
 int average_is_available(struct average *a) {
 
   if(a->type == AVERAGE_EXP)
-    return 1;
+    return (a->count > 0);
 
   if(a->type == AVERAGE_MATH)
     return (a->count >= a->period);
@@ -52,9 +52,8 @@ static double __average_update_math(struct average *a, double value) {
   
   double sum = 0.0;
   
-  a->index = (a->index + 1) % a->period; /* Inc */
   a->pool[a->index] = value;
-  a->count++;
+  a->index = (a->index + 1) % a->period; /* Inc */
   
   /* Compute simple average */
   if(average_is_available(a)){
@@ -81,6 +80,7 @@ double average_update(struct average *a, double value) {
   case AVERAGE_EXP : return __average_update_exp(a, value);
   }
 
+  a->count++; /* FIXME : risk of bug after a certain amout of data */
   return 0.0;
 }
 

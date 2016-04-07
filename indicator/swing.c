@@ -17,6 +17,8 @@ static int swing_feed(struct indicator *i, struct candle *c) {
   /* TODO : back to original version
    * Problem with inside candles
    */
+  if(!s->ref)
+    goto out;
   
   if(c->high > s->ref->high || c->low < s->ref->low){
     /* Eliminate inside candles */
@@ -37,21 +39,22 @@ static int swing_feed(struct indicator *i, struct candle *c) {
     }
   }
 
+ out:
   s->ref = c;
   return 0;
 }
 
-int swing_init(struct swing *s, struct candle *seed) {
+int swing_init(struct swing *s) {
   
   /* Super() */
   __indicator_super__(s, swing_feed);
   __indicator_set_string__(s, "swing");
   
-  s->count = 1;
+  s->count = 0;
+  s->ref = NULL;
   s->type = SWING_NONE;
-  s->ref = seed;
 
-  swing_feed(__indicator__(s), seed);
+  /* swing_feed(__indicator__(s), seed); */
   return 0;
 }
 
