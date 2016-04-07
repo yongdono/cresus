@@ -43,17 +43,17 @@ int main(int argc, char **argv) {
   
   /* Set mobile averages */
   struct mobile ema40, ema14, ema5;
-  mobile_init(&ema40, MOBILE_EMA, 40, CANDLE_CLOSE, /* seed */);
-  mobile_init(&ema14, MOBILE_EMA, 14, CANDLE_CLOSE, /* seed */);
-  mobile_init(&ema5, MOBILE_EMA, 5, CANDLE_CLOSE, /* seed */);
+  mobile_init(&ema40, MOBILE_EMA, 40, CANDLE_CLOSE);
+  mobile_init(&ema14, MOBILE_EMA, 14, CANDLE_CLOSE);
+  mobile_init(&ema5, MOBILE_EMA, 5, CANDLE_CLOSE);
   
   /* MACD */
   struct macd macd;
-  macd_init(&macd, 12, 26, 9, /* seed */);
+  macd_init(&macd, 12, 26, 9);
   
   /* RS mansfield */
   struct rs_mansfield rsm;
-  rs_mansfield_init(&rsm, 14, /* seed */, /* ref */);
+  rs_mansfield_init(&rsm, 14, &ref); /* FIXME : Something's missing here */
 
   /* Add all these indicators */
   timeline_add_indicator(&timeline, __indicator__(&ema40));
