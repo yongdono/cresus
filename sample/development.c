@@ -29,6 +29,31 @@ int main(int argc, char **argv) {
    */
 
   /* Load / filter ref data */
+  struct yahoo ref;
+  struct candle tmp;
+  yahoo_init(&ref, "data/px1");
+
+  while(__input_read__(&ref, &tmp) != EOF){
+    struct candle *candle = malloc(sizeof *candle);
+    candle_init(candle, );
+  }
+
+  /*
+   * Example of loop read from file
+   */
+  for(;;){
+    struct candle *candle = malloc(sizeof *candle);
+    int eof = __input_read__(&ref, candle);
+    if(eof != -1){
+      __list_add_tail__(__list__(/* timeline ? */),
+			__timeline_entry__(candle));
+      continue;
+    }
+    
+    free(candle);
+    break;
+  }
+  
   /* Load / filter some other data */
   
   /*
@@ -66,15 +91,18 @@ int main(int argc, char **argv) {
      */
     struct list *ptr;
     struct timeline *timeline;
-    __list_for_each__(__list__(timeline), ptr, timeline_entry){
+    __list_for_each__(__list__(timeline), timeline_entry){
       struct candle candle;
       struct indicator *indicator_entry;
-      __input_read__(/* input */, __timeline_entry__(candle));
+      __input_read__(&ref, __timeline_entry__(&candle));
+      __list_add_tail__(/* timeline_entry list */,
+			__timeline_entry__(&candle));
+      
       /*
        * Store that candle somewhere. Store all candles in fact, we need all
        * data before applying any data treatment
        */
-      __list_for_each__(&/* list_indicator */, ptr, indicator_entry){
+			__list_for_each__(&/* list_indicator */, indicator_entry){
 	/* Populate indicators */
 	__indicator_feed__(indicator_entry, __timeline_entry__(candle));
 	/*

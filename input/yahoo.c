@@ -27,7 +27,7 @@ static int __yahoo_read(struct input *in,
 
   if(!fgets(buf, sizeof buf, y->fp))
     /* End of file */
-    return 0;
+    return EOF;
   
   /* Cut string */
   char *stime = strsep(&str, ",");
