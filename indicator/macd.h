@@ -24,6 +24,11 @@ struct macd_result {
 #define MACD_EVENT_SIGNAL2 0 /* TODO */
 #define MACD_EVENT_SIGNAL3 0 /* TODO */
 
+/* Default params */
+#define MACD_DEFAULT_FAST_P   12
+#define MACD_DEFAULT_SLOW_P   26
+#define MACD_DEFAULT_SIGNAL_P 9
+
 struct macd {
   /* Parent */
   __inherits_from_indicator__;

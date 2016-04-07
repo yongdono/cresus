@@ -29,7 +29,7 @@ int rs_dorsey_init(struct rs_dorsey *r, struct candle *seed,
 
   /* super() */
   __indicator_super__(r, rs_dorsey_feed);
-  __indicator_set_string__(r, "rsd[]");
+  __indicator_set_string__(r, "rsd[i]");
 
   r->ref = ref;
   /* seed */
