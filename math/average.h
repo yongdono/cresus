@@ -30,7 +30,7 @@ struct average {
 int average_init(struct average *a, average_t type, int period, double seed);
 void average_free(struct average *a);
 
-int average_is_ready(struct average *a);
+int average_is_available(struct average *a);
 double average_update(struct average *a, double value);
 double average_value(struct average *a);
 double average_stddev(struct average *a);

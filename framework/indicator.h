@@ -9,7 +9,7 @@
 #ifndef __Cresus_EVO__indicator__
 #define __Cresus_EVO__indicator__
 
-/*#include "slist.h"*/
+#include "slist.h"
 #include "timeline_entry.h"
 
 /* Required to force data types */
@@ -75,12 +75,14 @@ typedef int (*indicator_feed_ptr)(struct indicator*, struct candle*);
 
 struct indicator {
   /* Inherits from slist */
-  /*__inherits_from_slist__;*/
+  __inherits_from_slist__;
   __indicator_is_superclass__;
 
 #define INDICATOR_STR_MAX 64
   indicator_feed_ptr feed;
   char str[INDICATOR_STR_MAX];
+  /* Data / graph */
+  struct timeline_entry list_entry;
 };
 
 int indicator_init(struct indicator *i, indicator_feed_ptr feed);

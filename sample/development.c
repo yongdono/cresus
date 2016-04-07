@@ -47,6 +47,12 @@ int main(int argc, char **argv) {
     free(candle);
     break;
   }
+
+  /*
+   * Timeline test
+   */
+  timeline_init(&timeline, __input__(&ref));
+  timeline_load(&timeline);
   
   /* Load / filter some other data */
   

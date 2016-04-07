@@ -39,7 +39,7 @@ void average_free(struct average *a) {
     free(a->pool);
 }
 
-int average_is_ready(struct average *a) {
+int average_is_available(struct average *a) {
 
   if(a->type == AVERAGE_EXP)
     return 1;
@@ -57,7 +57,7 @@ static double __average_update_math(struct average *a, double value) {
   a->count++;
   
   /* Compute simple average */
-  if(average_is_ready(a)){
+  if(average_is_available(a)){
     for(int i = a->period; i--;)
       sum += a->pool[i];
 
@@ -93,7 +93,7 @@ double average_stddev(struct average *a) {
 
   double sum = 0.0;
   
-  if(average_is_ready(a)){
+  if(average_is_available(a)){
     for(int i = a->period; i--;)
       sum += pow(a->pool[i] - a->value, 2.0);
   }
