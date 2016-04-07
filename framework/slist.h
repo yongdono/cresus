@@ -15,11 +15,14 @@
 
 #define __inherits_from_slist__ struct slist __parent_slist__
 #define __slist_is_superclass__ void *__self_slist__
-#define __slist__(x) (x)->__parent_slist__
-#define __slist_self__(x) (x)->__self_slist__
+#define __slist__(x) (&(x)->__parent_slist__)
+#define __slist_self__(x) ((struct slist*)(x)->__self_slist__)
+#define __slist_self_init__(x, self) (x)->__self_slist__ = self
 
-#define __slist_super__(self) slist_init(&__slist__(self), self)
-#define __slist_free__(self) slist_free(&__slist__(self))
+#define __slist_super__(self)			\
+  __slist_self_init__(__slist__(self), self);	\
+  slist_init(__slist__(self))
+#define __slist_free__(self) slist_free(__slist__(self))
 
 #define __slist_insert__(slist, entry)			\
   slist_insert(__slist__(slist), __slist__(entry))
@@ -36,8 +39,7 @@ struct slist {
   struct slist *next;
 };
 
-static inline int slist_init(struct slist *s, void *self) {
-  __slist_self__(s) = self;
+static inline int slist_init(struct slist *s) {
   s->next = NULL;
 }
 

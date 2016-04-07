@@ -28,8 +28,8 @@ int main(int argc, char **argv) {
    * Data
    */
 
-  /* Load / filter PX1 (ref) data */
-  /* Load /filter some other data */
+  /* Load / filter ref data */
+  /* Load / filter some other data */
 
   /* 
    * Indicators

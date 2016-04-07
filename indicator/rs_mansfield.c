@@ -15,7 +15,7 @@
 static int rs_mansfield_feed(struct indicator *i, struct candle *c) {
 
   struct timeline_entry *entry;
-  time_t time = __timeline_entry__(c).time;
+  time_t time = __timeline_entry__(c)->time;
   struct rs_mansfield *r = __indicator_self__(i);
   
   if((entry = __timeline_entry_find__(r->ref, time))){

@@ -13,15 +13,18 @@
 
 #define __inherits_from_input__ struct input __parent_input__
 #define __input_is_superclass__ void *__self_input__
-#define __input__(x) (x)->__parent_input__
+#define __input__(x) (&(x)->__parent_input__)
 #define __input_self__(x) (x)->__self_input__
+#define __input_self_init__(x, self) __input_self__(x) = self
 
-#define __input_super__(self, read) input_init(&__input__(self), self, read)
-#define __input_free__(self) input_free(&__input__(self))
+#define __input_super__(self, read)		\
+  __input_self_init__(__input__(self), self);	\
+  input_init(__input__(self),read)
+#define __input_free__(self) input_free(__input__(self))
 
 /* methods */
 #define __input_read__(self, entry)			\
-  __input__(self)->read(&__input__(self), entry);
+  __input__(self)->read(__input__(self), entry);
 
 /* Typedefs */
 struct input; /* FIXME : find another way */
@@ -33,9 +36,7 @@ struct input {
   input_read_ptr read;
 };
 
-static inline int input_init(struct input *in, void *self,
-			     input_read_ptr read) {
-  __input_self__(in) = self;
+static inline int input_init(struct input *in, input_read_ptr read) {
   in->read = read;
   return 0;
 }

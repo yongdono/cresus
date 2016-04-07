@@ -11,7 +11,7 @@
 
 int timeline_init(struct timeline *t, granularity_t g, struct input *in) {
   
-  timeline_entry_init(&t->list_entry, NULL, 0, 0); /* FIXME ? */
+  timeline_entry_init(&t->list_entry, 0, 0); /* FIXME ? */
   t->cache = &t->list_entry;
   t->g = g;
   
@@ -38,8 +38,8 @@ int timeline_load(struct timeline *t, struct input *in) {
     struct candle *entry;
     if((entry = malloc(sizeof *entry))){
       /* Add it to the list */
-      __list_add_tail__(&__list__(&t->list_entry),
-			&__timeline_entry__(entry));
+      __list_add_tail__(__list__(&t->list_entry),
+			__timeline_entry__(entry));
       n++;
     }
   }
@@ -60,7 +60,7 @@ struct timeline_entry *timeline_by_date(struct timeline *t, time_t time) {
   
   if(tm < 0){
     /* time is forward */
-    __list_for_each__(&__list__(t->cache), ptr, entry)
+    __list_for_each__(__list__(t->cache), ptr, entry)
       if(!timeline_entry_timecmp(entry, time)){
 	t->cache = entry;
 	goto out;
@@ -68,7 +68,7 @@ struct timeline_entry *timeline_by_date(struct timeline *t, time_t time) {
     
   }else{
     /* time is backwards*/
-    __list_for_each_prev__(&__list__(t->cache), ptr, entry)
+    __list_for_each_prev__(__list__(t->cache), ptr, entry)
       if(!timeline_entry_timecmp(entry, time)){
 	t->cache = entry;
 	goto out;

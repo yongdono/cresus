@@ -15,16 +15,19 @@
 
 #define __inherits_from_list__ struct list __parent_list__
 #define __list_is_superclass__ void *__self_list__
-#define __list__(x) (x)->__parent_list__
-#define __list_self__(x) (x)->__self_list__
+#define __list__(x) (&(x)->__parent_list__)
+#define __list_self__(x) ((struct list*)(x)->__self_list__)
+#define __list_self_init__(x, self) (x)->__self_list__ = self
 
-#define __list_super__(self) list_init(&__list__(self), self);
-#define __list_free__(self) list_free(&__list__(self));
+#define __list_super__(self)			\
+  __list_self_init__(__list__(self), self);	\
+  list_init(__list__(self));
+#define __list_free__(self) list_free(__list__(self));
 
 #define __list_add__(list, entry)		\
-  list_add((list), &__list__(entry))
+  list_add((list), __list__(entry))
 #define __list_add_tail__(list, entry)		\
-  list_add_tail((list), &__list__(entry))
+  list_add_tail((list), __list__(entry))
 #define __list_del__(entry)			\
   list_del(&__list__(entry))
 #define __list_for_each__(list, ptr, self)				\
@@ -41,8 +44,7 @@ struct list {
   struct list *prev, *next;
 };
 
-static inline int list_init(struct list *l, void *self) {
-  __list_self__(l) = self;
+static inline int list_init(struct list *l) {
   l->next = l;
   l->prev = l;
 }

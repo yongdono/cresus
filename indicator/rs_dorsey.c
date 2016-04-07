@@ -11,7 +11,7 @@
 static int rs_dorsey_feed(struct indicator *i, struct candle *c) {
 
   struct timeline_entry *entry;
-  time_t time = __timeline_entry__(c).time;
+  time_t time = __timeline_entry__(c)->time;
   struct rs_dorsey *r = __indicator_self__(i);
   
   if((entry = __timeline_entry_find__(r->ref, time))){
@@ -33,7 +33,7 @@ int rs_dorsey_init(struct rs_dorsey *r, struct candle *seed,
 
   r->ref = ref;
   /* seed */
-  rs_dorsey_feed(&__indicator__(r), seed);
+  rs_dorsey_feed(__indicator__(r), seed);
     
   return 0;
 }

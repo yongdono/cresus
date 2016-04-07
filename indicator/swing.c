@@ -12,7 +12,7 @@
 static int swing_feed(struct indicator *i, struct candle *c) {
   
   struct swing *s = __indicator_self__(i);
-  struct list *l = &__list__(&__timeline_entry__(c)); /* ancestors tree */
+  struct list *l = __list__(__timeline_entry__(c)); /* ancestors tree */
 
   /* TODO : back to original version
    * Problem with inside candles
@@ -23,9 +23,9 @@ static int swing_feed(struct indicator *i, struct candle *c) {
     if(++s->count >= SWING_MAX){
       /* Find 3 last candles */
       struct candle *s0, *s1, *s2;
-      s2 = __timeline_entry_self__(__list_self__(l));
-      s1 = __timeline_entry_self__(__list_self__(l->prev));
-      s0 = __timeline_entry_self__(__list_self__(l->prev->prev));
+      s2 = __timeline_entry_self__((struct timeline_entry*)__list_self__(l));
+      s1 = __timeline_entry_self__((struct timeline_entry*)__list_self__(l->prev));
+      s0 = __timeline_entry_self__((struct timeline_entry*)__list_self__(l->prev->prev));
       
       if(s0->low < s1->low && s2->low < s1->low &&
 	 s0->high < s1->high && s2->high < s1->high)
@@ -51,7 +51,7 @@ int swing_init(struct swing *s, struct candle *seed) {
   s->type = SWING_NONE;
   s->ref = seed;
 
-  swing_feed(&__indicator__(s), seed);
+  swing_feed(__indicator__(s), seed);
   return 0;
 }
 

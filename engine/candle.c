@@ -31,8 +31,8 @@ int candle_init(struct candle *c,
   return 0;
 }
 
-void candle_free(struct candle *c)
-{
+void candle_free(struct candle *c) {
+  
   __timeline_entry_free__(c);
 }
 

@@ -41,7 +41,7 @@ int srsi_init(struct srsi *s, int max, struct candle *seed) {
     return -1;
   
   /* Init */
-  srsi_feed(&__indicator__(s), seed);
+  srsi_feed(__indicator__(s), seed);
   return 0;
 }
 

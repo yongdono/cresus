@@ -20,14 +20,14 @@
 #define __indicator_timeline_entry_is_superclass__	\
   void *__self_indicator_timeline_entry__
 #define __indicator_timeline_entry__(x)		\
-  (x)->__parent_indicator_timeline_entry__
+  (&(x)->__parent_indicator_timeline_entry__)
 #define __indicator_timeline_entry_self__(x)	\
-  (x)->__self_indicator_timeline_entry__
+  ((struct indicator_timeline_entry*)(x)->__self_indicator_timeline_entry__)
 
 #define __indicator_timeline_entry_super__(self)			\
-  indicator_timeline_entry_init(&__indicator_timeline_entry__(self), self);
+  indicator_timeline_entry_init(__indicator_timeline_entry__(self), self);
 #define __indicator_timeline_entry_free__(self)				\
-  indicator_timeline_entry_free(&__indicator_timeline_entry__(self));
+  indicator_timeline_entry_free(__indicator_timeline_entry__(self));
 
 struct indicator_timeline_entry {
   __inherits_from_timeline_entry__;
@@ -42,26 +42,28 @@ void indicator_timeline_entry_free(struct indicator_timeline_entry *entry);
 /* As it's a superclass, we want macros to manipulate this */
 #define __inherits_from_indicator__ struct indicator __parent_indicator__
 #define __indicator_is_superclass__ void *__self_indicator__
-#define __indicator__(x) (x)->__parent_indicator__
-#define __indicator_self__(x) (x)->__self_indicator__
+#define __indicator__(x) (&(x)->__parent_indicator__)
+#define __indicator_self__(x) ((struct indicator*)(x)->__self_indicator__)
+#define __indicator_self_init__(x, self) (x)->__self_indicator__ = self
 
 #define __indicator_super__(self, feed)			\
-  indicator_init(&__indicator__(self), self, feed)
+  __indicator_self_init__(__indicator__(self), self);	\
+  indicator_init(__indicator__(self), feed)
 #define __indicator_free__(self)		\
-  indicator_free(&__indicator__(self))
+  indicator_free(__indicator__(self))
 
 /* Set methods */
 #define __indicator_set_string__(self, fmt, ...)			\
-  snprintf(__indicator__(self).str, INDICATOR_STR_MAX,			\
+  snprintf(__indicator__(self)->str, INDICATOR_STR_MAX,			\
 	   fmt, ##__VA_ARGS__)
 #define __indicator_set_event__(self, candle, event)		\
-  indicator_set_event(&__indicator__(self), candle, event)
+  indicator_set_event(__indicator__(self), candle, event)
 #define __indicator_feed__(self, entry)				\
-  __indicator__(self)->feed(&__indicator__(self), entry)
+  __indicator__(self)->feed(__indicator__(self), entry)
 
 /* Internal values get */
-#define __indicator_string__(self) __indicator__(self).str
-#define __indicator_candle_value__(self) __indicator__(self).value
+#define __indicator_string__(self) __indicator__(self)->str
+#define __indicator_candle_value__(self) __indicator__(self)->value
 
 /* Define types */
 struct indicator; /* FIXME : find something more elegant */
@@ -81,8 +83,7 @@ struct indicator {
   char str[INDICATOR_STR_MAX];
 };
 
-int indicator_init(struct indicator *i, void *self, /* Required */
-		   indicator_feed_ptr feed);        /* TODO : can do better */
+int indicator_init(struct indicator *i, indicator_feed_ptr feed);
 void indicator_free(struct indicator *i);
 
 /* TODO : fix this */

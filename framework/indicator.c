@@ -8,12 +8,11 @@
 
 #include "indicator.h"
 
-int indicator_init(struct indicator *i, void *self, indicator_feed_ptr feed) {
+int indicator_init(struct indicator *i, indicator_feed_ptr feed) {
   
   /* Super */
   /*__slist_super__(i);*/
-  __indicator_self__(i) = self;
-  
+
   i->feed = feed;
   return 0;
 }
