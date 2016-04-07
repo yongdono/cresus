@@ -31,4 +31,7 @@ int timeline_add_indicator(struct timeline *t, struct indicator *i);
 int timeline_step(struct timeline *t, struct input *in);
 int timeline_load(struct timeline *t, struct input *in);
 
+#define timeline_entries(x)				\
+  __timeline_entry_self__((timeline)->list_entry);
+
 #endif

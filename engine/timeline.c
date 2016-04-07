@@ -51,8 +51,6 @@ int timeline_step(struct timeline *t, struct input *in) {
     __slist_for_each__(__slist__(&t->slist_indicator), indicator)
       indicator_feed(indicator, __timeline_entry__(candle));
     
-    /* FIXME : Where's the seed ? */
-    
     return 1;
   }
 

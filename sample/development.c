@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
   
   /* RS mansfield */
   struct rs_mansfield rsm;
-  rs_mansfield_init(&rsm, 14, &ref); /* FIXME : Something's missing here */
+  rs_mansfield_init(&rsm, 14, timeline_entries(&timeline));
 
   /* Add all these indicators */
   timeline_add_indicator(&timeline, __indicator__(&ema40));
