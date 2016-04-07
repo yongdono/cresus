@@ -14,12 +14,14 @@
 #include "framework/timeline_entry.h"
 
 struct list_indicator {
+  /* If it only does that, don't use this struct */
   __inherits_from_list__;
   struct indicator *indicator;
 };
 
 struct list_timeline_entry {
   __inherits_from_list__;
+  char name[];
   struct timeline_entry *timeline_entry;
 };
 

@@ -30,6 +30,10 @@ int main(int argc, char **argv) {
 
   /* Load / filter ref data */
   /* Load / filter some other data */
+  
+  /*
+   * Put all these datas in some kinda list
+   */
 
   /* 
    * Indicators
@@ -61,18 +65,18 @@ int main(int argc, char **argv) {
      * "Read" all data 
      */
     struct list *ptr;
-    struct list_timeline_entry *timeline_entry;
-    __list_for_each__(&/* list_timeline_entry */, ptr, timeline_entry){
+    struct timeline *timeline;
+    __list_for_each__(__list__(timeline), ptr, timeline_entry){
       struct candle candle;
       struct indicator *indicator_entry;
-      __input_read__(/* input */, &__timeline_entry__(candle));
+      __input_read__(/* input */, __timeline_entry__(candle));
       /*
        * Store that candle somewhere. Store all candles in fact, we need all
        * data before applying any data treatment
        */
       __list_for_each__(&/* list_indicator */, ptr, indicator_entry){
 	/* Populate indicators */
-	__indicator_feed__(indicator_entry, &__timeline_entry__(candle));
+	__indicator_feed__(indicator_entry, __timeline_entry__(candle));
 	/*
 	 * What about the indicator's results ?
 	 */

@@ -9,11 +9,10 @@
 #include <stdlib.h>
 #include "timeline.h"
 
-int timeline_init(struct timeline *t, granularity_t g, struct input *in) {
+int timeline_init(struct timeline *t, struct input *in) {
   
   timeline_entry_init(&t->list_entry, 0, 0); /* FIXME ? */
   t->cache = &t->list_entry;
-  t->g = g;
   
   return 0;
 }
@@ -50,17 +49,16 @@ int timeline_load(struct timeline *t, struct input *in) {
 
 struct timeline_entry *timeline_by_date(struct timeline *t, time_t time) {
 
-  struct list *ptr;
   struct timeline_entry *entry;
   time_t tm = timeline_entry_timecmp(t->cache, time);
-
+  
   if(!tm)
     /* time is the same */
     goto out;
   
   if(tm < 0){
     /* time is forward */
-    __list_for_each__(__list__(t->cache), ptr, entry)
+    __list_for_each__(__list__(t->cache), entry)
       if(!timeline_entry_timecmp(entry, time)){
 	t->cache = entry;
 	goto out;
@@ -68,7 +66,7 @@ struct timeline_entry *timeline_by_date(struct timeline *t, time_t time) {
     
   }else{
     /* time is backwards*/
-    __list_for_each_prev__(__list__(t->cache), ptr, entry)
+    __list_for_each_prev__(__list__(t->cache), entry)
       if(!timeline_entry_timecmp(entry, time)){
 	t->cache = entry;
 	goto out;

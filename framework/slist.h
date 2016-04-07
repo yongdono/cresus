@@ -28,9 +28,9 @@
   slist_insert(__slist__(slist), __slist__(entry))
 #define __slist_del__(slist)			\
   slist_del(__slist__(slist))
-#define __slist_for_each__(slist, ptr, self)				\
-  for(ptr = slist->next, self = __slist_self__(ptr);  ptr->next;	\
-      ptr = ptr->next, self = __slist_self__(ptr))
+#define __slist_for_each__(slist, self)					\
+  for(struct slist *ptr = slist->next, self = __slist_self__(ptr);	\
+      ptr->next; ptr = ptr->next, self = __slist_self__(ptr))
 
 /* Basic slist object */
 

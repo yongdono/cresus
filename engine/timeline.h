@@ -12,13 +12,15 @@
 #include "framework/input.h"
 #include "framework/timeline_entry.h"
 
+#define TIMELINE_NAME_MAX 256
+
 struct timeline {
+  char name[TIMELINE_NAME_MAX];
   struct timeline_entry list_entry;
   struct timeline_entry *cache;
-  granularity_t g;
 };
 
-int timeline_init(struct timeline *t, granularity_t g, struct input *in);
+int timeline_init(struct timeline *t, struct input *in);
 void timeline_free(struct timeline *t);
 
 /* TODO : Fill this */
