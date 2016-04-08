@@ -31,6 +31,7 @@
 #define __list_del__(entry)			\
   list_del(&__list__(entry))
 /* Iteration */
+/*
 #define __list_for_each__(list, self)			\
   for(self = __list_self__((list)->next);		\
       __list__(self) != (list);				\
@@ -39,7 +40,19 @@
   for(self = __list_self__((list)->prev);		\
       __list__(self) != (list);				\
       self = __list_self__(__list__(self)->prev))
+*/
 
+#define __list_head__ NULL
+#define __list_is_head__(list) (!list)
+
+#define __list_for_each__(list, self)			\
+  for(self = __list_self__((list));			\
+      __list__(self) != (list);				\
+      self = __list_self__(__list__(self)->next))
+#define __list_for_each_prev__(list, self)		\
+  for(self = __list_self__((list));			\
+      __list__(self) != (list);				\
+      self = __list_self__(__list__(self)->prev))
 /* Basic list object */
 
 struct list {
