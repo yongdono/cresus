@@ -39,15 +39,23 @@ struct candle {
   
   /* Misc */
   int offset; /* In minutes (google mode) : remove ? */
+
+  /* Debug */
+  char str[256];
 };
+
 
 int candle_init(struct candle *c,
 		time_t time, granularity_t g,
 		double open, double close,
 		double high, double low,
 		double volume);
-
 void candle_free(struct candle *c);
+
+struct candle *candle_alloc(time_t time, granularity_t g,
+			    double open, double close,
+			    double high, double low,
+			    double volume);
 
 /* Is that useful ? TODO : Remove these 2 */
 double candle_get_closest_inf(struct candle *c, double value);
@@ -55,5 +63,8 @@ double candle_get_closest_sup(struct candle *c, double value);
 
 double candle_get_value(const struct candle *c, candle_value_t value);
 int candle_get_direction(const struct candle *c);
+
+/* Debug */
+const char *candle_str(struct candle *c);
 
 #endif

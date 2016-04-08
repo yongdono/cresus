@@ -4,7 +4,7 @@ cresus_LDADD = libcresus.la
 lib_LTLIBRARIES = libcresus.la
 libcresus_la_SOURCES = framework/indicator.c framework/timeline_entry.c \
 		       engine/candle.c engine/timeline.c \
-                       math/average.c input/yahoo.c input/google.c \
+                       math/average.c input/yahoo.c \
 		       indicator/atr.c indicator/bollinger.c \
                        indicator/heikin_ashi.c indicator/rs_dorsey.c \
                        indicator/macd.c indicator/mobile.c indicator/rsi.c \

@@ -31,7 +31,7 @@
 /* Iteration */
 #define __slist_for_each__(slist, self)					\
   for(self = __slist_self__((slist)->next);				\
-      __slist__(self) != NULL;						\
+      __slist__(self)->next != NULL;					\
       self = __slist_self__(__slist__(self)->next))
 
 /* Basic slist object */

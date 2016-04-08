@@ -40,22 +40,19 @@ int timeline_add_indicator(struct timeline *t, struct indicator *i) {
 int timeline_step(struct timeline *t, struct input *in) {
 
   struct indicator *indicator;
-  struct candle *candle = malloc(sizeof *candle);
-  int eof = input_read(in, __timeline_entry__(candle));
+  struct timeline_entry *entry = input_read(in);
   
-  if(eof != -1){
+  if(entry != NULL){
     /* Cache data */
-    __list_add_tail__(__list__(&t->list_entry),
-		      __timeline_entry__(candle));
+    __list_add_tail__(__list__(&t->list_entry), entry);
+    /* Debug */
+    printf("%s\n", candle_str(__timeline_entry_self__(entry)));
     /* Run indicators */
     __slist_for_each__(__slist__(&t->slist_indicator), indicator)
-      indicator_feed(indicator, candle);
-    
-    return 1;
+      indicator_feed(indicator, __timeline_entry_self__(entry));
   }
 
-  free(candle);
-  return eof;
+  return (entry ? 0 : -1);
 }
 
 int timeline_load(struct timeline *t, struct input *in) {

@@ -17,6 +17,12 @@ static int rs_mansfield_feed(struct indicator *i, struct candle *c) {
   struct timeline_entry *entry;
   time_t time = __timeline_entry__(c)->time;
   struct rs_mansfield *r = __indicator_self__(i);
+
+  /* First data */
+  if(i->is_empty){
+    r->ref = c;
+    goto out;
+  }
   
   if((entry = __timeline_entry_find__(r->ref, time))){
     double rsd, mma;
@@ -27,7 +33,8 @@ static int rs_mansfield_feed(struct indicator *i, struct candle *c) {
       /* Finally set value */
       r->value = ((rsd / mma) - 1) * 100.0;
   }
-  
+
+ out:
   return 0;
 }
 

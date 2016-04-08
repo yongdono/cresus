@@ -12,8 +12,7 @@
 #include "yahoo.h"
 #include "engine/candle.h"
 
-static int __yahoo_read(struct input *in,
-			struct timeline_entry *entry) {
+static struct timeline_entry *__yahoo_read(struct input *in) {
   
   char buf[256];
   char *str = buf;
@@ -23,11 +22,10 @@ static int __yahoo_read(struct input *in,
   double open, close, high, low, volume;
   
   struct yahoo *y = __input_self__(in);
-  struct candle *candle = __timeline_entry_self__(entry);
-
+  
   if(!fgets(buf, sizeof buf, y->fp))
     /* End of file */
-    return EOF;
+    return NULL;
   
   /* Cut string */
   char *stime = strsep(&str, ",");
@@ -53,11 +51,9 @@ static int __yahoo_read(struct input *in,
   tm.tm_mon = month - 1;
   tm.tm_year = year - 1900;
 
-  /* Setup candle (at last !) */
-  candle_init(candle, mktime(&tm), GRANULARITY_DAY, /* No intraday on yahoo */
-	      open, close, high, low, volume);
-  
-  return 1;
+  /* Create candle (at last !) */
+  return candle_alloc(mktime(&tm), GRANULARITY_DAY, /* No intraday on yahoo */
+		      open, close, high, low, volume);
 }
 
 
@@ -69,6 +65,10 @@ int yahoo_init(struct yahoo *y, const char *filename) {
   if(!(y->fp = fopen(filename, "r")))
     return -1;
 
+  /* FIXME : read first line */
+  char buf[256];
+  fgets(buf, sizeof buf, y->fp);
+  
   return 0;
 }
 

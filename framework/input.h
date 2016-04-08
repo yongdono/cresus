@@ -23,13 +23,11 @@
 #define __input_free__(self) input_free(__input__(self))
 
 /* methods */
-#define __input_read__(self, entry)				\
-  input_read(__input__(self), __timeline_entry__(entry))
+#define __input_read__(self) input_read(__input__(self))
 
 /* Typedefs */
 struct input; /* FIXME : find another way */
-typedef int (*input_read_ptr)(struct input *in,
-			      struct timeline_entry *entry);
+typedef struct timeline_entry *(*input_read_ptr)(struct input *in);
 
 struct input {
   __input_is_superclass__;
@@ -41,11 +39,11 @@ static inline int input_init(struct input *in, input_read_ptr read) {
   return 0;
 }
 
-static inline void input_free(struct input *in) {}
+static inline void input_free(struct input *in) {
+}
 
-static inline int input_read(struct input *in,
-			     struct timeline_entry *entry) {
-  in->read(in, entry);
+static inline struct timeline_entry *input_read(struct input *in) {
+  return in->read(in);
 }
 
 #endif /* defined(__Cresus_EVO__input__) */

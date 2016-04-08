@@ -36,6 +36,17 @@ void candle_free(struct candle *c) {
   __timeline_entry_free__(c);
 }
 
+struct candle *candle_alloc(time_t time, granularity_t g,
+			    double open, double close,
+			    double high, double low,
+			    double volume) {
+
+  struct candle *c = malloc(sizeof(struct candle));
+  if(c) candle_init(c, time, g, open, close, high, low, volume);
+  
+  return c;
+}
+
 double candle_get_closest_inf(struct candle *c, double value)
 {
   /* Chronologically seems more relevant */
@@ -84,4 +95,15 @@ int candle_get_direction(const struct candle *c)
   if(c->open < c->close) return 1;
   */
   return (c->close - c->open);
+}
+
+/* Debug */
+
+const char *candle_str(struct candle *c) {
+
+  sprintf(c->str, "%u -> o%.1f c%.1f h%.1f l%.1f v%.0f",
+	  __timeline_entry__(c)->time,
+	  c->open, c->close, c->high, c->low, c->volume);
+	  
+  return c->str;
 }

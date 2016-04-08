@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
   
   /* Load / filter ref data */
   struct yahoo ref;
-  yahoo_init(&ref, "data/px1.yahoo");
+  yahoo_init(&ref, "data/FCHI.yahoo");
 
   /*
    * Timeline object

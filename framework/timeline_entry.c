@@ -9,7 +9,7 @@ int timeline_entry_init(struct timeline_entry *e, time_t time,
   __list_super__(e);
   
   e->time = time;
-  g->granularity = g;
+  e->granularity = g;
   
   return 0;
 }
@@ -28,7 +28,6 @@ time_t timeline_entry_timecmp(struct timeline_entry *e, time_t time) {
 struct timeline_entry *
 timeline_entry_find(struct timeline_entry *e, time_t time) {
   
-  struct list *ptr;
   struct timeline_entry *entry;
   time_t tm = timeline_entry_timecmp(e, time);
   
@@ -38,13 +37,13 @@ timeline_entry_find(struct timeline_entry *e, time_t time) {
   
   if(tm < 0){
     /* time is forward */
-    __list_for_each__(&__list__(e), ptr, entry)
+    __list_for_each__(__list__(e), entry)
       if(!timeline_entry_timecmp(entry, time))
 	goto out;
     
   }else{
     /* time is backwards*/
-    __list_for_each_prev__(&__list__(e), ptr, entry)
+    __list_for_each_prev__(__list__(e), entry)
       if(!timeline_entry_timecmp(entry, time))
 	goto out;
   }
