@@ -11,6 +11,7 @@
 
 #include <time.h>
 #include <float.h>
+#include <stdlib.h>
 
 #include "framework/timeline_entry.h"
 

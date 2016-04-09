@@ -20,6 +20,9 @@ struct yahoo {
   __inherits_from_input__;
   /* file loader */
   FILE *fp;
+  /* Yahoo file format is LIFO */
+  struct list list_entry;
+  struct list *current_entry;
 };
 
 int yahoo_init(struct yahoo *y, const char *filename);

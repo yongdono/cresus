@@ -13,16 +13,25 @@
 #include "engine/candle.h"
 
 static struct timeline_entry *__yahoo_read(struct input *in) {
+
+  struct yahoo *y = __input_self__(in);
+  
+  y->current_entry = y->current_entry->next;
+  if(y->current_entry == &y->list_entry)
+    return NULL;
+  
+  return __list_self__(y->current_entry);
+}
+
+static struct timeline_entry *__yahoo_load_entry(struct yahoo *y) {
   
   char buf[256];
   char *str = buf;
+  struct candle *ret = NULL;
 
   struct tm tm;
   int year, month, day;
   double open, close, high, low, volume;
-
-  struct candle *ret = NULL;
-  struct yahoo *y = __input_self__(in);
   
   if(!fgets(buf, sizeof buf, y->fp))
     /* End of file */
@@ -62,18 +71,37 @@ static struct timeline_entry *__yahoo_read(struct input *in) {
   return NULL;
 }
 
+static int __yahoo_load(struct yahoo *y) {
+
+  int n = 0;
+  char info[256];
+  struct timeline_entry *entry;
+  
+  /* Yahoo is LIFO with first line showing format */
+  fgets(info, sizeof info, y->fp);
+
+  while((entry = __yahoo_load_entry(y)) != NULL){
+    __list_add__(&y->list_entry, entry);
+    n++;
+  }
+
+  return n;
+}
 
 int yahoo_init(struct yahoo *y, const char *filename) {
   
   /* super */
   __input_super__(y, __yahoo_read);
+  __list_head_init__(&y->list_entry);
   
   if(!(y->fp = fopen(filename, "r")))
     return -1;
 
-  /* FIXME : read first line */
-  char buf[256];
-  fgets(buf, sizeof buf, y->fp);
+  /* Load all data */
+  __yahoo_load(y);
+  
+  /* Set pointers */
+  y->current_entry = &y->list_entry;
   
   return 0;
 }
