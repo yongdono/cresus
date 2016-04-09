@@ -25,6 +25,38 @@ time_t timeline_entry_timecmp(struct timeline_entry *e, time_t time) {
 	  __timeline_entry_time(time, e->granularity));
 }
 
+static struct timeline_entry *
+timeline_entry_find_forward(struct timeline_entry *e, time_t time) {
+
+  struct list *entry;
+  for(entry = __list__(e)->next;
+      entry != entry->head;
+      entry = entry->next){
+    /* Find forward */
+    struct timeline_entry *cur = __list_self__(entry);
+    if(!timeline_entry_timecmp(cur, time))
+      return e;
+  }
+
+  return NULL;
+}
+
+static struct timeline_entry *
+timeline_entry_find_backwards(struct timeline_entry *e, time_t time) {
+
+  struct list *entry;
+  for(entry = __list__(e)->prev;
+      entry != entry->head;
+      entry = entry->prev){
+    /* Find forward */
+    struct timeline_entry *cur = __list_self__(entry);
+    if(!timeline_entry_timecmp(cur, time))
+      return e;
+  }
+
+  return NULL;
+}
+
 struct timeline_entry *
 timeline_entry_find(struct timeline_entry *e, time_t time) {
   
@@ -35,20 +67,11 @@ timeline_entry_find(struct timeline_entry *e, time_t time) {
     /* time is the same */
     goto out;
   
-  if(tm < 0){
-    /* time is forward */
-    __list_for_each__(__list__(e), entry)
-      if(!timeline_entry_timecmp(entry, time))
-	goto out;
+  if(tm < 0)
+    return timeline_entry_find_forward(e, time);
     
-  }else{
-    /* time is backwards*/
-    __list_for_each_prev__(__list__(e), entry)
-      if(!timeline_entry_timecmp(entry, time))
-	goto out;
-  }
-  
-  return NULL;
+  /* else */
+  return timeline_entry_find_backwards(e, time);
   
  out:
   return entry;

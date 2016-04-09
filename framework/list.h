@@ -47,15 +47,17 @@
 
 struct list {
   __list_is_superclass__;
-  struct list *prev, *next;
+  struct list *head, *prev, *next;
 };
 
 static inline int list_init(struct list *l) {
+  l->head = l;
   l->next = l;
   l->prev = l;
 }
 
 static inline void list_free(struct list *l) {
+  l->head = NULL;
   l->next = NULL;
   l->prev = NULL;
 }
@@ -65,10 +67,13 @@ static inline void list_add(struct list *l, struct list *new) {
   new->next = l->next;
   l->next->prev = new;
   l->next = new;
+  l->head = l;
 }
 
 static inline void list_add_tail(struct list *l, struct list *entry) {
   list_add(l->prev, entry);
+  /* Correct head */
+  l->head = l;
 }
 
 static inline void list_del(struct list *l) {
