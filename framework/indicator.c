@@ -12,7 +12,8 @@ int indicator_init(struct indicator *i, indicator_feed_ptr feed) {
   
   /* Super */
   __slist_super__(i);
-  timeline_entry_init(&i->list_entry, 0, 0);
+
+  __list_head_init__(&i->list_entry);
   
   i->feed = feed;
   i->is_empty = 1;
@@ -40,6 +41,6 @@ void indicator_set_event(struct indicator *i, struct candle *candle,
   
   /* Nothing to do now */
   /* Set in candle or timeline maybe */
-  __list_add_tail__(__list__(&i->list_entry),
+  __list_add_tail__(&i->list_entry,
 		    __timeline_entry__(candle));
 }

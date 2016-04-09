@@ -16,7 +16,7 @@
 #define __inherits_from_list__ struct list __parent_list__
 #define __list_is_superclass__ void *__self_list__
 #define __list__(x) (&(x)->__parent_list__)
-#define __list_self__(x) ((struct list*)(x)->__self_list__)
+#define __list_self__(x) ((x)->__self_list__)
 #define __list_self_init__(x, self) (x)->__self_list__ = self
 
 #define __list_super__(self)			\
@@ -39,8 +39,11 @@
   for(self = __list_self__((list)->prev);		\
       __list__(self) != (list);				\
       self = __list_self__(__list__(self)->prev))
-
+ 
 /* Basic list object */
+  
+#define __list_head__ struct list
+#define __list_head_init__(x) list_init(x)
 
 struct list {
   __list_is_superclass__;

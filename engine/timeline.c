@@ -13,10 +13,11 @@
 
 int timeline_init(struct timeline *t) {
   
-  timeline_entry_init(&t->list_entry, 0, 0); /* FIXME ? */
-  t->cache = &t->list_entry;
+  __list_head_init__(&t->list_entry);
+  t->cache = NULL;
 
-  indicator_init(&t->slist_indicator, NULL);
+  //indicator_init(&t->slist_indicator, NULL);
+  __slist_head_init__(&t->slist_indicator);
   
   return 0;
 }
@@ -27,14 +28,14 @@ void timeline_free(struct timeline *t) {
    * TODO : Don't forget to free() & unload data 
    * list_entry AND slist_indicator
    */
-  timeline_entry_free(&t->list_entry);
-  indicator_free(&t->slist_indicator);
-  t->cache = &t->list_entry;
+  //timeline_entry_free(&t->list_entry);
+  //indicator_free(&t->slist_indicator);
+  t->cache = NULL;
 }
 
 int timeline_add_indicator(struct timeline *t, struct indicator *i) {
 
-  slist_insert(__slist__(&t->slist_indicator), __slist__(i));
+  slist_insert(&t->slist_indicator, __slist__(i));
 }
 
 int timeline_step(struct timeline *t, struct input *in) {
@@ -44,11 +45,11 @@ int timeline_step(struct timeline *t, struct input *in) {
   
   if(entry != NULL){
     /* Cache data */
-    __list_add_tail__(__list__(&t->list_entry), entry);
+    list_add_tail(&t->list_entry, __list__(entry));
     /* Debug */
     printf("%s\n", candle_str(__timeline_entry_self__(entry)));
     /* Run indicators */
-    __slist_for_each__(__slist__(&t->slist_indicator), indicator)
+    __slist_for_each__(&t->slist_indicator, indicator)
       indicator_feed(indicator, __timeline_entry_self__(entry));
   }
 

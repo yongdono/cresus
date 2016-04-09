@@ -20,7 +20,8 @@ static struct timeline_entry *__yahoo_read(struct input *in) {
   struct tm tm;
   int year, month, day;
   double open, close, high, low, volume;
-  
+
+  struct candle *ret = NULL;
   struct yahoo *y = __input_self__(in);
   
   if(!fgets(buf, sizeof buf, y->fp))
@@ -52,8 +53,13 @@ static struct timeline_entry *__yahoo_read(struct input *in) {
   tm.tm_year = year - 1900;
 
   /* Create candle (at last !) */
-  return candle_alloc(mktime(&tm), GRANULARITY_DAY, /* No intraday on yahoo */
-		      open, close, high, low, volume);
+  ret = candle_alloc(mktime(&tm), GRANULARITY_DAY, /* No intraday on yahoo */
+		     open, close, high, low, volume);
+
+  if(ret)
+    return __timeline_entry__(ret);
+
+  return NULL;
 }
 
 

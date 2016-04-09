@@ -16,6 +16,7 @@
  */
 
 #include "math/average.h"
+#include "framework/list.h"
 #include "framework/indicator.h"
 
 struct rs_mansfield {
@@ -23,12 +24,12 @@ struct rs_mansfield {
   __inherits_from_indicator__;
   
   struct average mma;
-  struct candle *ref;
+  __list_head__ *ref; /* FIXME ? Bad format */
 
   double value;
 };
 
-int rs_mansfield_init(struct rs_mansfield *r, int period, struct candle *ref);
+int rs_mansfield_init(struct rs_mansfield *r, int period, __list_head__ *ref);
 void rs_mansfield_free(struct rs_mansfield *r);
 
 /* Indicator-specific */
