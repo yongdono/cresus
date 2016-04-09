@@ -16,10 +16,12 @@ static struct timeline_entry *__yahoo_read(struct input *in) {
 
   struct yahoo *y = __input_self__(in);
   
-  y->current_entry = y->current_entry->next;
+  y->current_entry = y->list_entry.next;
   if(y->current_entry == &y->list_entry)
     return NULL;
-  
+
+  /* Don't forget we'll put it in another list */
+  list_del(y->current_entry);
   return __list_self__(y->current_entry);
 }
 
@@ -99,9 +101,6 @@ int yahoo_init(struct yahoo *y, const char *filename) {
 
   /* Load all data */
   __yahoo_load(y);
-  
-  /* Set pointers */
-  y->current_entry = &y->list_entry;
   
   return 0;
 }

@@ -61,10 +61,10 @@ static inline void list_free(struct list *l) {
 }
 
 static inline void list_add(struct list *l, struct list *new) {
-  l->next->prev = new;
+  new->prev = l->next->prev;
   new->next = l->next;
-  new->prev = l->prev;
-  l->prev->next = new;
+  l->next->prev = new;
+  l->next = new;
 }
 
 static inline void list_add_tail(struct list *l, struct list *entry) {
