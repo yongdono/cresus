@@ -24,12 +24,13 @@ struct rs_mansfield {
   __inherits_from_indicator__;
   
   struct average mma;
-  __list_head__ *ref; /* FIXME ? Bad format */
+  __list_head__(struct timeline_entry) *ref;
 
   double value;
 };
 
-int rs_mansfield_init(struct rs_mansfield *r, int period, __list_head__ *ref);
+int rs_mansfield_init(struct rs_mansfield *r, int period,
+		      __list_head__(struct timeline_entry) *ref);
 void rs_mansfield_free(struct rs_mansfield *r);
 
 /* Indicator-specific */

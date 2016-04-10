@@ -36,7 +36,7 @@
 
 /* Basic slist object */
 
-#define __slist_head__ struct slist
+#define __slist_head__(type) struct slist /* Type is indicative */
 #define __slist_head_init__(x) slist_init(x)
 
 struct slist {

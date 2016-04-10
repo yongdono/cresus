@@ -42,7 +42,7 @@
  
 /* Basic list object */
   
-#define __list_head__ struct list
+#define __list_head__(type) struct list /* Type is purely indicative */
 #define __list_head_init__(x) list_init(x)
 
 struct list {

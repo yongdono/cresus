@@ -53,15 +53,15 @@ int main(int argc, char **argv) {
   macd_init(&macd, 12, 26, 9);
   
   /* RS mansfield */
-  //struct rs_mansfield rsm;
-  //rs_mansfield_init(&rsm, 14, timeline_entries(&timeline));
+  struct rs_mansfield rsm;
+  rs_mansfield_init(&rsm, 14, &ref.list_entry);
 
   /* Add all these indicators */
   timeline_add_indicator(&timeline, __indicator__(&ema40));
   timeline_add_indicator(&timeline, __indicator__(&ema14));
   timeline_add_indicator(&timeline, __indicator__(&ema5));
   timeline_add_indicator(&timeline, __indicator__(&macd));
-  //timeline_add_indicator(&timeline, __indicator__(&rsm));
+  timeline_add_indicator(&timeline, __indicator__(&rsm));
   
   /* Load full data. FIXME : what about filtering ? */
   timeline_load(&timeline, __input__(&ref));

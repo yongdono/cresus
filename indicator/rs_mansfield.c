@@ -39,8 +39,8 @@ static int rs_mansfield_feed(struct indicator *i, struct candle *c) {
   return 0;
 }
 
-int rs_mansfield_init(struct rs_mansfield *r,
-		      int period, __list_head__ *ref) {
+int rs_mansfield_init(struct rs_mansfield *r, int period,
+		      __list_head__(struct timeline_entry) *ref) {
 
   __indicator_super__(r,  rs_mansfield_feed);
   __indicator_set_string__(r, "rsm[%d]", period);
