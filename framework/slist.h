@@ -38,6 +38,7 @@
 
 #define __slist_head__(type) struct slist /* Type is indicative */
 #define __slist_head_init__(x) slist_init(x)
+#define __slist_head_free__(x) slist_free(x)
 
 struct slist {
   __slist_is_superclass__;

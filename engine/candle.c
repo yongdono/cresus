@@ -27,6 +27,9 @@ int candle_init(struct candle *c,
   c->high = high;
   c->low = low;
   c->volume = volume;
+
+  /* Indicators */
+  __slist_head_init__(&c->slist_indicator);
   
   return 0;
 }

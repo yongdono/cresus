@@ -13,6 +13,8 @@
 #include <float.h>
 #include <stdlib.h>
 
+#include "framework/slist.h"
+#include "framework/indicator.h"
 #include "framework/timeline_entry.h"
 
 typedef enum {
@@ -41,6 +43,9 @@ struct candle {
   /* Misc */
   int offset; /* In minutes (google mode) : remove ? */
 
+  /* Indicators information ? */
+  __slist_head__(struct indicator_entry) slist_indicator;
+  
   /* Debug */
   char str[256];
 };

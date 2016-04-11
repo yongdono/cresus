@@ -17,29 +17,32 @@
 
 /* TODO : find something for indicator data storage */
 
-#define __inherits_from_indicator_timeline_entry__			\
-  struct indicator_timeline_entry __parent_indicator_timeline_entry__
-#define __indicator_timeline_entry_is_superclass__	\
-  void *__self_indicator_timeline_entry__
-#define __indicator_timeline_entry__(x)		\
-  (&(x)->__parent_indicator_timeline_entry__)
-#define __indicator_timeline_entry_self__(x)	\
-  ((x)->__self_indicator_timeline_entry__)
+#define __inherits_from_indicator_entry__		\
+  struct indicator_entry __parent_indicator_entry__
+#define __indicator_entry_is_superclass__ void *__self_indicator_entry__
+#define __indicator_entry__(x) (&(x)->__parent_indicator_entry__)
+#define __indicator_entry_self__(x) ((x)->__self_indicator_entry__)
+#define __indicator_entry_self_init__(x, self)	\
+  (x)->__self_indicator_entry__ = self
 
-#define __indicator_timeline_entry_super__(self)			\
-  indicator_timeline_entry_init(__indicator_timeline_entry__(self), self);
-#define __indicator_timeline_entry_free__(self)				\
-  indicator_timeline_entry_free(__indicator_timeline_entry__(self));
+#define __indicator_entry_super__(self)					\
+  __indicator_entry_self_init__(self,__indicator_entry__(self));	\
+  indicator_entry_init(__indicator_entry__(self));
+#define __indicator_entry_free__(self)			\
+  indicator_entry_free(__indicator_entry__(self));
 
-struct indicator_timeline_entry {
-  __inherits_from_timeline_entry__;
-  __indicator_timeline_entry_is_superclass__;
-  /* Basic info */
-  unsigned int status; /* Maybe */
+struct indicator_entry {
+  __inherits_from_slist__;
+  __indicator_entry_is_superclass__;
 };
 
-int indicator_timeline_entry_init(struct indicator_timeline_entry *entry, void *self);
-void indicator_timeline_entry_free(struct indicator_timeline_entry *entry);
+static inline int indicator_entry_init(struct indicator_entry *entry) {
+  __slist_super__(entry);
+}
+
+static inline void indicator_entry_free(struct indicator_entry *entry) {
+  __slist_free__(entry);
+}
 
 /* As it's a superclass, we want macros to manipulate this */
 #define __inherits_from_indicator__ struct indicator __parent_indicator__

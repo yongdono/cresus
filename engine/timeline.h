@@ -19,7 +19,6 @@ struct timeline {
   char name[TIMELINE_NAME_MAX];
   /* Main data / graph */
   __list_head__(struct timeline_entry) list_entry;
-  struct timeline_entry *cache;
   /* Secondary graphs */
   __slist_head__(struct indicator) slist_indicator;
 };
