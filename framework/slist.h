@@ -24,13 +24,13 @@
   slist_init(__slist__(self))
 #define __slist_free__(self) slist_free(__slist__(self))
 
-#define __slist_insert__(slist, entry)			\
-  slist_insert(__slist__(slist), __slist__(entry))
+#define __slist_insert__(slist, entry)		\
+  slist_insert((slist), __slist__(entry))
 #define __slist_del__(slist)			\
   slist_del(__slist__(slist))
 /* Iteration */
-#define __slist_for_each__(slist, self)					\
-  for(self = __slist_self__((slist)->next);				\
+#define __slist_for_each__(head, self)					\
+  for(self = __slist_self__((head)->next);				\
       __slist__(self)->next != NULL;					\
       self = __slist_self__(__slist__(self)->next))
 

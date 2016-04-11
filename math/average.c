@@ -74,14 +74,15 @@ static double __average_update_exp(struct average *a, double value) {
 }
 
 double average_update(struct average *a, double value) {
-  
-  switch(a->type){
-  case AVERAGE_MATH : return __average_update_math(a, value);
-  case AVERAGE_EXP : return __average_update_exp(a, value);
-  }
 
+  double ret = 0.0;
+  switch(a->type){
+  case AVERAGE_MATH : ret = __average_update_math(a, value); break;
+  case AVERAGE_EXP : ret = __average_update_exp(a, value); break;
+  }
+  
   a->count++; /* FIXME : risk of bug after a certain amout of data */
-  return 0.0;
+  return ret;
 }
 
 double average_value(struct average *a) {

@@ -17,6 +17,7 @@
 #include "math/average.h"
 #include "framework/indicator.h"
 
+/* TODO : Is that useful ? */
 typedef enum {
   MOBILE_MMA,
   MOBILE_EMA
@@ -27,7 +28,7 @@ typedef enum {
   MOBILE_DIR_DOWN
 } mobile_dir_t;
 
-/* Warning
+/* Warning /!\
  * this is position of the mobile avg
  * compared to candle value
  * above means candle is below
@@ -46,9 +47,9 @@ typedef enum {
 
 /* Timeline entries object */
 
-struct mobile_timeline_entry {
+struct mobile_indicator_entry {
   /* As below */
-  __inherits_from_timeline_entry__;
+  __inherits_from_indicator_entry__;
   /* Single value */
   double value;
   /* More info */
@@ -56,17 +57,32 @@ struct mobile_timeline_entry {
   /* Events ? */
 };
 
+static inline int
+mobile_indicator_entry_init(struct mobile_indicator_entry *entry,
+			    double value, double direction){
+  __indicator_entry_super__(entry);
+  entry->value = value;
+  entry->direction = direction;
+  return 0;
+}
+
+static inline struct mobile_indicator_entry *
+mobile_indicator_entry_alloc(double value, double direction) {
+  struct mobile_indicator_entry *entry;
+  if((entry = malloc(sizeof *entry)))
+    mobile_indicator_entry_init(entry, value, direction);
+  
+  return entry;
+}
+
 /* Main object */
 
 struct mobile {
   /* As always */
   __inherits_from_indicator__;
-  
+  /* Basic data */
   mobile_t type;
-  /* mobile_dir_t dir;
-     mobile_pos_t pos; */
   candle_value_t cvalue;
-
   /* Average object */
   struct average avg;
 };

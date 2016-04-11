@@ -70,8 +70,22 @@ int main(int argc, char **argv) {
   /* Step by step loop */
   struct timeline_entry *entry;
   __list_for_each__(&timeline.list_entry, entry){
-    /* TODO : How to sync indicators with candles ? */
-    /* Arch problem here */
+    struct indicator_entry *indicator;
+    struct candle *c = __timeline_entry_self__(entry);
+    printf("%s - ", candle_str(__timeline_entry_self__(entry)));
+
+    /* TODO : find a way to remove this */
+    if(c->slist_indicator.next == NULL){
+      printf("XX XX\n");
+      continue;
+    }
+    
+    __slist_for_each__(&c->slist_indicator, indicator){
+      /* Beware, some parsing will be required here */
+      struct mobile_indicator_entry *mob =
+	__indicator_entry_self__(indicator);
+      printf("%.1f %.1f\n", mob->value, mob->direction);
+    }
   }
   
   return 0;

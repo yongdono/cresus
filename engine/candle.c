@@ -37,6 +37,7 @@ int candle_init(struct candle *c,
 void candle_free(struct candle *c) {
   
   __timeline_entry_free__(c);
+  __slist_head_free__(&c->slist_indicator);
 }
 
 struct candle *candle_alloc(time_t time, granularity_t g,

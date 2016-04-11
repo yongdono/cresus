@@ -56,20 +56,16 @@ static void mobile_manage_position(struct mobile *m, double avg,
 
 static int mobile_feed(struct indicator *i, struct candle *c) {
   
-  struct mobile_timeline_entry *entry;
+  struct mobile_indicator_entry *entry;
   struct mobile *m = __indicator_self__(i);
-
+  /* Trying to get average values */
+  double last_avg = average_value(&m->avg);
+  double avg = average_update(&m->avg, candle_get_value(c, m->cvalue));
+  
   if(average_is_available(&m->avg)){
-    double last_avg = average_value(&m->avg);
-    double avg = average_update(&m->avg,
-				candle_get_value(c, m->cvalue));
-    
     /* Create new entry */
-    if((entry = malloc(sizeof *entry))){
-      entry->direction = (avg - last_avg);
-      entry->value = avg;
-      /* Add this to timeline */
-      __list_add_tail__(&i->list_entry, __timeline_entry__(entry));
+    if((entry = mobile_indicator_entry_alloc(avg, (avg - last_avg)))){
+      __slist_insert__(&c->slist_indicator, __indicator_entry__(entry));
       return 1;
     }
   }

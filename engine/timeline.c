@@ -44,7 +44,7 @@ int timeline_step(struct timeline *t, struct input *in) {
     /* Cache data */
     list_add_tail(&t->list_entry, __list__(entry));
     /* Debug */
-    printf("%s\n", candle_str(__timeline_entry_self__(entry)));
+    // printf("%s\n", candle_str(__timeline_entry_self__(entry)));
     /* Run indicators */
     __slist_for_each__(&t->slist_indicator, indicator)
       indicator_feed(indicator, __timeline_entry_self__(entry));

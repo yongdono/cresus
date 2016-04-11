@@ -12,7 +12,8 @@
 #include "slist.h"
 #include "timeline_entry.h"
 
-/* Required to force data types */
+/* Required to force data types 
+ * FIXME ? */
 #include "engine/candle.h"
 
 /* TODO : find something for indicator data storage */
@@ -26,7 +27,7 @@
   (x)->__self_indicator_entry__ = self
 
 #define __indicator_entry_super__(self)					\
-  __indicator_entry_self_init__(self,__indicator_entry__(self));	\
+  __indicator_entry_self_init__(__indicator_entry__(self), self);	\
   indicator_entry_init(__indicator_entry__(self));
 #define __indicator_entry_free__(self)			\
   indicator_entry_free(__indicator_entry__(self));
