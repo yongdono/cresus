@@ -7,16 +7,19 @@
  */
 
 #include "rs_dorsey.h"
+#include "engine/candle.h"
 
-static int rs_dorsey_feed(struct indicator *i, struct candle *c) {
+static int rs_dorsey_feed(struct indicator *i, struct timeline_entry *e) {
 
   struct timeline_entry *entry;
-  time_t time = __timeline_entry__(c)->time;
   struct rs_dorsey *r = __indicator_self__(i);
+  struct candle *c = __timeline_entry_self__(e);
   
-  if((entry = __timeline_entry_find__(r->ref, time))){
-    r->ref = __timeline_entry_self__(entry);
-    r->value = c->close / r->ref->close;
+  if((entry = timeline_entry_find(__list_self__(r->ref), e->time))){
+    struct candle *cref = __timeline_entry_self__(entry);
+    r->value = c->close / cref->close;
+    /* Set new ref */
+    r->ref = __list__(entry);
     /* TODO : create new entry ? */
     return 0;
   }
@@ -24,13 +27,14 @@ static int rs_dorsey_feed(struct indicator *i, struct candle *c) {
   return -1;
 }
 
-int rs_dorsey_init(struct rs_dorsey *r, struct candle *ref) {
+int rs_dorsey_init(struct rs_dorsey *r,
+		   __list_head__(struct timeline_entry) *ref) {
 
   /* super() */
   __indicator_super__(r, rs_dorsey_feed);
   __indicator_set_string__(r, "rsd[i]");
 
-  r->ref = ref;
+  r->ref = ref->next;
   return 0;
 }
 

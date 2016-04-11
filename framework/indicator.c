@@ -29,19 +29,11 @@ void indicator_free(struct indicator *i) {
   i->feed = NULL;
 }
 
-int indicator_feed(struct indicator *i, struct candle *c) {
+int indicator_feed(struct indicator *i, struct timeline_entry *e) {
 
-  int ret = i->feed(i, c);
+  int ret = i->feed(i, e);
   i->is_empty = 0;
 
   return ret;
 }
 
-void indicator_set_event(struct indicator *i, struct candle *candle,
-			 int event) {
-  
-  /* Nothing to do now */
-  /* Set in candle or timeline maybe */
-  __list_add_tail__(&i->list_entry,
-		    __timeline_entry__(candle));
-}

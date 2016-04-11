@@ -12,11 +12,12 @@
 #include "rsi.h"
 #include "mobile.h"
 
-static int rsi_feed(struct indicator *i, struct candle *c) {
+static int rsi_feed(struct indicator *i, struct timeline_entry *e) {
   
   double h, b, sub;
   struct rsi *r = __indicator_self__(i);
-
+  struct candle *c = __timeline_entry_self__(e);
+  
   if(!r->last)
     goto out;
   

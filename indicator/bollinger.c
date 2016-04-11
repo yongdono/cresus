@@ -9,9 +9,10 @@
 #include <stdio.h>
 #include "bollinger.h"
 
-static int bollinger_feed(struct indicator *i, struct candle *c) {
+static int bollinger_feed(struct indicator *i, struct timeline_entry *e) {
   
   struct bollinger *b = __indicator_self__(i);
+  struct candle *c = __timeline_entry_self__(e);
   double value = candle_get_value(c, b->cvalue);
   b->value.mma = average_update(&b->avg, value);
 

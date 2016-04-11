@@ -12,10 +12,6 @@
 #include "slist.h"
 #include "timeline_entry.h"
 
-/* Required to force data types 
- * FIXME ? */
-#include "engine/candle.h"
-
 /* TODO : find something for indicator data storage */
 
 #define __inherits_from_indicator_entry__		\
@@ -70,15 +66,11 @@ static inline void indicator_entry_free(struct indicator_entry *entry) {
 
 /* Internal values get */
 #define __indicator_string__(self) __indicator__(self)->str
-#define __indicator_candle_value__(self) __indicator__(self)->value
+//#define __indicator_candle_value__(self) __indicator__(self)->value
 
 /* Define types */
 struct indicator; /* FIXME : find something more elegant */
-typedef int (*indicator_feed_ptr)(struct indicator*, struct candle*);
-/* TODO : why use ony candle data (seed / current) as we could set ref candle
- * in the init and then increment by granularity using some kind of step()
- * function ?
- */
+typedef int (*indicator_feed_ptr)(struct indicator*, struct timeline_entry*);
 
 struct indicator {
   /* Inherits from slist */
@@ -99,8 +91,7 @@ struct indicator {
 int indicator_init(struct indicator *i, indicator_feed_ptr feed);
 void indicator_free(struct indicator *i);
 
-int indicator_feed(struct indicator *i, struct candle *c);
-/* TODO : fix this */
-void indicator_set_event(struct indicator *i, struct candle *candle, int event);
+/* FIXME : Use timeline_entry ? */
+int indicator_feed(struct indicator *i, struct timeline_entry *e);
 
 #endif /* defined(__Cresus_EVO__indicator__) */

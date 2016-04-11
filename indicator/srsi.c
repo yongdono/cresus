@@ -8,10 +8,12 @@
 
 #include <stdlib.h>
 #include "srsi.h"
+#include "engine/candle.h"
 
-static int srsi_feed(struct indicator *i, struct candle *c) {
+static int srsi_feed(struct indicator *i, struct timeline_entry *e) {
   
   struct srsi *s = __indicator_self__(i);
+  struct candle *c = __timeline_entry_self__(e);
   int start = (c->open < c->close ? c->open : c->close);
   int end = (c->close < c->open ? c->open : c->close);
   

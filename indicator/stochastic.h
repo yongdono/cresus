@@ -9,8 +9,9 @@
 #ifndef __Cresus_EVO__stochastic__
 #define __Cresus_EVO__stochastic__
 
-#include "framework/indicator.h"
 #include "math/average.h"
+#include "engine/candle.h"
+#include "framework/indicator.h"
 
 struct stochastic {
   __inherits_from_indicator__;

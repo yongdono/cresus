@@ -23,10 +23,11 @@ struct rs_dorsey {
   __inherits_from_indicator__;
 
   double value;
-  struct candle *ref;
+  __list_head__(struct timeline_entry) *ref;
 };
 
-int rs_dorsey_init(struct rs_dorsey *r, struct candle *ref);
+int rs_dorsey_init(struct rs_dorsey *r,
+		   __list_head__(struct timeline_entry) *ref);
 void rs_dorsey_free(struct rs_dorsey *r);
 
 /* Indicator-specific */

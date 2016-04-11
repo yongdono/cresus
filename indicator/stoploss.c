@@ -7,10 +7,12 @@
  */
 
 #include "stoploss.h"
+#include "engine/candle.h"
 
-static int stoploss_feed(struct indicator *i, struct candle *candle) {
+static int stoploss_feed(struct indicator *i, struct timeline_entry *e) {
   
   struct stoploss *s = __indicator_self__(i);
+  struct candle *candle = __timeline_entry_self__(e);
   
   if(s->type == STOPLOSS_UP){
     if(candle->close >= s->value){
@@ -28,7 +30,7 @@ static int stoploss_feed(struct indicator *i, struct candle *candle) {
   return 0;
   
 out:
-  indicator_set_event(i, candle, STOPLOSS_EVENT_HIT);
+  //indicator_set_event(i, candle, STOPLOSS_EVENT_HIT);
   stoploss_clear(s);
   return 1;
 }

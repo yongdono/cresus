@@ -16,6 +16,7 @@
  */
 
 #include "math/average.h"
+#include "engine/candle.h"
 #include "framework/indicator.h"
 
 struct rsi {

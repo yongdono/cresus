@@ -11,11 +11,12 @@
 
 #include "smi.h"
 
-static int smi_feed(struct indicator *i, struct candle *c) {
+static int smi_feed(struct indicator *i, struct timeline_entry *e) {
   
   double hi = 0.0;
   double lo = DBL_MAX;
   struct smi *s = __indicator_self__(i);
+  struct candle *c = __timeline_entry_self__(e);
 
   memcpy(&s->pool[s->index], c, sizeof *c);
   s->index = (s->index + 1) % s->period;

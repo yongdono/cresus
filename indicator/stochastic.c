@@ -12,9 +12,10 @@
 
 #include "stochastic.h"
 
-static int stochastic_feed(struct indicator *i, struct candle *candle) {
+static int stochastic_feed(struct indicator *i, struct timeline_entry *e) {
   
   struct stochastic *s = __indicator_self__(i);
+  struct candle *candle = __timeline_entry_self__(e);
   
   memcpy(&s->array[s->index], candle, sizeof *candle);
   s->index = (s->index + 1) % s->period;

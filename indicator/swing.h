@@ -9,6 +9,7 @@
 #ifndef SWING_H
 #define SWING_H
 
+#include "engine/candle.h"
 #include "framework/indicator.h"
 
 #define SWING_MAX 3

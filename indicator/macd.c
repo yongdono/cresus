@@ -10,10 +10,12 @@
 #include <string.h>
 
 #include "macd.h"
+#include "engine/candle.h"
 
-static int macd_feed(struct indicator *i, struct candle *c) {
+static int macd_feed(struct indicator *i, struct timeline_entry *e) {
   
   struct macd *m = __indicator_self__(i);
+  struct candle *c = __timeline_entry_self__(e);
   double fast = average_update(&m->fast, c->close);
   double slow = average_update(&m->slow, c->close);
   

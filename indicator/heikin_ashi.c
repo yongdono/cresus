@@ -12,9 +12,10 @@
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-static int heikin_ashi_feed(struct indicator *i, struct candle *c) {
+static int heikin_ashi_feed(struct indicator *i, struct timeline_entry *e) {
   
   struct heikin_ashi *h = __indicator_self__(i);
+  struct candle *c = __timeline_entry_self__(e);
 
   if(i->is_empty){
     /* First data */
@@ -34,14 +35,14 @@ static int heikin_ashi_feed(struct indicator *i, struct candle *c) {
   heikin_ashi_dir_t dir = ((h->value.open - h->value.close) < 0 ?
                            HEIKIN_ASHI_DIR_UP : HEIKIN_ASHI_DIR_DOWN);
   
-  /* Event management */
+  /* Event management
   if(dir != h->dir){
     h->dir = dir;
     if(dir == HEIKIN_ASHI_DIR_UP)
       indicator_set_event(i, c, HEIKIN_ASHI_EVENT_CHDIR_UP);
     else
       indicator_set_event(i, c, HEIKIN_ASHI_EVENT_CHDIR_DOWN);
-  }
+      }*/
   
  out:
   return 1;

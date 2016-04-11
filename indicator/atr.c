@@ -10,10 +10,12 @@
 #include <stdio.h>
 
 #include "atr.h"
+#include "engine/candle.h"
 
-static int atr_feed(struct indicator *i, struct candle *c) {
-  
+static int atr_feed(struct indicator *i, struct timeline_entry *e) {
+
   struct atr *a = __indicator_self__(i);
+  struct candle *c = __timeline_entry_self__(e);
 
   if(!a->ref){
     a->value = c->high - c->low;

@@ -9,9 +9,10 @@
 #include "swing.h"
 #include <string.h>
 
-static int swing_feed(struct indicator *i, struct candle *c) {
+static int swing_feed(struct indicator *i, struct timeline_entry *e) {
   
   struct swing *s = __indicator_self__(i);
+  struct candle *c = __timeline_entry_self__(e);
   struct list *l = __list__(__timeline_entry__(c)); /* ancestors tree */
 
   /* TODO : back to original version

@@ -54,10 +54,11 @@ static void mobile_manage_position(struct mobile *m, double avg,
 }
 #endif
 
-static int mobile_feed(struct indicator *i, struct candle *c) {
+static int mobile_feed(struct indicator *i, struct timeline_entry *e) {
   
   struct mobile_indicator_entry *entry;
   struct mobile *m = __indicator_self__(i);
+  struct candle *c = __timeline_entry_self__(e);
   /* Trying to get average values */
   double last_avg = average_value(&m->avg);
   double avg = average_update(&m->avg, candle_get_value(c, m->cvalue));

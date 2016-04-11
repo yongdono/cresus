@@ -10,6 +10,7 @@
 #define BOLLINGER_H
 
 #include "math/average.h"
+#include "engine/candle.h"
 #include "framework/indicator.h"
 
 struct bollinger_value {
