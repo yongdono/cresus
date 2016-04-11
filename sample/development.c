@@ -67,7 +67,12 @@ int main(int argc, char **argv) {
   /* Execute all ops on data */
   timeline_execute(&timeline, __input__(&ref));
   
-  /* TODO : step loop ? */
+  /* Step by step loop */
+  struct timeline_entry *entry;
+  __list_for_each__(&timeline.list_entry, entry){
+    /* TODO : How to sync indicators with candles ? */
+    /* Arch problem here */
+  }
   
   return 0;
 }

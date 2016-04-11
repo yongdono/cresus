@@ -61,7 +61,8 @@ static int mobile_feed(struct indicator *i, struct candle *c) {
 
   if(average_is_available(&m->avg)){
     double last_avg = average_value(&m->avg);
-    double avg = average_update(&m->avg, candle_get_value(c, m->cvalue));
+    double avg = average_update(&m->avg,
+				candle_get_value(c, m->cvalue));
     
     /* Create new entry */
     if((entry = malloc(sizeof *entry))){
