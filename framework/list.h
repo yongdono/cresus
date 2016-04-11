@@ -32,13 +32,13 @@
   list_del(&__list__(entry))
 /* Iteration */
 #define __list_for_each__(head, self)			\
-  for(self = __list_self__((head)->next);		\
-      __list__(self) != (head);				\
-      self = __list_self__(__list__(self)->next))
+  for(struct list *ptr = (head)->next;			\
+      ptr != (head) && (self = __list_self__(ptr));	\
+      ptr = ptr->next)
 #define __list_for_each_prev__(head, self)		\
-  for(self = __list_self__((head)->prev);		\
-      __list__(self) != (head);				\
-      self = __list_self__(__list__(self)->prev))
+  for(struct list *ptr = (head)->prev;			\
+      ptr != (head) && (self = __list_self__(ptr));	\
+      ptr = ptr->prev)
 
 /* Basic list object */
   

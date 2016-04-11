@@ -29,10 +29,10 @@
 #define __slist_del__(slist)			\
   slist_del(__slist__(slist))
 /* Iteration */
-#define __slist_for_each__(head, self)					\
-  for(self = __slist_self__((head)->next);				\
-      __slist__(self)->next != NULL;					\
-      self = __slist_self__(__slist__(self)->next))
+#define __slist_for_each__(head, self)			\
+  for(struct slist *ptr = (head)->next;			\
+      ptr != NULL && (self = __slist_self__(ptr));	\
+      ptr = ptr->next)
 
 /* Basic slist object */
 
@@ -61,5 +61,8 @@ static inline void slist_insert(struct slist *s, struct slist *entry) {
 static inline void slist_del(struct slist *s) {
   s->next = s->next->next;
 }
+
+#define slist_for_each(head, ptr)				\
+  for(ptr = (head)->next; (ptr) != NULL; ptr = (ptr)->next)
 
 #endif

@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
   /* Step by step loop */
   struct timeline_entry *entry;
   __list_for_each__(&timeline.list_entry, entry){
-    struct indicator_entry *indicator;
+    struct indicator_entry *ientry;
     struct candle *c = __timeline_entry_self__(entry);
     printf("%s - ", candle_str(__timeline_entry_self__(entry)));
 
@@ -80,12 +80,13 @@ int main(int argc, char **argv) {
       continue;
     }
     
-    __slist_for_each__(&c->slist_indicator, indicator){
-      /* Beware, some parsing will be required here */
-      struct mobile_indicator_entry *mob =
-	__indicator_entry_self__(indicator);
-      printf("%.1f %.1f\n", mob->value, mob->direction);
+    __slist_for_each__(&c->slist_indicator, ientry){
+      /* Beware, some parsing will be required here to determine who's who */
+      struct mobile_indicator_entry *mob = __indicator_entry_self__(ientry);
+      printf("%.1f %.1f ", mob->value, mob->direction);
     }
+    
+    printf("\n");
   }
   
   return 0;

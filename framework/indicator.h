@@ -35,6 +35,7 @@
 struct indicator_entry {
   __inherits_from_slist__;
   __indicator_entry_is_superclass__;
+  /* Say who is parent ? */
 };
 
 static inline int indicator_entry_init(struct indicator_entry *entry) {
