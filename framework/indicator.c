@@ -12,7 +12,6 @@ int indicator_init(struct indicator *i, indicator_feed_ptr feed) {
   
   /* Super */
   __slist_super__(i);
-
   __list_head_init__(&i->list_entry);
   
   i->feed = feed;
@@ -24,6 +23,8 @@ int indicator_init(struct indicator *i, indicator_feed_ptr feed) {
 void indicator_free(struct indicator *i) {
 
   __slist_free__(i);
+  __list_head_free__(&i->list_entry);
+  
   /* TODO : don't forget to free() timeline_entries */
   i->feed = NULL;
 }

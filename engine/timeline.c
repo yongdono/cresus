@@ -54,7 +54,7 @@ int timeline_step(struct timeline *t, struct input *in) {
   return (entry ? 0 : -1);
 }
 
-int timeline_load(struct timeline *t, struct input *in) {
+int timeline_execute(struct timeline *t, struct input *in) {
   
   int n;
   

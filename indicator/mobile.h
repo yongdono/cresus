@@ -44,13 +44,27 @@ typedef enum {
 #define MOBILE_EVENT_CROSSED_DOWN 2
 #define MOBILE_EVENT_CROSSED_UP   3
 
+/* Timeline entries object */
+
+struct mobile_timeline_entry {
+  /* As below */
+  __inherits_from_timeline_entry__;
+  /* Single value */
+  double value;
+  /* More info */
+  double direction;
+  /* Events ? */
+};
+
+/* Main object */
+
 struct mobile {
   /* As always */
   __inherits_from_indicator__;
   
   mobile_t type;
-  mobile_dir_t dir;
-  mobile_pos_t pos;
+  /* mobile_dir_t dir;
+     mobile_pos_t pos; */
   candle_value_t cvalue;
 
   /* Average object */

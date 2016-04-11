@@ -12,6 +12,7 @@
 
 #include "mobile.h"
 
+#if 0
 static void mobile_manage_direction(struct mobile *m, double avg,
                                     struct candle *candle) {
   
@@ -51,18 +52,28 @@ static void mobile_manage_position(struct mobile *m, double avg,
   
   /* If equals, do nothing */
 }
+#endif
 
 static int mobile_feed(struct indicator *i, struct candle *c) {
   
+  struct mobile_timeline_entry *entry;
   struct mobile *m = __indicator_self__(i);
-  average_update(&m->avg, candle_get_value(c, m->cvalue));
+
+  if(average_is_available(&m->avg)){
+    double last_avg = average_value(&m->avg);
+    double avg = average_update(&m->avg, candle_get_value(c, m->cvalue));
+    
+    /* Create new entry */
+    if((entry = malloc(sizeof *entry))){
+      entry->direction = (avg - last_avg);
+      entry->value = avg;
+      /* Add this to timeline */
+      __list_add_tail__(&i->list_entry, __timeline_entry__(entry));
+      return 1;
+    }
+  }
   
-  /* Check direction change */
-  mobile_manage_direction(m, m->avg.value, c);
-  /* Check position change */
-  mobile_manage_position(m, m->avg.value, c);
-  
-  return m->avg.value;
+  return 0;
 }
 
 int mobile_init(struct mobile *m, mobile_t type,
@@ -76,8 +87,6 @@ int mobile_init(struct mobile *m, mobile_t type,
 
   m->type = type;
   m->cvalue = cvalue;
-  m->dir = MOBILE_DIR_UP; /* FIXME */
-  m->pos = MOBILE_POS_BELOW;
 
   switch(m->type) {
   case MOBILE_MMA : average_init(&m->avg, AVERAGE_MATH, period); break;

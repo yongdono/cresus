@@ -30,8 +30,9 @@ int main(int argc, char **argv) {
   
   /* Load / filter ref data */
   struct yahoo ref;
-  yahoo_init(&ref, "data/FCHI.yahoo");
-
+  yahoo_init(&ref, "data/FCHI.yahoo",
+	     INPUT_TIME_MIN, INPUT_TIME_MAX);
+  
   /*
    * Timeline object
    */
@@ -54,7 +55,7 @@ int main(int argc, char **argv) {
   
   /* RS mansfield */
   struct rs_mansfield rsm;
-  rs_mansfield_init(&rsm, 14, &ref.list_entry);
+  rs_mansfield_init(&rsm, 14, &timeline.list_entry);
 
   /* Add all these indicators */
   timeline_add_indicator(&timeline, __indicator__(&ema40));
@@ -63,9 +64,9 @@ int main(int argc, char **argv) {
   timeline_add_indicator(&timeline, __indicator__(&macd));
   timeline_add_indicator(&timeline, __indicator__(&rsm));
   
-  /* Load full data. FIXME : what about filtering ? */
-  timeline_load(&timeline, __input__(&ref));
-
+  /* Execute all ops on data */
+  timeline_execute(&timeline, __input__(&ref));
+  
   /* TODO : step loop ? */
   
   return 0;

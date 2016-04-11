@@ -24,7 +24,7 @@
 #define __indicator_timeline_entry__(x)		\
   (&(x)->__parent_indicator_timeline_entry__)
 #define __indicator_timeline_entry_self__(x)	\
-  ((struct indicator_timeline_entry*)(x)->__self_indicator_timeline_entry__)
+  ((x)->__self_indicator_timeline_entry__)
 
 #define __indicator_timeline_entry_super__(self)			\
   indicator_timeline_entry_init(__indicator_timeline_entry__(self), self);
@@ -62,8 +62,6 @@ void indicator_timeline_entry_free(struct indicator_timeline_entry *entry);
   indicator_set_event(__indicator__(self), candle, event)
 #define __indicator_feed__(self, entry)		\
   indicator_feed(__indicator__(self), entry);
-/*  __indicator__(self)->feed(__indicator__(self), entry) */
-
 
 /* Internal values get */
 #define __indicator_string__(self) __indicator__(self)->str
@@ -84,6 +82,8 @@ struct indicator {
 
 #define INDICATOR_STR_MAX 64
   indicator_feed_ptr feed;
+  /* Unique Id & name */
+  unsigned int id;
   char str[INDICATOR_STR_MAX];
   /* Status */
   int is_empty;

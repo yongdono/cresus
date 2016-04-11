@@ -44,6 +44,7 @@
   
 #define __list_head__(type) struct list /* Type is purely indicative */
 #define __list_head_init__(x) list_init(x)
+#define __list_head_free__(x) list_free(x)
 
 struct list {
   __list_is_superclass__;

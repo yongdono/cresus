@@ -29,11 +29,6 @@ void timeline_free(struct timeline *t);
 
 int timeline_add_indicator(struct timeline *t, struct indicator *i);
 int timeline_step(struct timeline *t, struct input *in);
-int timeline_load(struct timeline *t, struct input *in);
-
-/* Deprecated */
-#define timeline_entries(x)					\
-  __timeline_entry_self__((struct timeline_entry*)		\
-			  __list_self__(&(x)->list_entry))
+int timeline_execute(struct timeline *t, struct input *in);
 
 #endif

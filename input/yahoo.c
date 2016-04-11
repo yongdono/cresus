@@ -25,19 +25,21 @@ static struct timeline_entry *__yahoo_read(struct input *in) {
   return __list_self__(y->current_entry);
 }
 
-static struct timeline_entry *__yahoo_load_entry(struct yahoo *y) {
+static int __yahoo_load_entry(struct yahoo *y, struct timeline_entry **ret,
+			      time_t time_min, time_t time_max) {
   
   char buf[256];
   char *str = buf;
-  struct candle *ret = NULL;
+  struct candle *candle = NULL;
 
+  time_t time;
   struct tm tm;
   int year, month, day;
   double open, close, high, low, volume;
   
   if(!fgets(buf, sizeof buf, y->fp))
     /* End of file */
-    return NULL;
+    return -1;
   
   /* Cut string */
   char *stime = strsep(&str, ",");
@@ -62,38 +64,56 @@ static struct timeline_entry *__yahoo_load_entry(struct yahoo *y) {
   tm.tm_mday = day;
   tm.tm_mon = month - 1;
   tm.tm_year = year - 1900;
+  time = mktime(&tm);
 
-  /* Create candle (at last !) */
-  ret = candle_alloc(mktime(&tm), GRANULARITY_DAY, /* No intraday on yahoo */
-		     open, close, high, low, volume);
+  /* What about granularity ? */
+  if(time >= time_min && time <= time_max){
+    /* Create candle (at last !) */
+    candle = candle_alloc(time, GRANULARITY_DAY, /* No intraday on yahoo */
+			  open, close, high, low, volume);
 
-  if(ret)
-    return __timeline_entry__(ret);
-
-  return NULL;
+    if(candle){
+      *ret = __timeline_entry__(candle);
+      return 1;
+    }
+    
+  }else
+    return 0;
+  
+  return -1;
 }
 
 static int __yahoo_load(struct yahoo *y) {
-
-  int n = 0;
+  
+  int n;
   char info[256];
   struct timeline_entry *entry;
   
   /* Yahoo is LIFO with first line showing format */
   fgets(info, sizeof info, y->fp);
 
-  while((entry = __yahoo_load_entry(y)) != NULL){
-    __list_add__(&y->list_entry, entry);
-    n++;
+  for(n = 0;;){
+    switch(__yahoo_load_entry(y, &entry,
+			      __input__(y)->from,
+			      __input__(y)->to)) {
+    case 0 : break;
+    case -1 : goto out;
+    default :
+      __list_add__(&y->list_entry, entry);
+      n++;
+      break;
+    }
   }
-
+  
+ out:
   return n;
 }
 
-int yahoo_init(struct yahoo *y, const char *filename) {
+int yahoo_init(struct yahoo *y, const char *filename,
+	       time_t from, time_t to) {
   
   /* super */
-  __input_super__(y, __yahoo_read);
+  __input_super__(y, __yahoo_read, from, to);
   __list_head_init__(&y->list_entry);
   
   if(!(y->fp = fopen(filename, "r")))
