@@ -14,6 +14,9 @@ static int rs_dorsey_feed(struct indicator *i, struct timeline_entry *e) {
   struct timeline_entry *entry;
   struct rs_dorsey *r = __indicator_self__(i);
   struct candle *c = __timeline_entry_self__(e);
+
+  if(i->is_empty)
+    r->ref = __list__(e);
   
   if((entry = timeline_entry_find(__list_self__(r->ref), e->time))){
     struct candle *cref = __timeline_entry_self__(entry);

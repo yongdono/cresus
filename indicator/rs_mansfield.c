@@ -19,6 +19,9 @@ static int rs_mansfield_feed(struct indicator *i, struct timeline_entry *e) {
   struct candle *c = __timeline_entry_self__(e);
   struct rs_mansfield *r = __indicator_self__(i);
 
+  if(i->is_empty)
+    r->ref = __list__(e);
+  
   if((entry = timeline_entry_find(__list_self__(r->ref), e->time))){
     struct candle *cref = __timeline_entry_self__(entry);
     double rsd = c->close / cref->close;
@@ -43,7 +46,7 @@ int rs_mansfield_init(struct rs_mansfield *r, int period,
   
   average_init(&r->mma, AVERAGE_MATH, period);
   
-  r->ref = ref->next;
+  r->ref = ref;
   r->value = 0.0;
   
   return 0;
