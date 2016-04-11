@@ -18,10 +18,10 @@
 struct timeline {
   char name[TIMELINE_NAME_MAX];
   /* Main data / graph */
-  struct timeline_entry *list_entry;
+  __list_head__(struct timeline_entry) list_entry;
   struct timeline_entry *cache;
   /* Secondary graphs */
-  struct indicator slist_indicator;
+  __slist_head__(struct indicator) slist_indicator;
 };
 
 int timeline_init(struct timeline *t);
@@ -31,7 +31,9 @@ int timeline_add_indicator(struct timeline *t, struct indicator *i);
 int timeline_step(struct timeline *t, struct input *in);
 int timeline_load(struct timeline *t, struct input *in);
 
-#define timeline_entries(x)			\
-  __timeline_entry_self__((x)->list_entry)
+/* Deprecated */
+#define timeline_entries(x)					\
+  __timeline_entry_self__((struct timeline_entry*)		\
+			  __list_self__(&(x)->list_entry))
 
 #endif

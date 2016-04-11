@@ -88,7 +88,7 @@ struct indicator {
   /* Status */
   int is_empty;
   /* Data / graph */
-  struct timeline_entry list_entry;
+  __list_head__(struct timeline_entry) list_entry;
 };
 
 int indicator_init(struct indicator *i, indicator_feed_ptr feed);
