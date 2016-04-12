@@ -51,6 +51,12 @@ struct candle *candle_alloc(time_t time, granularity_t g,
   return c;
 }
 
+void candle_add_indicator_entry(struct candle *c,
+				struct indicator_entry *e) {
+
+  __slist_insert__(&c->slist_indicator, e);
+}
+
 double candle_get_closest_inf(struct candle *c, double value)
 {
   /* Chronologically seems more relevant */

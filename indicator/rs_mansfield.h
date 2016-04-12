@@ -15,9 +15,42 @@
  * RSM = ((RSD(today) / mma(RSD(today), n)) - 1) * 100.0
  */
 
+#include <stdlib.h>
 #include "math/average.h"
 #include "framework/list.h"
 #include "framework/indicator.h"
+
+/* Entries */
+
+struct rs_mansfield_indicator_entry {
+  /* As below */
+  __inherits_from_indicator_entry__;
+  /* Single value */
+  double value;
+  /* More info */
+  double direction;
+  /* Events ? */
+};
+
+static inline int
+rs_mansfield_indicator_entry_init(struct rs_mansfield_indicator_entry *entry,
+				  double value, double direction){
+  __indicator_entry_super__(entry);
+  entry->value = value;
+  entry->direction = direction;
+  return 0;
+}
+
+static inline struct rs_mansfield_indicator_entry *
+rs_mansfield_indicator_entry_alloc(double value, double direction) {
+  struct rs_mansfield_indicator_entry *entry;
+  if((entry = malloc(sizeof *entry)))
+    rs_mansfield_indicator_entry_init(entry, value, direction);
+  
+  return entry;
+}
+
+/* Object */
 
 struct rs_mansfield {
   /* As always, inherits from indicator */

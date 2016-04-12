@@ -63,6 +63,9 @@ struct candle *candle_alloc(time_t time, granularity_t g,
 			    double high, double low,
 			    double volume);
 
+void candle_add_indicator_entry(struct candle *c,
+				struct indicator_entry *e);
+
 /* Is that useful ? TODO : Remove these 2 */
 double candle_get_closest_inf(struct candle *c, double value);
 double candle_get_closest_sup(struct candle *c, double value);
