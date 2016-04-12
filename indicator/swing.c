@@ -33,10 +33,14 @@ static int swing_feed(struct indicator *i, struct timeline_entry *e) {
   
   /* Populate ref table */
   for(int n = 0; n < SWING_MAX;){
+    /* Beware of head if not enough data */
+    if(__list__(__timeline_entry__(c)) == l->head)
+      goto out;
+    
     if(!is_inside_candle(c))
       table[n++] = c;
-
-    /* Navigate backwards. FIXME : beware of head */
+    
+    /* Navigate backwards */
     c = candle_prev(c);
   }
   
@@ -64,7 +68,6 @@ int swing_init(struct swing *s) {
   __indicator_super__(s, swing_feed);
   __indicator_set_string__(s, "swing");
   
-  s->count = 0;
   s->ref = NULL;
   s->type = SWING_NONE;
 

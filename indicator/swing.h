@@ -23,8 +23,7 @@ typedef enum {
 struct swing {
   /* This is an indicator */
   __inherits_from_indicator__;
-
-  int count;
+  /* Own data */
   swing_t type;
   struct candle *ref;
 };

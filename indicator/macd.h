@@ -9,6 +9,7 @@
 #ifndef MACD_H
 #define MACD_H
 
+#include <stdlib.h>
 #include "math/average.h"
 #include "framework/indicator.h"
 
