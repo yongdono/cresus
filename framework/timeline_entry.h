@@ -60,7 +60,7 @@ int timeline_entry_init(struct timeline_entry *e, time_t time, granularity_t g);
 void timeline_entry_free(struct timeline_entry *e);
 
 /* Methods */
-time_t timeline_entry_timecmp(struct timeline_entry *e, time_t time);
+int timeline_entry_timecmp(struct timeline_entry *e, time_t time);
 struct timeline_entry *timeline_entry_find(struct timeline_entry *t, time_t time);
 const char *timeline_entry_localtime_str(struct timeline_entry *e, char *buf, size_t len);
 

@@ -9,37 +9,50 @@
 #include "swing.h"
 #include <string.h>
 
+#define candle_prev(c) ((struct candle*)__timeline_entry_self__		\
+			((struct timeline_entry*)__list_self__		\
+			 (__list__(__timeline_entry__(c))->prev)))
+
+#define is_inside_candle(c)					\
+  ((c)->high < candle_prev(c)->high &&				\
+   (c)->low > candle_prev(c)->low)
+
 static int swing_feed(struct indicator *i, struct timeline_entry *e) {
   
+  struct list *l = __list__(e);
   struct swing *s = __indicator_self__(i);
   struct candle *c = __timeline_entry_self__(e);
-  struct list *l = __list__(__timeline_entry__(c)); /* ancestors tree */
-
+  
+  struct candle *table[SWING_MAX];
+  
   /* TODO : back to original version
    * Problem with inside candles
    */
   if(!s->ref)
     goto out;
   
-  if(c->high > s->ref->high || c->low < s->ref->low){
-    /* Eliminate inside candles */
-    if(++s->count >= SWING_MAX){
-      /* Find 3 last candles */
-      struct candle *s0, *s1, *s2;
-      s2 = __timeline_entry_self__((struct timeline_entry*)__list_self__(l));
-      s1 = __timeline_entry_self__((struct timeline_entry*)__list_self__(l->prev));
-      s0 = __timeline_entry_self__((struct timeline_entry*)__list_self__(l->prev->prev));
-      
-      if(s0->low < s1->low && s2->low < s1->low &&
-	 s0->high < s1->high && s2->high < s1->high)
-	s->type = SWING_TOP;
-      
-      if(s0->low > s1->low && s2->low > s1->low &&
-	 s0->high > s1->high && s2->high > s1->high)
-	s->type = SWING_BOTTOM;
-    }
-  }
+  /* Populate ref table */
+  for(int n = 0; n < SWING_MAX;){
+    if(!is_inside_candle(c))
+      table[n++] = c;
 
+    /* Navigate backwards. FIXME : beware of head */
+    c = candle_prev(c);
+  }
+  
+  /* Find 3 last candles */
+  struct candle *s2 = table[0];
+  struct candle *s1 = table[1];
+  struct candle *s0 = table[2];
+  
+  if(s0->low < s1->low && s2->low < s1->low &&
+     s0->high < s1->high && s2->high < s1->high)
+    s->type = SWING_TOP;
+  
+  if(s0->low > s1->low && s2->low > s1->low &&
+     s0->high > s1->high && s2->high > s1->high)
+    s->type = SWING_BOTTOM;
+  
  out:
   s->ref = c;
   return 0;

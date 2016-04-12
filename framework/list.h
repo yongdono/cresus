@@ -68,13 +68,13 @@ static inline void list_add(struct list *l, struct list *new) {
   new->next = l->next;
   l->next->prev = new;
   l->next = new;
-  l->head = l;
+  new->head = l;
 }
 
 static inline void list_add_tail(struct list *l, struct list *entry) {
   list_add(l->prev, entry);
   /* Correct head */
-  l->head = l;
+  entry->head = l;
 }
 
 static inline void list_del(struct list *l) {

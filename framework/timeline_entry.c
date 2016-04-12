@@ -19,7 +19,7 @@ void timeline_entry_free(struct timeline_entry *e) {
   __list_free__(e);
 }
 
-time_t timeline_entry_timecmp(struct timeline_entry *e, time_t time) {
+int timeline_entry_timecmp(struct timeline_entry *e, time_t time) {
   
   return (__timeline_entry_time(e->time, e->granularity) -
 	  __timeline_entry_time(time, e->granularity));
@@ -60,21 +60,18 @@ timeline_entry_find_backwards(struct timeline_entry *e, time_t time) {
 struct timeline_entry *
 timeline_entry_find(struct timeline_entry *e, time_t time) {
   
-  struct timeline_entry *entry;
-  time_t tm = timeline_entry_timecmp(e, time);
-  
+  int tm = timeline_entry_timecmp(e, time);
   if(!tm)
     /* time is the same */
     goto out;
   
   if(tm < 0)
     return timeline_entry_find_forward(e, time);
-    
   /* else */
   return timeline_entry_find_backwards(e, time);
   
  out:
-  return entry;
+  return e;
 }
 
 /* Debug functions */
