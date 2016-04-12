@@ -16,12 +16,21 @@ static int macd_feed(struct indicator *i, struct timeline_entry *e) {
   
   struct macd *m = __indicator_self__(i);
   struct candle *c = __timeline_entry_self__(e);
+
+  /* Set 2 main averages */
   double fast = average_update(&m->fast, c->close);
   double slow = average_update(&m->slow, c->close);
-  
-  m->result.value = fast - slow;
-  m->result.signal = average_update(&m->signal, m->result.value);
-  m->result.histogram = m->result.value - m->result.signal;
+  if(average_is_available(&m->fast) &&
+     average_is_available(&m->slow)){
+    /* Compute signal */
+    double value = (fast - slow);
+    double signal = average_update(&m->signal, value);
+    if(average_is_available(&m->signal)){
+      struct macd_indicator_entry *entry;
+      if((entry = macd_indicator_entry_alloc(value, signal)))
+	candle_add_indicator_entry(c, __indicator_entry__(entry));
+    }
+  }
   
   /* State machine & events here */
   
@@ -39,7 +48,6 @@ int macd_init(struct macd *m, int fast_p, int slow_p, int signal_p) {
   average_init(&m->slow, AVERAGE_EXP, slow_p);
   average_init(&m->signal, AVERAGE_EXP, signal_p);
   
-  memset(&m->result, 0, sizeof m->result);
   return 0;
 }
 
@@ -49,12 +57,4 @@ void macd_free(struct macd *m)
   average_free(&m->fast);
   average_free(&m->slow);
   average_free(&m->signal);
-}
-
-const char *macd_str(struct macd *m, char *buf, size_t len)
-{
-  sprintf(buf, "%.2lf %.2lf (%+.2lf)", m->result.value, m->result.signal,
-	  m->result.histogram);
-  
-  return buf;
 }

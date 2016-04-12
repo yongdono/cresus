@@ -12,11 +12,32 @@
 #include "math/average.h"
 #include "framework/indicator.h"
 
-struct macd_result {
+struct macd_indicator_entry {
+  /* As always */
+  __inherits_from_indicator_entry__;
+  /* Own data */
   double value;
   double signal;
   double histogram;
 };
+
+static inline int
+macd_indicator_entry_init(struct macd_indicator_entry *entry,
+			  double value, double signal){
+  __indicator_entry_super__(entry);
+  entry->value = value;
+  entry->signal = signal;
+  entry->histogram = (value - signal);
+  return 0;
+}
+
+static inline struct macd_indicator_entry *
+macd_indicator_entry_alloc(double value, double signal) {
+  struct macd_indicator_entry *entry;
+  if((entry = malloc(sizeof *entry)))
+    macd_indicator_entry_init(entry, value, signal);
+  return entry;
+}
 
 /* Indicator events */
 #define MACD_EVENT_SIGNAL0 0 /* TODO */
@@ -32,19 +53,13 @@ struct macd_result {
 struct macd {
   /* Parent */
   __inherits_from_indicator__;
-  
+  /* 3 averages required */
   struct average fast;
   struct average slow;
   struct average signal;
-
-  /* Private */
-  struct macd_result result;
 };
 
 int macd_init(struct macd *m, int fast_p, int slow_p, int signal_p);
 void macd_free(struct macd *m);
-
-/* indicator-specific */
-const char *macd_str(struct macd *m, char *buf, size_t len);
 
 #endif
