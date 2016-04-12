@@ -49,9 +49,9 @@ static inline void indicator_entry_free(struct indicator_entry *entry) {
 #define __indicator_self__(x) (x)->__self_indicator__
 #define __indicator_self_init__(x, self) (x)->__self_indicator__ = self
 
-#define __indicator_super__(self, feed)			\
+#define __indicator_super__(self, id, feed)		\
   __indicator_self_init__(__indicator__(self), self);	\
-  indicator_init(__indicator__(self), feed)
+  indicator_init(__indicator__(self), id, feed)
 #define __indicator_free__(self)		\
   indicator_free(__indicator__(self))
 
@@ -70,6 +70,7 @@ static inline void indicator_entry_free(struct indicator_entry *entry) {
 
 /* Define types */
 struct indicator; /* FIXME : find something more elegant */
+typedef indicator_id_t unsigned int;
 typedef int (*indicator_feed_ptr)(struct indicator*, struct timeline_entry*);
 
 struct indicator {
@@ -78,6 +79,7 @@ struct indicator {
   __indicator_is_superclass__;
 
 #define INDICATOR_STR_MAX 64
+  indicator_id_t id;
   indicator_feed_ptr feed;
   /* Unique Id & name */
   unsigned int id;
@@ -88,7 +90,8 @@ struct indicator {
   __list_head__(struct timeline_entry) list_entry;
 };
 
-int indicator_init(struct indicator *i, indicator_feed_ptr feed);
+int indicator_init(struct indicator *i, indicator_id_t id,
+		   indicator_feed_ptr feed);
 void indicator_free(struct indicator *i);
 
 /* FIXME : Use timeline_entry ? */
