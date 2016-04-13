@@ -111,8 +111,9 @@ int candle_get_direction(const struct candle *c)
 
 const char *candle_str(struct candle *c) {
 
-  sprintf(c->str, "t%u o%.1f c%.1f h%.1f l%.1f v%.0f",
-	  __timeline_entry__(c)->time,
+  char buf[256];
+  sprintf(c->str, "%s o%.1f c%.1f h%.1f l%.1f v%.0f",
+	  __timeline_entry_str__(c, buf, sizeof buf),
 	  c->open, c->close, c->high, c->low, c->volume);
 	  
   return c->str;

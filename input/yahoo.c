@@ -63,7 +63,7 @@ static int __yahoo_load_entry(struct yahoo *y,
   TIME_SET_YEAR(time, year);
   
   /* What about granularity ? */
-  if(time >= time_min && time <= time_max){
+  //if(time >= time_min && time <= time_max){
     /* Create candle (at last !) */
     candle = candle_alloc(time, GRANULARITY_DAY, /* No intraday on yahoo */
 			  open, close, high, low, volume);
@@ -73,8 +73,8 @@ static int __yahoo_load_entry(struct yahoo *y,
       return 1;
     }
     
-  }else
-    return 0;
+    //}else
+    //return 0;
   
   return -1;
 }
@@ -106,7 +106,7 @@ static int __yahoo_load(struct yahoo *y) {
 }
 
 int yahoo_init(struct yahoo *y, const char *filename,
-	       time_t from, time_t to) {
+	       time_info_t from, time_info_t to) {
   
   /* super */
   __input_super__(y, __yahoo_read, from, to);

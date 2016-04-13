@@ -72,10 +72,10 @@ timeline_entry_find(struct timeline_entry *e, time_info_t time) {
 }
 
 /* Debug functions */
-const char *timeline_entry_localtime_str(struct timeline_entry *e,
-					 char *buf, size_t len) {
+const char *timeline_entry_str(struct timeline_entry *e,
+			       char *buf, size_t len) {
 
-  snprintf(buf, len, "%2u/%2u/%4u %2u:%2u:%2u\n",
+  snprintf(buf, len, "%.2u/%.2u/%.4u %.2u:%.2u:%.2u",
 	   TIME_GET_MONTH(e->time),
 	   TIME_GET_DAY(e->time),
 	   TIME_GET_YEAR(e->time),

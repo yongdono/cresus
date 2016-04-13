@@ -110,7 +110,9 @@ int main(int argc, char **argv) {
 	goto next;
       }
       case RSD : {
-	struct rs_dorsey_indicator_entry *rs = __indicator_entry_self__(ientry);
+	struct rs_dorsey_indicator_entry *rs =
+	  __indicator_entry_self__(ientry);
+	
 	printf("%.1f ", rs->value);
       } goto next;
       }

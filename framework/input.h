@@ -9,7 +9,6 @@
 #ifndef __Cresus_EVO__input__
 #define __Cresus_EVO__input__
 
-#include <time.h>
 #include <limits.h>
 #include "timeline_entry.h"
 
@@ -33,19 +32,18 @@ typedef struct timeline_entry *(*input_read_ptr)(struct input *in);
 /* typedef int (*input_load_ptr)(struct input *in, time_t from, time_t to); */
 
 /* FIXME */
-typedef time_t input_time_t;
 #define INPUT_TIME_MIN 0
 #define INPUT_TIME_MAX INT_MAX
 
 struct input {
   __input_is_superclass__;
   input_read_ptr read;
-  time_t from, to;
+  time_info_t from, to;
   /* input_load_ptr load; */
 };
 
 static inline int input_init(struct input *in, input_read_ptr read,
-			     time_t from, time_t to) {
+			     time_info_t from, time_info_t to) {
   in->read = read;
   in->from = from;
   in->to = to;

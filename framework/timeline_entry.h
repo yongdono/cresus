@@ -32,8 +32,8 @@
   timeline_entry_timecmp(__timeline_entry__(self), time)
 #define __timeline_entry_find__(self, time)		\
   timeline_entry_find(__timeline_entry__(self), time)
-#define __timeline_entry_localtime_str__(self, buf, len)		\
-  timeline_entry_localtime_str(__timeline_entry__(self), buf, len)
+#define __timeline_entry_str__(self, buf, len)		\
+  timeline_entry_str(__timeline_entry__(self), buf, len)
 
 struct timeline_entry {
   /* parent */
@@ -50,6 +50,6 @@ void timeline_entry_free(struct timeline_entry *e);
 
 /* Methods */
 struct timeline_entry *timeline_entry_find(struct timeline_entry *t, time_info_t time);
-const char *timeline_entry_localtime_str(struct timeline_entry *e, char *buf, size_t len);
+const char *timeline_entry_str(struct timeline_entry *e, char *buf, size_t len);
 
 #endif

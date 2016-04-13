@@ -10,7 +10,7 @@
 
 /* If year starts on 1970, limit is 12/31/2033 23:59:59 */
 
-#define YEAR_BASE 1970
+#define YEAR_BASE 1970ul
 
 #define SIX_BIT_MASK  0x3f
 #define FIVE_BIT_MASK 0x1f

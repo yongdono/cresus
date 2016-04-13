@@ -25,7 +25,8 @@ struct yahoo {
   struct list *current_entry;
 };
 
-int yahoo_init(struct yahoo *y, const char *filename, time_t from, time_t to);
+int yahoo_init(struct yahoo *y, const char *filename,
+	       time_info_t from, time_info_t to);
 void yahoo_free(struct yahoo *y);
 
 #endif

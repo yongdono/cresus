@@ -42,7 +42,7 @@ int macd_init(struct macd *m, indicator_id_t id,
 
   /* Super */
   __indicator_super__(m, id, macd_feed);
-  __indicator_set_string__(m, "macd[%d, %d, %d]", fast_p, slow_p, signal_p);
+  __indicator_set_string__(m, "macd[%d,%d,%d]", fast_p, slow_p, signal_p);
 
   /* Seed */
   average_init(&m->fast, AVERAGE_EXP, fast_p);
