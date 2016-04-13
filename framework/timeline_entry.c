@@ -32,7 +32,7 @@ timeline_entry_find_forward(struct timeline_entry *e, time_info_t time) {
     /* Find forward */
     struct timeline_entry *cur = __list_self__(entry);
     if(!timeline_entry_timecmp(cur, time))
-      return e;
+      return cur;
   }
 
   return NULL;
@@ -48,7 +48,7 @@ timeline_entry_find_backwards(struct timeline_entry *e, time_info_t time) {
     /* Find forward */
     struct timeline_entry *cur = __list_self__(entry);
     if(!timeline_entry_timecmp(cur, time))
-      return e;
+      return cur;
   }
 
   return NULL;

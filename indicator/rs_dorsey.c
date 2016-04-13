@@ -26,7 +26,6 @@ static int rs_dorsey_feed(struct indicator *i, struct timeline_entry *e) {
       candle_add_indicator_entry(c, __indicator_entry__(rsd));
     /* Set new ref */
     r->ref = __list__(entry);
-    /* TODO : create new entry ? */
     return 0;
   }
   
