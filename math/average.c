@@ -14,6 +14,7 @@ int average_init(struct average *a, average_t type, int period) {
   
   a->index = 0;
   a->count = 0;
+  a->value = 0;
   a->type = type;
   a->period = period;
 
@@ -69,7 +70,11 @@ static double __average_update_math(struct average *a, double value) {
 
 static double __average_update_exp(struct average *a, double value) {
 
-  a->value = a->k * value + (1 - a->k) * a->value;
+  if(average_is_available(a))
+    a->value = a->k * value + (1 - a->k) * a->value;
+  else
+    a->value = value;
+  
   return a->value;
 }
 

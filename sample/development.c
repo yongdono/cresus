@@ -93,15 +93,21 @@ int main(int argc, char **argv) {
       case EMA40 :
       case EMA14:
       case EMA5 : {
-	struct mobile_indicator_entry *mob = __indicator_entry_self__(ientry);
+	struct mobile_indicator_entry *mob =
+	  __indicator_entry_self__(ientry);
+	
 	printf("%s ", ientry->indicator->str);
-	printf("%.1f %.1f ", mob->value, mob->direction);
-      } break;
+	printf("%.1f ", mob->value);
+	goto next;
+      }
       case RSM : {
-	struct rs_mansfield_indicator_entry *rs = __indicator_entry_self__(ientry);
+	struct rs_mansfield_indicator_entry *rs =
+	  __indicator_entry_self__(ientry);
+	
 	printf("%s ", ientry->indicator->str);
-	printf("%.1f %.1f ", rs->value, rs->direction);
-      } break;
+	printf("%.1f ", rs->value);
+	goto next;
+      }
 	/*case RSD : {
 	struct rs_dorsey_indicator_entry *rs = __indicator_entry_self__(ientry);
 	printf("RSD %.1f ", rs->value);
@@ -109,7 +115,7 @@ int main(int argc, char **argv) {
 	*/
       }
     }
-    
+  next:
     printf("\n");
   }
   
