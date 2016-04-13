@@ -62,10 +62,10 @@ static int swing_feed(struct indicator *i, struct timeline_entry *e) {
   return 0;
 }
 
-int swing_init(struct swing *s) {
+int swing_init(struct swing *s, indicator_id_t id) {
   
   /* Super() */
-  __indicator_super__(s, swing_feed);
+  __indicator_super__(s, id, swing_feed);
   __indicator_set_string__(s, "swing");
   
   s->ref = NULL;

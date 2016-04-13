@@ -36,10 +36,11 @@ static int stochastic_feed(struct indicator *i, struct timeline_entry *e) {
 }
 
 
-int stochastic_init(struct stochastic *s, int period, int k, int d) {
+int stochastic_init(struct stochastic *s, indicator_id_t id,
+		    int period, int k, int d) {
   
   /* super() */
-  __indicator_super__(s, stochastic_feed);
+  __indicator_super__(s, id, stochastic_feed);
   __indicator_set_string__(s, "sto[%d, %d, %d]", period, k, d);
   
   s->k = k;

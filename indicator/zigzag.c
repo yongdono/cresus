@@ -95,11 +95,11 @@ static int zigzag_feed(struct indicator *i, struct timeline_entry *e) {
   return z->direction;
 }
 
-int zigzag_init(struct zigzag *z, zigzag_t type,
+int zigzag_init(struct zigzag *z, indicator_id_t id, zigzag_t type,
 		double thres, candle_value_t cvalue) {
   
   /* Super */
-  __indicator_super__(z, zigzag_feed);
+  __indicator_super__(z, id, zigzag_feed);
   __indicator_set_string__(z, "zigzag[%.2f]", thres);
   
   z->type = type;

@@ -20,7 +20,15 @@
 #include "engine/timeline.h"
 #include "indicator/macd.h"
 #include "indicator/mobile.h"
+#include "indicator/rs_dorsey.h"
 #include "indicator/rs_mansfield.h"
+
+#define EMA40 0
+#define EMA14 1
+#define EMA5  2
+#define MACD  3
+#define RSM   4
+#define RSD   5
 
 int main(int argc, char **argv) {
 
@@ -45,17 +53,21 @@ int main(int argc, char **argv) {
   
   /* Set mobile averages */
   struct mobile ema40, ema14, ema5;
-  mobile_init(&ema40, MOBILE_EMA, 40, CANDLE_CLOSE);
-  mobile_init(&ema14, MOBILE_EMA, 14, CANDLE_CLOSE);
-  mobile_init(&ema5, MOBILE_EMA, 5, CANDLE_CLOSE);
+  mobile_init(&ema40, EMA40, MOBILE_EMA, 40, CANDLE_CLOSE);
+  mobile_init(&ema14, EMA14, MOBILE_EMA, 14, CANDLE_CLOSE);
+  mobile_init(&ema5, EMA5, MOBILE_EMA, 5, CANDLE_CLOSE);
   
   /* MACD */
   struct macd macd;
-  macd_init(&macd, 12, 26, 9);
+  macd_init(&macd, MACD, 12, 26, 9);
   
   /* RS mansfield */
   struct rs_mansfield rsm;
-  rs_mansfield_init(&rsm, 14, &timeline.list_entry);
+  rs_mansfield_init(&rsm, RSM, 14, &timeline.list_entry);
+
+  /* RS Dorsey */
+  struct rs_dorsey rsd;
+  rs_dorsey_init(&rsd, RSD, &timeline.list_entry);
 
   /* Add all these indicators */
   timeline_add_indicator(&timeline, __indicator__(&ema40));
@@ -65,25 +77,37 @@ int main(int argc, char **argv) {
   timeline_add_indicator(&timeline, __indicator__(&rsm));
   
   /* Execute all ops on data */
-  timeline_execute(&timeline, __input__(&ref));
+  /* timeline_execute(&timeline, __input__(&ref)); */
   
   /* Step by step loop */
   struct timeline_entry *entry;
-  __list_for_each__(&timeline.list_entry, entry){
+  /*__list_for_each__(&timeline.list_entry, entry){ */
+  while((entry = timeline_step(&timeline, __input__(&ref)))){
     struct indicator_entry *ientry;
     struct candle *c = __timeline_entry_self__(entry);
     printf("%s - ", candle_str(__timeline_entry_self__(entry)));
-
-    /* TODO : find a way to remove this */
-    if(c->slist_indicator.next == NULL){
-      printf("XX XX\n");
-      continue;
-    }
     
     __slist_for_each__(&c->slist_indicator, ientry){
       /* Beware, some parsing will be required here to determine who's who */
-      struct mobile_indicator_entry *mob = __indicator_entry_self__(ientry);
-      printf("%.1f %.1f ", mob->value, mob->direction);
+      switch(ientry->indicator->id){
+      case EMA40 :
+      case EMA14:
+      case EMA5 : {
+	struct mobile_indicator_entry *mob = __indicator_entry_self__(ientry);
+	printf("%s ", ientry->indicator->str);
+	printf("%.1f %.1f ", mob->value, mob->direction);
+      } break;
+      case RSM : {
+	struct rs_mansfield_indicator_entry *rs = __indicator_entry_self__(ientry);
+	printf("%s ", ientry->indicator->str);
+	printf("%.1f %.1f ", rs->value, rs->direction);
+      } break;
+	/*case RSD : {
+	struct rs_dorsey_indicator_entry *rs = __indicator_entry_self__(ientry);
+	printf("RSD %.1f ", rs->value);
+      } break;
+	*/
+      }
     }
     
     printf("\n");

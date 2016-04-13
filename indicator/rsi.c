@@ -40,10 +40,10 @@ static int rsi_feed(struct indicator *i, struct timeline_entry *e) {
   return 0;
 }
 
-int rsi_init(struct rsi *r, int period)
+int rsi_init(struct rsi *r, indicator_id_t id, int period)
 {
   /* Super() */
-  __indicator_super__(r, rsi_feed);
+  __indicator_super__(r, id, rsi_feed);
   __indicator_set_string__(r, "rsi[%d]", period);
   
   r->value = 0.0;

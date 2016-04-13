@@ -45,10 +45,10 @@ static int smi_feed(struct indicator *i, struct timeline_entry *e) {
   return 0;
 }
 
-int smi_init(struct smi *s, int period, int smooth) {
+int smi_init(struct smi *s, indicator_id_t id, int period, int smooth) {
   
   /* Super() */
-  __indicator_super__(s, smi_feed);
+  __indicator_super__(s, id, smi_feed);
   __indicator_set_string__(s, "smi[%d, %d]", period, smooth);
     
   s->count = 0;

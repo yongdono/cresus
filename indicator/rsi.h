@@ -31,7 +31,7 @@ struct rsi {
   double value;
 };
 
-int rsi_init(struct rsi *r, int period);
+int rsi_init(struct rsi *r, indicator_id_t id, int period);
 void rsi_free(struct rsi *r);
 
 /* Indicator-specific */

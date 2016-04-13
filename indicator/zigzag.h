@@ -48,7 +48,7 @@ struct zigzag {
   zigzag_dir_t direction; /* FIXME : use int ? */
 };
 
-int zigzag_init(struct zigzag *z, zigzag_t type,
+int zigzag_init(struct zigzag *z, indicator_id_t id, zigzag_t type,
 		double thres, candle_value_t cvalue);
 void zigzag_free(struct zigzag *z);
 

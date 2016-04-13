@@ -30,10 +30,10 @@ static int srsi_feed(struct indicator *i, struct timeline_entry *e) {
   return 0;
 }
 
-int srsi_init(struct srsi *s, int max) {
+int srsi_init(struct srsi *s, indicator_id_t id, int max) {
   
   /* super() */
-  __indicator_super__(s, srsi_feed);
+  __indicator_super__(s, id, srsi_feed);
   __indicator_set_string__(s, "srsi[%d]", max);
   
   s->len = 0;

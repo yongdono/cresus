@@ -35,7 +35,8 @@ int timeline_add_indicator(struct timeline *t, struct indicator *i) {
   __slist_insert__(&t->slist_indicator, i);
 }
 
-int timeline_step(struct timeline *t, struct input *in) {
+struct timeline_entry * timeline_step(struct timeline *t,
+				      struct input *in) {
 
   struct indicator *indicator;
   struct timeline_entry *entry = input_read(in);
@@ -52,7 +53,7 @@ int timeline_step(struct timeline *t, struct input *in) {
     }
   }
 
-  return (entry ? 0 : -1);
+  return entry;
 }
 
 int timeline_execute(struct timeline *t, struct input *in) {
@@ -60,7 +61,7 @@ int timeline_execute(struct timeline *t, struct input *in) {
   int n;
   
   for(n = 0;; n++)
-    if(timeline_step(t, in) < 0)
+    if(timeline_step(t, in) == NULL)
       break;
   
   return n;

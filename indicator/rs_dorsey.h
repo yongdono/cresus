@@ -21,12 +21,12 @@
 struct rs_dorsey {
   /* As always, inherits from indicator */
   __inherits_from_indicator__;
-
+  /* Own values */
   double value;
   __list_head__(struct timeline_entry) *ref;
 };
 
-int rs_dorsey_init(struct rs_dorsey *r,
+int rs_dorsey_init(struct rs_dorsey *r, indicator_id_t id,
 		   __list_head__(struct timeline_entry) *ref);
 void rs_dorsey_free(struct rs_dorsey *r);
 

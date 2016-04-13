@@ -65,7 +65,7 @@ static int mobile_feed(struct indicator *i, struct timeline_entry *e) {
   
   if(average_is_available(&m->avg)){
     /* Create new entry */
-    if((entry = mobile_indicator_entry_alloc(avg, (avg - last_avg)))){
+    if((entry = mobile_indicator_entry_alloc(i, avg, (avg - last_avg)))){
       candle_add_indicator_entry(c, __indicator_entry__(entry));
       return 1;
     }
@@ -74,11 +74,11 @@ static int mobile_feed(struct indicator *i, struct timeline_entry *e) {
   return 0;
 }
 
-int mobile_init(struct mobile *m, mobile_t type,
+int mobile_init(struct mobile *m, indicator_id_t id, mobile_t type,
 		int period, candle_value_t cvalue) {
   
   /* Super */
-  __indicator_super__(m, mobile_feed);
+  __indicator_super__(m, id, mobile_feed);
   __indicator_set_string__(m, "%cma[%d]",
 			   ((type == MOBILE_EMA) ? 'e' : 'm'),
 			   period);

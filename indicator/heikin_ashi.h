@@ -30,7 +30,7 @@ struct heikin_ashi {
   heikin_ashi_dir_t dir;
 };
 
-int heikin_ashi_init(struct heikin_ashi *h);
+int heikin_ashi_init(struct heikin_ashi *h, indicator_id_t id);
 void heikin_ashi_free(struct heikin_ashi *h);
 
 /* Indicator-specific */

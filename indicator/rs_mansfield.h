@@ -32,21 +32,21 @@ struct rs_mansfield_indicator_entry {
   /* Events ? */
 };
 
-static inline int
+static inline void
 rs_mansfield_indicator_entry_init(struct rs_mansfield_indicator_entry *entry,
+				  struct indicator *parent,
 				  double value, double direction){
-  __indicator_entry_super__(entry);
+  __indicator_entry_super__(entry, parent);
   entry->value = value;
   entry->direction = direction;
-  return 0;
 }
 
 static inline struct rs_mansfield_indicator_entry *
-rs_mansfield_indicator_entry_alloc(double value, double direction) {
+rs_mansfield_indicator_entry_alloc(struct indicator *parent,
+				   double value, double direction) {
   struct rs_mansfield_indicator_entry *entry;
   if((entry = malloc(sizeof *entry)))
-    rs_mansfield_indicator_entry_init(entry, value, direction);
-  
+    rs_mansfield_indicator_entry_init(entry, parent, value, direction);
   return entry;
 }
 
@@ -62,7 +62,7 @@ struct rs_mansfield {
   double value;
 };
 
-int rs_mansfield_init(struct rs_mansfield *r, int period,
+int rs_mansfield_init(struct rs_mansfield *r, indicator_id_t id, int period,
 		      __list_head__(struct timeline_entry) *ref);
 void rs_mansfield_free(struct rs_mansfield *r);
 

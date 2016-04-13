@@ -22,21 +22,22 @@ struct macd_indicator_entry {
   double histogram;
 };
 
-static inline int
+static inline void
 macd_indicator_entry_init(struct macd_indicator_entry *entry,
+			  struct indicator *parent,
 			  double value, double signal){
-  __indicator_entry_super__(entry);
+  __indicator_entry_super__(entry, parent);
   entry->value = value;
   entry->signal = signal;
   entry->histogram = (value - signal);
-  return 0;
 }
 
 static inline struct macd_indicator_entry *
-macd_indicator_entry_alloc(double value, double signal) {
+macd_indicator_entry_alloc(struct indicator *parent,
+			   double value, double signal) {
   struct macd_indicator_entry *entry;
   if((entry = malloc(sizeof *entry)))
-    macd_indicator_entry_init(entry, value, signal);
+    macd_indicator_entry_init(entry, parent, value, signal);
   return entry;
 }
 
@@ -60,7 +61,8 @@ struct macd {
   struct average signal;
 };
 
-int macd_init(struct macd *m, int fast_p, int slow_p, int signal_p);
+int macd_init(struct macd *m, indicator_id_t id,
+	      int fast_p, int slow_p, int signal_p);
 void macd_free(struct macd *m);
 
 #endif

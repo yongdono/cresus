@@ -35,10 +35,10 @@ out:
   return 1;
 }
 
-int stoploss_init(struct stoploss *s, double percent) {
+int stoploss_init(struct stoploss *s, indicator_id_t id, double percent) {
   
   /* Init parent */
-  __indicator_super__(s, stoploss_feed);
+  __indicator_super__(s, id, stoploss_feed);
   __indicator_set_string__(s, "stoploss[%.2f]", percent);
   
   s->value = 0.0;

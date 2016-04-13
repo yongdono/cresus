@@ -12,36 +12,6 @@
 #include "slist.h"
 #include "timeline_entry.h"
 
-/* TODO : find something for indicator data storage */
-
-#define __inherits_from_indicator_entry__		\
-  struct indicator_entry __parent_indicator_entry__
-#define __indicator_entry_is_superclass__ void *__self_indicator_entry__
-#define __indicator_entry__(x) (&(x)->__parent_indicator_entry__)
-#define __indicator_entry_self__(x) ((x)->__self_indicator_entry__)
-#define __indicator_entry_self_init__(x, self)	\
-  (x)->__self_indicator_entry__ = self
-
-#define __indicator_entry_super__(self)					\
-  __indicator_entry_self_init__(__indicator_entry__(self), self);	\
-  indicator_entry_init(__indicator_entry__(self));
-#define __indicator_entry_free__(self)			\
-  indicator_entry_free(__indicator_entry__(self));
-
-struct indicator_entry {
-  __inherits_from_slist__;
-  __indicator_entry_is_superclass__;
-  /* Say who is parent ? */
-};
-
-static inline int indicator_entry_init(struct indicator_entry *entry) {
-  __slist_super__(entry);
-}
-
-static inline void indicator_entry_free(struct indicator_entry *entry) {
-  __slist_free__(entry);
-}
-
 /* As it's a superclass, we want macros to manipulate this */
 #define __inherits_from_indicator__ struct indicator __parent_indicator__
 #define __indicator_is_superclass__ void *__self_indicator__
@@ -70,7 +40,7 @@ static inline void indicator_entry_free(struct indicator_entry *entry) {
 
 /* Define types */
 struct indicator; /* FIXME : find something more elegant */
-typedef indicator_id_t unsigned int;
+typedef unsigned int indicator_id_t;
 typedef int (*indicator_feed_ptr)(struct indicator*, struct timeline_entry*);
 
 struct indicator {
@@ -79,10 +49,9 @@ struct indicator {
   __indicator_is_superclass__;
 
 #define INDICATOR_STR_MAX 64
-  indicator_id_t id;
   indicator_feed_ptr feed;
   /* Unique Id & name */
-  unsigned int id;
+  indicator_id_t id;
   char str[INDICATOR_STR_MAX];
   /* Status */
   int is_empty;
@@ -96,5 +65,39 @@ void indicator_free(struct indicator *i);
 
 /* FIXME : Use timeline_entry ? */
 int indicator_feed(struct indicator *i, struct timeline_entry *e);
+
+
+/* Indicators generated sub-object */
+
+#define __inherits_from_indicator_entry__		\
+  struct indicator_entry __parent_indicator_entry__
+#define __indicator_entry_is_superclass__ void *__self_indicator_entry__
+#define __indicator_entry__(x) (&(x)->__parent_indicator_entry__)
+#define __indicator_entry_self__(x) ((x)->__self_indicator_entry__)
+#define __indicator_entry_self_init__(x, self)	\
+  (x)->__self_indicator_entry__ = self
+
+#define __indicator_entry_super__(self, indicator)			\
+  __indicator_entry_self_init__(__indicator_entry__(self), self);	\
+  indicator_entry_init(__indicator_entry__(self), indicator);
+#define __indicator_entry_free__(self)			\
+  indicator_entry_free(__indicator_entry__(self));
+
+struct indicator_entry {
+  __inherits_from_slist__;
+  __indicator_entry_is_superclass__;
+  /* Say who is parent ? */
+  struct indicator *indicator;
+};
+
+static inline void indicator_entry_init(struct indicator_entry *entry,
+					struct indicator *parent) {
+  __slist_super__(entry);
+  entry->indicator = parent;
+}
+
+static inline void indicator_entry_free(struct indicator_entry *entry) {
+  __slist_free__(entry);
+}
 
 #endif /* defined(__Cresus_EVO__indicator__) */

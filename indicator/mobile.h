@@ -58,20 +58,21 @@ struct mobile_indicator_entry {
   /* Events ? */
 };
 
-static inline int
+static inline void
 mobile_indicator_entry_init(struct mobile_indicator_entry *entry,
+			    struct indicator *parent,
 			    double value, double direction){
-  __indicator_entry_super__(entry);
+  __indicator_entry_super__(entry, parent);
   entry->value = value;
   entry->direction = direction;
-  return 0;
 }
 
 static inline struct mobile_indicator_entry *
-mobile_indicator_entry_alloc(double value, double direction) {
+mobile_indicator_entry_alloc(struct indicator *parent,
+			     double value, double direction) {
   struct mobile_indicator_entry *entry;
   if((entry = malloc(sizeof *entry)))
-    mobile_indicator_entry_init(entry, value, direction);
+    mobile_indicator_entry_init(entry, parent, value, direction);
   
   return entry;
 }
@@ -88,7 +89,7 @@ struct mobile {
   struct average avg;
 };
 
-int mobile_init(struct mobile *m, mobile_t type,
+int mobile_init(struct mobile *m, indicator_id_t id, mobile_t type,
 		int period, candle_value_t cvalue);
 void mobile_free(struct mobile *m);
 

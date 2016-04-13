@@ -31,7 +31,7 @@ static int rs_mansfield_feed(struct indicator *i, struct timeline_entry *e) {
       /* Finally set value */
       double value = ((rsd / mma) - 1) * 100.0;
       struct rs_mansfield_indicator_entry *rsm;
-      rsm = rs_mansfield_indicator_entry_alloc(value, (mma - last));
+      rsm = rs_mansfield_indicator_entry_alloc(i, value, (mma - last));
       candle_add_indicator_entry(c, __indicator_entry__(rsm));
     }
     
@@ -43,10 +43,10 @@ static int rs_mansfield_feed(struct indicator *i, struct timeline_entry *e) {
   return -1;
 }
 
-int rs_mansfield_init(struct rs_mansfield *r, int period,
+int rs_mansfield_init(struct rs_mansfield *r, indicator_id_t id, int period,
 		      __list_head__(struct timeline_entry) *ref) {
 
-  __indicator_super__(r,  rs_mansfield_feed);
+  __indicator_super__(r, id, rs_mansfield_feed);
   __indicator_set_string__(r, "rsm[%d]", period);
   
   average_init(&r->mma, AVERAGE_MATH, period);
