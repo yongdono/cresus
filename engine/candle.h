@@ -9,7 +9,6 @@
 #ifndef CANDLE_H
 #define CANDLE_H
 
-#include <time.h>
 #include <float.h>
 #include <stdlib.h>
 
@@ -40,9 +39,6 @@ struct candle {
   double high, low;
   double volume;
   
-  /* Misc */
-  int offset; /* In minutes (google mode) : remove ? */
-
   /* Indicators information ? */
   __slist_head__(struct indicator_entry) slist_indicator;
   
@@ -52,13 +48,13 @@ struct candle {
 
 
 int candle_init(struct candle *c,
-		time_t time, granularity_t g,
+		time_info_t time, granularity_t g,
 		double open, double close,
 		double high, double low,
 		double volume);
 void candle_free(struct candle *c);
 
-struct candle *candle_alloc(time_t time, granularity_t g,
+struct candle *candle_alloc(time_info_t time, granularity_t g,
 			    double open, double close,
 			    double high, double low,
 			    double volume);

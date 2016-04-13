@@ -13,7 +13,7 @@
 #include "candle.h"
 
 int candle_init(struct candle *c,
-		time_t time, granularity_t g,
+		time_info_t time, granularity_t g,
 		double open, double close,
 		double high, double low,
 		double volume) {
@@ -40,7 +40,7 @@ void candle_free(struct candle *c) {
   __slist_head_free__(&c->slist_indicator);
 }
 
-struct candle *candle_alloc(time_t time, granularity_t g,
+struct candle *candle_alloc(time_info_t time, granularity_t g,
 			    double open, double close,
 			    double high, double low,
 			    double volume) {

@@ -25,15 +25,16 @@ static struct timeline_entry *__yahoo_read(struct input *in) {
   return __list_self__(y->current_entry);
 }
 
-static int __yahoo_load_entry(struct yahoo *y, struct timeline_entry **ret,
-			      time_t time_min, time_t time_max) {
+static int __yahoo_load_entry(struct yahoo *y,
+			      struct timeline_entry **ret,
+			      time_info_t time_min,
+			      time_info_t time_max) {
   
   char buf[256];
   char *str = buf;
   struct candle *candle = NULL;
 
-  time_t time;
-  struct tm tm;
+  time_info_t time = 0;
   int year, month, day;
   double open, close, high, low, volume;
   
@@ -57,15 +58,10 @@ static int __yahoo_load_entry(struct yahoo *y, struct timeline_entry **ret,
   sscanf(slo, "%lf", &low);
   sscanf(svol, "%lf", &volume);
   
-  /* TODO : Set EOD timestamp */
-  memset(&tm, 0, sizeof tm);
-  tm.tm_min = 30;
-  tm.tm_hour = 17;
-  tm.tm_mday = day;
-  tm.tm_mon = month - 1;
-  tm.tm_year = year - 1900;
-  time = mktime(&tm);
-
+  TIME_SET_DAY(time, day);
+  TIME_SET_MONTH(time, month);
+  TIME_SET_YEAR(time, year);
+  
   /* What about granularity ? */
   if(time >= time_min && time <= time_max){
     /* Create candle (at last !) */
