@@ -12,6 +12,8 @@
 #include "slist.h"
 #include "timeline_entry.h"
 
+#include <stdlib.h>
+
 /* As it's a superclass, we want macros to manipulate this */
 #define __inherits_from_indicator__ struct indicator __parent_indicator__
 #define __indicator_is_superclass__ void *__self_indicator__

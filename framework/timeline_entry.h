@@ -54,6 +54,9 @@ struct timeline_entry {
   /* Time/Date management */
   time_t time; /* Epoch */
   granularity_t granularity; /* epoch-format, too */
+
+  int second, minute, hour; /* Intraday */
+  int day, month, year;
 };
 
 int timeline_entry_init(struct timeline_entry *e, time_t time, granularity_t g);
