@@ -1,9 +1,6 @@
 #include "timeline_entry.h"
 
-#define __timeline_entry_time(time, granularity)	\
-  (time - (time % granularity))
-
-int timeline_entry_init(struct timeline_entry *e, time_t time,
+int timeline_entry_init(struct timeline_entry *e, time_info_t time,
 			granularity_t g) {
   
   __list_super__(e);
@@ -19,14 +16,14 @@ void timeline_entry_free(struct timeline_entry *e) {
   __list_free__(e);
 }
 
-int timeline_entry_timecmp(struct timeline_entry *e, time_t time) {
+static int timeline_entry_timecmp(struct timeline_entry *e,
+				  time_info_t time) {
   
-  return (__timeline_entry_time(e->time, e->granularity) -
-	  __timeline_entry_time(time, e->granularity));
+  return TIMECMP(e->time, time, e->granularity);
 }
 
 static struct timeline_entry *
-timeline_entry_find_forward(struct timeline_entry *e, time_t time) {
+timeline_entry_find_forward(struct timeline_entry *e, time_info_t time) {
 
   struct list *entry;
   for(entry = __list__(e)->next;
@@ -42,7 +39,7 @@ timeline_entry_find_forward(struct timeline_entry *e, time_t time) {
 }
 
 static struct timeline_entry *
-timeline_entry_find_backwards(struct timeline_entry *e, time_t time) {
+timeline_entry_find_backwards(struct timeline_entry *e, time_info_t time) {
 
   struct list *entry;
   for(entry = __list__(e)->prev;
@@ -58,7 +55,7 @@ timeline_entry_find_backwards(struct timeline_entry *e, time_t time) {
 }
 
 struct timeline_entry *
-timeline_entry_find(struct timeline_entry *e, time_t time) {
+timeline_entry_find(struct timeline_entry *e, time_info_t time) {
   
   int tm = timeline_entry_timecmp(e, time);
   if(!tm)
@@ -77,9 +74,14 @@ timeline_entry_find(struct timeline_entry *e, time_t time) {
 /* Debug functions */
 const char *timeline_entry_localtime_str(struct timeline_entry *e,
 					 char *buf, size_t len) {
-  struct tm tm;
-  time_t time = e->time;
+
+  snprintf(buf, len, "%2u/%2u/%4u %2u:%2u:%2u\n",
+	   TIME_GET_MONTH(e->time),
+	   TIME_GET_DAY(e->time),
+	   TIME_GET_YEAR(e->time),
+	   TIME_GET_HOUR(e->time),
+	   TIME_GET_MINUTE(e->time),
+	   TIME_GET_SECOND(e->time));
   
-  strftime(buf, len, "%c", gmtime_r(&time, &tm));
   return buf;
 }

@@ -10,6 +10,8 @@
 
 /* If year starts on 1970, limit is 12/31/2033 23:59:59 */
 
+#define YEAR_BASE 1970
+
 #define SIX_BIT_MASK  0x3f
 #define FIVE_BIT_MASK 0x1f
 #define FOUR_BIT_MASK 0xf
@@ -30,7 +32,7 @@
 
 /* Our basic types */
 
-typedef unsigned long time_entry_t;
+typedef unsigned long time_info_t;
 typedef unsigned long granularity_t;
 
 #define GRANULARITY_SECOND 0xffffffff /* FIXME : Use macros */
@@ -51,14 +53,14 @@ typedef unsigned long granularity_t;
 #define TIME_SET_MONTH(t, m) \
   t = ((t & ~MONTH_MASK) | ((FOUR_BIT_MASK & m) << MONTH_SHIFT))
 #define TIME_SET_YEAR(t, y) \
-  t = ((t & ~YEAR_MASK) | ((SIX_BIT_MASK & y) << YEAR_SHIFT))
+  t = ((t & ~YEAR_MASK) | ((SIX_BIT_MASK & (y - YEAR_BASE)) << YEAR_SHIFT))
 
 #define TIME_GET_SECOND(t)((t & SECOND_MASK) >> SECOND_SHIFT)
 #define TIME_GET_MINUTE(t) ((t & MINUTE_MASK) >> MINUTE_SHIFT)
 #define TIME_GET_HOUR(t) ((t & HOUR_MASK) >> HOUR_SHIFT)
 #define TIME_GET_DAY(t) ((t & DAY_MASK) >> DAY_SHIFT)
 #define TIME_GET_MONTH(t) ((t & MONTH_MASK) >> MONTH_SHIFT)
-#define TIME_GET_YEAR(t, y) ((t & YEAR_MASK) >> YEAR_SHIFT)
+#define TIME_GET_YEAR(t) (((t & YEAR_MASK) >> YEAR_SHIFT) + YEAR_BASE)
 
 #define TIMECMP(t1, t2, g) (int)((t1 & g) - (t2 & g))
 

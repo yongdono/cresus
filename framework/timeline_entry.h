@@ -9,19 +9,8 @@
 #ifndef TIMELINE_ENTRY_H
 #define TIMELINE_ENTRY_H
 
-#include <time.h>
 #include "list.h"
-
-/* Define furtherly required types */
-typedef time_t granularity_t;
-
-#define GRANULARITY_SEC   1
-#define GRANULARITY_MIN   60
-#define GRANULARITY_HOUR  3600
-#define GRANULARITY_DAY   86400
-#define GRANULARITY_WEEK  432000
-#define GRANULARITY_MONTH 1728000
-#define GRANULARITY_YEAR  20736000
+#include "types.h"
 
 /* This is a superclass */
 
@@ -52,19 +41,15 @@ struct timeline_entry {
   __timeline_entry_is_superclass__;
   
   /* Time/Date management */
-  time_t time; /* Epoch */
-  granularity_t granularity; /* epoch-format, too */
-
-  int second, minute, hour; /* Intraday */
-  int day, month, year;
+  time_info_t time;
+  granularity_t granularity;
 };
 
-int timeline_entry_init(struct timeline_entry *e, time_t time, granularity_t g);
+int timeline_entry_init(struct timeline_entry *e, time_info_t time, granularity_t g);
 void timeline_entry_free(struct timeline_entry *e);
 
 /* Methods */
-int timeline_entry_timecmp(struct timeline_entry *e, time_t time);
-struct timeline_entry *timeline_entry_find(struct timeline_entry *t, time_t time);
+struct timeline_entry *timeline_entry_find(struct timeline_entry *t, time_info_t time);
 const char *timeline_entry_localtime_str(struct timeline_entry *e, char *buf, size_t len);
 
 #endif
