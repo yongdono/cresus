@@ -19,8 +19,11 @@ static int rs_dorsey_feed(struct indicator *i, struct timeline_entry *e) {
     r->ref = __list__(e);
   
   if((entry = timeline_entry_find(__list_self__(r->ref), e->time))){
+    struct rs_dorsey_indicator_entry *rsd;
     struct candle *cref = __timeline_entry_self__(entry);
-    r->value = c->close / cref->close;
+    double value = c->close / cref->close;
+    if((rsd = rs_dorsey_indicator_entry_alloc(i, value)))
+      candle_add_indicator_entry(c, __indicator_entry__(rsd));
     /* Set new ref */
     r->ref = __list__(entry);
     /* TODO : create new entry ? */
@@ -44,10 +47,4 @@ int rs_dorsey_init(struct rs_dorsey *r, indicator_id_t id,
 void rs_dorsey_free(struct rs_dorsey *r) {
 
   __indicator_free__(r);
-}
-
-/* Indicator-specific */
-double rs_dorsey_value(struct rs_dorsey *r) {
-
-  return r->value;
 }

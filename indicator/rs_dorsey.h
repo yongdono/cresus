@@ -18,19 +18,40 @@
 #include "framework/indicator.h"
 #include "framework/timeline_entry.h"
 
+/* Entries */
+
+struct rs_dorsey_indicator_entry {
+  /* As below */
+  __inherits_from_indicator_entry__;
+  /* Single value */
+  double value;
+};
+
+static inline void
+rs_dorsey_indicator_entry_init(struct rs_dorsey_indicator_entry *entry,
+			       struct indicator *parent, double value) {
+  __indicator_entry_super__(entry, parent);
+  entry->value = value;
+}
+
+static inline struct rs_dorsey_indicator_entry *
+rs_dorsey_indicator_entry_alloc(struct indicator *parent, double value) {
+  struct rs_dorsey_indicator_entry *entry;
+  if((entry = malloc(sizeof *entry)))
+    rs_dorsey_indicator_entry_init(entry, parent, value);
+  return entry;
+}
+
+/* Maion object */
+
 struct rs_dorsey {
   /* As always, inherits from indicator */
   __inherits_from_indicator__;
-  /* Own values */
-  double value;
   __list_head__(struct timeline_entry) *ref;
 };
 
 int rs_dorsey_init(struct rs_dorsey *r, indicator_id_t id,
 		   __list_head__(struct timeline_entry) *ref);
 void rs_dorsey_free(struct rs_dorsey *r);
-
-/* Indicator-specific */
-double rs_dorsey_value(struct rs_dorsey *r);
 
 #endif

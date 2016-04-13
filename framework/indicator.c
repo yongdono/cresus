@@ -14,7 +14,8 @@ int indicator_init(struct indicator *i, indicator_id_t id,
   /* Super */
   __slist_super__(i);
   __list_head_init__(&i->list_entry);
-  
+
+  i->id = id;
   i->feed = feed;
   i->is_empty = 1;
   

@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
   timeline_add_indicator(&timeline, __indicator__(&ema5));
   timeline_add_indicator(&timeline, __indicator__(&macd));
   timeline_add_indicator(&timeline, __indicator__(&rsm));
+  timeline_add_indicator(&timeline, __indicator__(&rsd));
   
   /* Execute all ops on data */
   /* timeline_execute(&timeline, __input__(&ref)); */
@@ -83,12 +84,14 @@ int main(int argc, char **argv) {
   struct timeline_entry *entry;
   /*__list_for_each__(&timeline.list_entry, entry){ */
   while((entry = timeline_step(&timeline, __input__(&ref)))){
+    int n = 0;
     struct indicator_entry *ientry;
     struct candle *c = __timeline_entry_self__(entry);
     printf("%s - ", candle_str(__timeline_entry_self__(entry)));
     
     __slist_for_each__(&c->slist_indicator, ientry){
       /* Beware, some parsing will be required here to determine who's who */
+      printf("%s(%u) ", ientry->indicator->str, ientry->indicator->id);
       switch(ientry->indicator->id){
       case EMA40 :
       case EMA14:
@@ -96,7 +99,6 @@ int main(int argc, char **argv) {
 	struct mobile_indicator_entry *mob =
 	  __indicator_entry_self__(ientry);
 	
-	printf("%s ", ientry->indicator->str);
 	printf("%.1f ", mob->value);
 	goto next;
       }
@@ -104,19 +106,19 @@ int main(int argc, char **argv) {
 	struct rs_mansfield_indicator_entry *rs =
 	  __indicator_entry_self__(ientry);
 	
-	printf("%s ", ientry->indicator->str);
 	printf("%.1f ", rs->value);
 	goto next;
       }
-	/*case RSD : {
+      case RSD : {
 	struct rs_dorsey_indicator_entry *rs = __indicator_entry_self__(ientry);
-	printf("RSD %.1f ", rs->value);
-      } break;
-	*/
+	printf("%.1f ", rs->value);
+      } goto next;
       }
+    next:
+      n++;
     }
-  next:
-    printf("\n");
+    
+    printf("- %d\n", n);
   }
   
   return 0;
