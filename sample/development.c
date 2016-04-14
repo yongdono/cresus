@@ -38,8 +38,7 @@ int main(int argc, char **argv) {
   
   /* Load / filter ref data */
   struct yahoo ref;
-  yahoo_init(&ref, "data/FCHI.yahoo",
-	     INPUT_TIME_MIN, INPUT_TIME_MAX);
+  yahoo_init(&ref, "data/FCHI.yahoo", TIME_MIN, TIME_MAX);
   
   /*
    * Timeline object

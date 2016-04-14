@@ -62,19 +62,20 @@ static int __yahoo_load_entry(struct yahoo *y,
   TIME_SET_MONTH(time, month);
   TIME_SET_YEAR(time, year);
   
-  /* What about granularity ? */
-  //if(time >= time_min && time <= time_max){
+  /* No intraday on yahoo */
+  if(TIMECMP(time, time_min, GRANULARITY_DAY) >= 0 &&
+     TIMECMP(time, time_max, GRANULARITY_DAY) <= 0){
     /* Create candle (at last !) */
-    candle = candle_alloc(time, GRANULARITY_DAY, /* No intraday on yahoo */
+    candle = candle_alloc(time, GRANULARITY_DAY,
 			  open, close, high, low, volume);
-
+    
     if(candle){
       *ret = __timeline_entry__(candle);
       return 1;
     }
     
-    //}else
-    //return 0;
+  }else
+    return 0;
   
   return -1;
 }

@@ -31,10 +31,6 @@ struct input; /* FIXME : find another way */
 typedef struct timeline_entry *(*input_read_ptr)(struct input *in);
 /* typedef int (*input_load_ptr)(struct input *in, time_t from, time_t to); */
 
-/* FIXME */
-#define INPUT_TIME_MIN 0
-#define INPUT_TIME_MAX INT_MAX
-
 struct input {
   __input_is_superclass__;
   input_read_ptr read;

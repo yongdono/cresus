@@ -35,7 +35,11 @@
 typedef unsigned long time_info_t;
 typedef unsigned long granularity_t;
 
-#define GRANULARITY_SECOND 0xffffffff /* FIXME : Use macros */
+#define TIME_MIN 0x00000000ul
+#define TIME_MAX 0xff3f7efbul /* 12/31/2033 23:59:59 */
+
+/* FIXME : Use macros ? */
+#define GRANULARITY_SECOND 0xffffffff
 #define GRANULARITY_MINUTE 0xffffffc0
 #define GRANULARITY_HOUR   0xfffff000
 #define GRANULARITY_DAY    0xfffe0000
