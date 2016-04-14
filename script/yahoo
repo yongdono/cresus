@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# From date
+from_day=1
+from_month=0 # 0 is Jan
+from_year=2016
+
+# To date
+to_day=1
+to_month=0
+to_year=0
+
+# csv dl link for ^FCHI from 1 mar. 2016 to 14 avr. 2016
+#http://real-chart.finance.yahoo.com/table.csv?s=%5EFCHI&a=02&b=1&c=2016&d=03&e=14&f=2016&g=d&ignore=.csv
+
+# Attempt to build a link
+url_prefix="http://real-chart.finance.yahoo.com/table.csv?"
+url_suffix="&g=d&ignore=.csv"
+
+s=stock_id
+a=$(expr $month - 1)
+b=$from_day
+c=
+d=
+e=
+f=
