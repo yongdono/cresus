@@ -57,6 +57,11 @@ static int __yahoo_load_entry(struct yahoo *y,
   sscanf(shi, "%lf", &high);
   sscanf(slo, "%lf", &low);
   sscanf(svol, "%lf", &volume);
+
+  /* Dummy values for control */
+  TIME_SET_SECOND(time, 1);
+  TIME_SET_MINUTE(time, 30);
+  TIME_SET_HOUR(time, 17);
   
   TIME_SET_DAY(time, day);
   TIME_SET_MONTH(time, month);
