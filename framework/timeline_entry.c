@@ -75,13 +75,14 @@ timeline_entry_find(struct timeline_entry *e, time_info_t time) {
 const char *timeline_entry_str(struct timeline_entry *e,
 			       char *buf, size_t len) {
 
-  snprintf(buf, len, "%.2u/%.2u/%.4u %.2u:%.2u:%.2u",
+  snprintf(buf, len, "%.2d/%.2d/%.4d %.2d:%.2d:%.2d ::%.3d",
 	   TIME_GET_MONTH(e->time),
 	   TIME_GET_DAY(e->time),
 	   TIME_GET_YEAR(e->time),
 	   TIME_GET_HOUR(e->time),
 	   TIME_GET_MINUTE(e->time),
-	   TIME_GET_SECOND(e->time));
+	   TIME_GET_SECOND(e->time),
+	   TIME_GET_MSEC(e->time));
   
   return buf;
 }
