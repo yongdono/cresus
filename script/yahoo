@@ -1,14 +1,12 @@
 #!/bin/sh
 
+# Stock id
+stock=$1
+
 # From date
 from_day=1
-from_month=0 # 0 is Jan
-from_year=2016
-
-# To date
-to_day=1
-to_month=0
-to_year=0
+from_month=1
+from_year=1990
 
 # csv dl link for ^FCHI from 1 mar. 2016 to 14 avr. 2016
 #http://real-chart.finance.yahoo.com/table.csv?s=%5EFCHI&a=02&b=1&c=2016&d=03&e=14&f=2016&g=d&ignore=.csv
@@ -17,10 +15,16 @@ to_year=0
 url_prefix="http://real-chart.finance.yahoo.com/table.csv?"
 url_suffix="&g=d&ignore=.csv"
 
-s=stock_id
-a=$(expr $month - 1)
+# Parameters
+s=$stock
+a=$(expr $from_month - 1)
 b=$from_day
-c=
-d=
-e=
-f=
+c=$from_year
+
+# We want data til today
+d=$(expr $(date +%m) - 1)
+e=$(date +%d)
+f=$(date +%Y)
+
+url=$(echo "${url_prefix}s=${s}&a=${a}&b=${b}&c=${c}&d=${d}&e=${e}&f=${f}${url_suffix}");
+wget ${url} -O data/${stock}.yahoo
