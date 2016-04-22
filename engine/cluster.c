@@ -50,12 +50,11 @@ static int cluster_create_index(struct cluster *c, struct candle *candle) {
     
   }else{
     /* Create missing entry */
-    current = candle_alloc(__timeline_entry__(candle)->time,
-			   __timeline_entry__(candle)->granularity,
-			   candle->open, candle->close, candle->high,
-			   candle->low, candle->volume);
-    /* Add it to list */
-    if(current){
+    if(candle_alloc(current, __timeline_entry__(candle)->time,
+		    __timeline_entry__(candle)->granularity,
+		    candle->open, candle->close, candle->high,
+		    candle->low, candle->volume)){
+      /* Add it to list */
       list_add_tail(&__timeline__(c)->list_entry,
 		    __list__(__timeline_entry__(current)));
     }else

@@ -37,14 +37,23 @@ int main(int argc, char **argv) {
    */
   
   /* Load / filter ref data */
-  struct yahoo ref;
-  yahoo_init(&ref, "data/FCHI.yahoo", TIME_MIN, TIME_MAX);
+  //struct yahoo ref;
+  //yahoo_init(&ref, "data/FCHI.yahoo", TIME_MIN, TIME_MAX);
+  
+  struct yahoo *yahoo;
+  struct timeline *timeline;
+
+  if(yahoo_alloc(yahoo, "data/FCHI.yahoo", TIME_MIN, TIME_MAX)){
+    if(timeline_alloc(timeline, "^FCHI", __input__(yahoo))){
+      /* */
+    }
+  }
   
   /*
    * Timeline object
    */
-  struct timeline timeline;
-  timeline_init(&timeline, "^FCHI", __input__(&ref));
+  //struct timeline timeline;
+  //timeline_init(&timeline, "^FCHI", __input__(yahoo));
 
   /* 
    * Indicators
@@ -62,31 +71,31 @@ int main(int argc, char **argv) {
   
   /* RS mansfield */
   struct rs_mansfield rsm;
-  rs_mansfield_init(&rsm, RSM, 14, &timeline.list_entry);
+  rs_mansfield_init(&rsm, RSM, 14, &timeline->list_entry);
 
   /* RS Dorsey */
   struct rs_dorsey rsd;
-  rs_dorsey_init(&rsd, RSD, &timeline.list_entry);
+  rs_dorsey_init(&rsd, RSD, &timeline->list_entry);
 
   /* Add all these indicators */
-  timeline_add_indicator(&timeline, __indicator__(&ema40));
-  timeline_add_indicator(&timeline, __indicator__(&ema14));
-  timeline_add_indicator(&timeline, __indicator__(&ema5));
-  timeline_add_indicator(&timeline, __indicator__(&macd));
-  timeline_add_indicator(&timeline, __indicator__(&rsm));
-  timeline_add_indicator(&timeline, __indicator__(&rsd));
+  timeline_add_indicator(timeline, __indicator__(&ema40));
+  timeline_add_indicator(timeline, __indicator__(&ema14));
+  timeline_add_indicator(timeline, __indicator__(&ema5));
+  timeline_add_indicator(timeline, __indicator__(&macd));
+  timeline_add_indicator(timeline, __indicator__(&rsm));
+  timeline_add_indicator(timeline, __indicator__(&rsd));
   
   /* Execute all ops on data */
   /* timeline_execute(&timeline, __input__(&ref)); */
   
   /* Step by step loop */
   struct timeline_entry *entry;
-  while((entry = timeline_next_entry(&timeline))){
+  while((entry = timeline_next_entry(timeline))){
     int n = 0;
     struct indicator_entry *ientry;
     struct candle *c = __timeline_entry_self__(entry);
     /* Execute */
-    timeline_step(&timeline);
+    timeline_step(timeline);
     printf("%s - ", candle_str(__timeline_entry_self__(entry)));
     /* Then check results */
     __slist_for_each__(&c->slist_indicator, ientry){

@@ -29,6 +29,11 @@ typedef enum {
   /* Other info here */
 } candle_value_t;
 
+/* Object is allocatable */
+#define candle_alloc(c, time, g, open, close, high, low, volume)	\
+  DEFINE_ALLOC(struct candle, c, candle_init,				\
+	       time, g, open, close, high, low, volume)
+
 struct candle {
   /* Inherits from timeline,
    * so we don't need time management */
@@ -46,18 +51,12 @@ struct candle {
   char str[256];
 };
 
-
 int candle_init(struct candle *c,
 		time_info_t time, granularity_t g,
 		double open, double close,
 		double high, double low,
 		double volume);
 void candle_free(struct candle *c);
-
-struct candle *candle_alloc(time_info_t time, granularity_t g,
-			    double open, double close,
-			    double high, double low,
-			    double volume);
 
 void candle_add_indicator_entry(struct candle *c,
 				struct indicator_entry *e);

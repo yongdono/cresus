@@ -10,10 +10,15 @@
 #define YAHOO_H
 
 #include <stdio.h>
+#include "framework/alloc.h"
 #include "framework/input.h"
 
 /* TODO : find a way to clearly tell what objects this input returns */
 #define __yahoo_timeline_entry_t__(x) (struct candle*)(x)
+
+/* Object is allocatable */
+#define yahoo_alloc(y, filename, from, to)			\
+  DEFINE_ALLOC(struct yahoo, y, yahoo_init, filename, from, to)
 
 struct yahoo {
   /* Inherits from input */

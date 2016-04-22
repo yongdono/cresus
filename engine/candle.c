@@ -40,17 +40,6 @@ void candle_free(struct candle *c) {
   __slist_head_free__(&c->slist_indicator);
 }
 
-struct candle *candle_alloc(time_info_t time, granularity_t g,
-			    double open, double close,
-			    double high, double low,
-			    double volume) {
-
-  struct candle *c = malloc(sizeof(struct candle));
-  if(c) candle_init(c, time, g, open, close, high, low, volume);
-  
-  return c;
-}
-
 void candle_add_indicator_entry(struct candle *c,
 				struct indicator_entry *e) {
 

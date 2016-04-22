@@ -9,6 +9,7 @@
 #ifndef TIMELINE_H
 #define TIMELINE_H
 
+#include "framework/alloc.h"
 #include "framework/slist.h"
 #include "framework/input.h"
 #include "framework/indicator.h"
@@ -27,6 +28,10 @@
 #define __timeline_free__(self) timeline_free(__timeline__(self));
 
 #define TIMELINE_NAME_MAX 256
+
+/* Object is allocatable */
+#define timeline_alloc(t, name, input)				\
+  DEFINE_ALLOC(struct timeline, t, timeline_init, name, input)
 
 struct timeline {
   /* "Listable" & "Heritable" */

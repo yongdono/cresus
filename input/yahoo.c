@@ -71,10 +71,9 @@ static int __yahoo_load_entry(struct yahoo *y,
   if(TIMECMP(time, time_min, GRANULARITY_DAY) >= 0 &&
      TIMECMP(time, time_max, GRANULARITY_DAY) <= 0){
     /* Create candle (at last !) */
-    candle = candle_alloc(time, GRANULARITY_DAY,
-			  open, close, high, low, volume);
-    
-    if(candle){
+    if(candle_alloc(candle, time, GRANULARITY_DAY,
+		    open, close, high, low, volume)){
+      /* Candle is allocated & init */
       *ret = __timeline_entry__(candle);
       return 1;
     }
