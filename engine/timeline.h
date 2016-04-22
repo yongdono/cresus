@@ -19,7 +19,7 @@
 #define __timeline_is_superclass__ void *__self_timeline__
 #define __timeline__(x) &((x)->__parent_timeline__)
 #define __timeline_self__(x) ((struct timeline*)x)->__self_timeline__
-#define __timeline_self_init__(x) (x)->__self_timeline__ = self
+#define __timeline_self_init__(x, self) (x)->__self_timeline__ = self
 
 #define __timeline_super__(self, name) \
   __timeline_self_init__(__timeline__(self), self); \

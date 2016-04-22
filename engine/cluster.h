@@ -21,7 +21,7 @@ struct cluster {
   /* Do we want some indicators on our cluster's data ? */
 };
 
-int cluster_init(struct cluster *c);
+int cluster_init(struct cluster *c, const char *name);
 void cluster_free(struct cluster *c);
 
 int cluster_add_timeline(struct cluster *c, struct timeline *t);
