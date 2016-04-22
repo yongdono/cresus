@@ -10,14 +10,14 @@
 #include <string.h>
 #include "timeline.h"
 
-int timeline_init(struct timeline *t, const char *name,
-		  struct input *in) {
+int timeline_init(struct timeline *t, const char *name, struct input *in) {
   
   /* Inheritance */
   __slist_super__(t);
   /* Data */
-  t->in = in;
   strncpy(t->name, name, sizeof(t->name));
+  t->current_timeline_entry = NULL;
+  t->in = in;
   /* Internals */
   __list_head_init__(&t->list_entry);
   __slist_head_init__(&t->slist_indicator);
@@ -41,25 +41,35 @@ int timeline_add_indicator(struct timeline *t, struct indicator *i) {
   __slist_insert__(&t->slist_indicator, i);
 }
 
-void timeline_step_entry(struct timeline *t, struct timeline_entry *entry) {
+struct timeline_entry *timeline_next_entry(struct timeline *t) {
+  
+  struct timeline_entry *entry;
+  if((entry = input_read(t->in))){
+    /* Cache data */
+    list_add_tail(&t->list_entry, __list__(entry));
+    t->current_timeline_entry = entry; /* Speed up things */
+  }
+  
+  return entry;
+}
+
+static void timeline_step_entry(struct timeline *t) {
 
   struct indicator *indicator;
-  /* Cache data */
-  list_add_tail(&t->list_entry, __list__(entry));
-  /* Debug */
-  /* printf("%s\n", candle_str(__timeline_entry_self__(entry))); */
-  /* Run indicators */
+  /* Parse indicators */
   __slist_for_each__(&t->slist_indicator, indicator){
-    indicator_feed(indicator, entry);
+    indicator_feed(indicator, t->current_timeline_entry);
     /* printf("indicator %s\n", indicator->str); */
   }
 }
 
 struct timeline_entry * timeline_step(struct timeline *t) {
-  
-  struct timeline_entry *entry = NULL;
-  if((entry = input_read(t->in)) != NULL)
-    timeline_step_entry(t, entry);
+
+  struct timeline_entry *entry = t->current_timeline_entry;
+  if(entry != NULL){
+    timeline_step_entry(t);
+    t->current_timeline_entry = NULL;
+  }
   
   return entry;
 }

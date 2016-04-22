@@ -81,12 +81,14 @@ int main(int argc, char **argv) {
   
   /* Step by step loop */
   struct timeline_entry *entry;
-  while((entry = timeline_step(&timeline))){
+  while((entry = timeline_next_entry(&timeline))){
     int n = 0;
     struct indicator_entry *ientry;
     struct candle *c = __timeline_entry_self__(entry);
+    /* Execute */
+    timeline_step(&timeline);
     printf("%s - ", candle_str(__timeline_entry_self__(entry)));
-    
+    /* Then check results */
     __slist_for_each__(&c->slist_indicator, ientry){
       /* Beware, some parsing will be required here to determine who's who */
       printf("%s(%u) ", ientry->indicator->str, ientry->indicator->id);

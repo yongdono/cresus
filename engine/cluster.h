@@ -14,13 +14,12 @@
 #include "engine/timeline.h"
 
 struct cluster {
-  /* First, a cluster is a timeline */
+  /* First, a cluster is a timeline cause it's an indice computer */
   __inherits_from_timeline__;
   /* Second, a cluster's a list of timelines */
   __slist_head__(struct timeline) slist_timeline;
+  /* We need to speed things up finding entries */
   __list_head__(struct timeline_entry) *ref;
-  /* Then, it's an indice computer */
-  /* Do we want some indicators on our cluster's data ? */
 };
 
 int cluster_init(struct cluster *c, const char *name);

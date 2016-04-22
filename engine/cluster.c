@@ -22,6 +22,9 @@ int cluster_init(struct cluster *c, const char *name) {
 
 void cluster_free(struct cluster *c) {
 
+  __timeline_free__(c);
+  __slist_head_free__(&c->slist_timeline);
+  c->ref = NULL;
 }
 
 int cluster_add_timeline(struct cluster *c, struct timeline *t) {
@@ -67,13 +70,11 @@ static int cluster_create_index(struct cluster *c, struct candle *candle) {
 int cluster_step(struct cluster *c) {
 
   struct timeline *t;
-  struct timeline_entry *__candle__;
-
   /* First create cluster index */
   __slist_for_each__(&c->slist_timeline, t){
-    struct timeline_entry *entry = input_read(t->in);
-    cluster_create_index(c, __timeline_entry_self__(entry));
-    /* TODO : What about index indicators ? */
+    struct timeline_entry *entry;
+    if((entry = timeline_next_entry(t)))
+      cluster_create_index(c, __timeline_entry_self__(entry));
   }
   
   /* Then execute indicators */
