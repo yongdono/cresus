@@ -7,15 +7,18 @@
  */
 
 #include <stdlib.h>
-
-#include "candle.h"
 #include "timeline.h"
 
-int timeline_init(struct timeline *t) {
+int timeline_init(struct timeline *t, const char *name) {
   
+  /* Inheritance */
+  __slist_super__(t);
+  /* Name */
+  strncpy(t->name, name, sizeof(t->name));
+  /* Internals */
   __list_head_init__(&t->list_entry);
   __slist_head_init__(&t->slist_indicator);
-    
+  
   return 0;
 }
 

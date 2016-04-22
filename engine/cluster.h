@@ -10,10 +10,12 @@
 #define CLUSTER_H
 
 #include "framework/slist.h"
-#include "engine/timeline.g"
+#include "engine/timeline.h"
 
 struct cluster {
-  /* First a cluster's a list of timelines */
+  /* First, a cluster is a timeline */
+  __inherits_from_timeline__;
+  /* Second, a cluster's a list of timelines */
   __slist_head__(struct timeline) slist_timeline;
   /* Then, it's an indice computer */
   /* Do we want some indicators on our cluster's data ? */
