@@ -27,7 +27,7 @@ static int macd_feed(struct indicator *i, struct timeline_entry *e) {
     double signal = average_update(&m->signal, value);
     if(average_is_available(&m->signal)){
       struct macd_indicator_entry *entry;
-      if((entry = macd_indicator_entry_alloc(i, value, signal)))
+      if(macd_indicator_entry_alloc(entry, i, value, signal))
 	candle_add_indicator_entry(c, __indicator_entry__(entry));
     }
   }

@@ -22,7 +22,7 @@ static int rs_dorsey_feed(struct indicator *i, struct timeline_entry *e) {
     struct rs_dorsey_indicator_entry *rsd;
     struct candle *cref = __timeline_entry_self__(entry);
     double value = c->close / cref->close;
-    if((rsd = rs_dorsey_indicator_entry_alloc(i, value)))
+    if(rs_dorsey_indicator_entry_alloc(rsd, i, value))
       candle_add_indicator_entry(c, __indicator_entry__(rsd));
     /* Set new ref */
     r->ref = __list__(entry);

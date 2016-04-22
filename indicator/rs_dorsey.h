@@ -15,6 +15,7 @@
  * RSD = (close / close_index) * 100.0
  */
 
+#include "framework/alloc.h"
 #include "framework/indicator.h"
 #include "framework/timeline_entry.h"
 
@@ -27,19 +28,16 @@ struct rs_dorsey_indicator_entry {
   double value;
 };
 
-static inline void
+#define rs_dorsey_indicator_entry_alloc(entry, parent, value)	\
+  DEFINE_ALLOC(struct rs_dorsey_indicator_entry, entry,		\
+	       rs_dorsey_indicator_entry_init, parent, value)
+
+static inline int
 rs_dorsey_indicator_entry_init(struct rs_dorsey_indicator_entry *entry,
 			       struct indicator *parent, double value) {
   __indicator_entry_super__(entry, parent);
   entry->value = value;
-}
-
-static inline struct rs_dorsey_indicator_entry *
-rs_dorsey_indicator_entry_alloc(struct indicator *parent, double value) {
-  struct rs_dorsey_indicator_entry *entry;
-  if((entry = malloc(sizeof *entry)))
-    rs_dorsey_indicator_entry_init(entry, parent, value);
-  return entry;
+  return 0;
 }
 
 /* Maion object */

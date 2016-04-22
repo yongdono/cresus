@@ -16,6 +16,8 @@
 
 #include "math/average.h"
 #include "engine/candle.h"
+
+#include "framework/alloc.h"
 #include "framework/indicator.h"
 
 /* TODO : Is that useful ? */
@@ -58,23 +60,18 @@ struct mobile_indicator_entry {
   /* Events ? */
 };
 
-static inline void
+#define mobile_indicator_entry_alloc(entry, parent, value, direction)	\
+  DEFINE_ALLOC(struct mobile_indicator_entry, entry,			\
+	       mobile_indicator_entry_init, parent, value, direction)
+
+static inline int
 mobile_indicator_entry_init(struct mobile_indicator_entry *entry,
 			    struct indicator *parent,
 			    double value, double direction){
   __indicator_entry_super__(entry, parent);
   entry->value = value;
   entry->direction = direction;
-}
-
-static inline struct mobile_indicator_entry *
-mobile_indicator_entry_alloc(struct indicator *parent,
-			     double value, double direction) {
-  struct mobile_indicator_entry *entry;
-  if((entry = malloc(sizeof *entry)))
-    mobile_indicator_entry_init(entry, parent, value, direction);
-  
-  return entry;
+  return 0;
 }
 
 /* Main object */

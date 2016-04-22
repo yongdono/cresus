@@ -65,7 +65,7 @@ static int mobile_feed(struct indicator *i, struct timeline_entry *e) {
   
   if(average_is_available(&m->avg)){
     /* Create new entry */
-    if((entry = mobile_indicator_entry_alloc(i, avg, (avg - last_avg)))){
+    if(mobile_indicator_entry_alloc(entry, i, avg, (avg - last_avg))){
       candle_add_indicator_entry(c, __indicator_entry__(entry));
       return 1;
     }

@@ -10,7 +10,9 @@
 #define MACD_H
 
 #include <stdlib.h>
+
 #include "math/average.h"
+#include "framework/alloc.h"
 #include "framework/indicator.h"
 
 struct macd_indicator_entry {
@@ -22,7 +24,11 @@ struct macd_indicator_entry {
   double histogram;
 };
 
-static inline void
+#define macd_indicator_entry_alloc(entry, parent, value, signal)	\
+  DEFINE_ALLOC(struct macd_indicator_entry, entry,			\
+	       macd_indicator_entry_init, parent, value, signal)
+
+static inline int
 macd_indicator_entry_init(struct macd_indicator_entry *entry,
 			  struct indicator *parent,
 			  double value, double signal){
@@ -30,15 +36,7 @@ macd_indicator_entry_init(struct macd_indicator_entry *entry,
   entry->value = value;
   entry->signal = signal;
   entry->histogram = (value - signal);
-}
-
-static inline struct macd_indicator_entry *
-macd_indicator_entry_alloc(struct indicator *parent,
-			   double value, double signal) {
-  struct macd_indicator_entry *entry;
-  if((entry = malloc(sizeof *entry)))
-    macd_indicator_entry_init(entry, parent, value, signal);
-  return entry;
+  return 0;
 }
 
 /* Indicator events */

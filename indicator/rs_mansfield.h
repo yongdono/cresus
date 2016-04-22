@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include "math/average.h"
 #include "framework/list.h"
+#include "framework/alloc.h"
 #include "framework/indicator.h"
 
 /* Entries */
@@ -32,22 +33,19 @@ struct rs_mansfield_indicator_entry {
   /* Events ? */
 };
 
-static inline void
+#define rs_mansfield_indicator_entry_alloc(entry, parent, value, direction) \
+  DEFINE_ALLOC(struct rs_mansfield_indicator_entry, entry,		\
+	       rs_mansfield_indicator_entry_init, parent, value,	\
+	       direction)
+
+static inline int
 rs_mansfield_indicator_entry_init(struct rs_mansfield_indicator_entry *entry,
 				  struct indicator *parent,
 				  double value, double direction){
   __indicator_entry_super__(entry, parent);
   entry->value = value;
   entry->direction = direction;
-}
-
-static inline struct rs_mansfield_indicator_entry *
-rs_mansfield_indicator_entry_alloc(struct indicator *parent,
-				   double value, double direction) {
-  struct rs_mansfield_indicator_entry *entry;
-  if((entry = malloc(sizeof *entry)))
-    rs_mansfield_indicator_entry_init(entry, parent, value, direction);
-  return entry;
+  return 0;
 }
 
 /* Object */

@@ -31,8 +31,8 @@ static int rs_mansfield_feed(struct indicator *i, struct timeline_entry *e) {
       /* Finally set value */
       double value = ((rsd / mma) - 1) * 100.0;
       struct rs_mansfield_indicator_entry *rsm;
-      rsm = rs_mansfield_indicator_entry_alloc(i, value, (mma - last));
-      candle_add_indicator_entry(c, __indicator_entry__(rsm));
+      if(rs_mansfield_indicator_entry_alloc(rsm, i, value, (mma - last)))
+	candle_add_indicator_entry(c, __indicator_entry__(rsm));
     }
     
     /* Set new ref */
