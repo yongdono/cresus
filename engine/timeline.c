@@ -7,6 +7,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "timeline.h"
 
 int timeline_init(struct timeline *t, const char *name,
@@ -41,7 +42,8 @@ int timeline_add_indicator(struct timeline *t, struct indicator *i) {
 }
 
 void timeline_step_entry(struct timeline *t, struct timeline_entry *entry) {
-  
+
+  struct indicator *indicator;
   /* Cache data */
   list_add_tail(&t->list_entry, __list__(entry));
   /* Debug */
@@ -55,10 +57,8 @@ void timeline_step_entry(struct timeline *t, struct timeline_entry *entry) {
 
 struct timeline_entry * timeline_step(struct timeline *t) {
   
-  struct indicator *indicator;
-  struct timeline_entry *entry = input_read(t->in);
-  
-  if(entry != NULL)
+  struct timeline_entry *entry = NULL;
+  if((entry = input_read(t->in)) != NULL)
     timeline_step_entry(t, entry);
   
   return entry;
