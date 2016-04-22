@@ -45,6 +45,7 @@ int timeline_init(struct timeline *t, const char *name, struct input *in);
 void timeline_free(struct timeline *t);
 
 int timeline_add_indicator(struct timeline *t, struct indicator *i);
+void timeline_step_entry(struct timeline *t, struct timeline_entry *entry);
 struct timeline_entry *timeline_step(struct timeline *t);
 int timeline_execute(struct timeline *t);
 

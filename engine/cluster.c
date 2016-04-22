@@ -30,8 +30,8 @@ int cluster_add_timeline(struct cluster *c, struct timeline *t) {
   return 0;
 }
 
-static int cluster_ref(struct cluster *c, struct candle *candle) {
-
+static int cluster_create_index(struct cluster *c, struct candle *candle) {
+  
   struct candle *current;
   struct timeline_entry *entry;
   
@@ -68,15 +68,21 @@ int cluster_step(struct cluster *c) {
 
   struct timeline *t;
   struct timeline_entry *__candle__;
+
+  /* First create cluster index */
+  __slist_for_each__(&c->slist_timeline, t){
+    struct timeline_entry *entry = input_read(t->in);
+    cluster_create_index(c, __timeline_entry_self__(entry));
+    /* TODO : What about index indicators ? */
+  }
   
+  /* Then execute indicators */
   __slist_for_each__(&c->slist_timeline, t){
     /* Step all timelines */
     struct timeline_entry *entry;
     if((entry = timeline_step(t))){
       struct indicator_entry *indicator;
       struct candle *candle = __timeline_entry_self__(entry);
-      /* Candle allocation */
-      cluster_ref(c, candle);
       /* Indicators management */
       __slist_for_each__(&candle->slist_indicator, indicator){
 	/* TODO : Use function pointer ? */
