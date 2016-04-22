@@ -7,6 +7,7 @@
  */
 
 #include "cluster.h"
+#include "candle.h"
 
 int cluster_init(struct cluster *c, const char *name) {
 
@@ -34,7 +35,12 @@ int cluster_step(struct cluster *c) {
     /* Step all timelines */
     struct timeline_entry *entry;
     if((entry = timeline_step(t))){
-      /* Indicators here ? */
+      struct indicator_entry *indicator;
+      struct candle *candle = __timeline_entry_self__(entry);
+      __slist_for_each__(&candle->slist_indicator, indicator){
+	/* Parse indicators */
+	/* TODO : Use function pointer ? */
+      }
     }
   }
   
