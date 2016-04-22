@@ -9,6 +9,7 @@
 #ifndef CLUSTER_H
 #define CLUSTER_H
 
+#include "framework/list.h"
 #include "framework/slist.h"
 #include "engine/timeline.h"
 
@@ -17,6 +18,7 @@ struct cluster {
   __inherits_from_timeline__;
   /* Second, a cluster's a list of timelines */
   __slist_head__(struct timeline) slist_timeline;
+  __list_head__(struct timeline_entry) *ref;
   /* Then, it's an indice computer */
   /* Do we want some indicators on our cluster's data ? */
 };

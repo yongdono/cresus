@@ -17,7 +17,7 @@
 #define __inherits_from_timeline_entry__		\
   struct timeline_entry __parent_timeline_entry__
 #define __timeline_entry_is_superclass__ void *__self_timeline_entry__
-#define __timeline_entry__(x) (&(x)->__parent_timeline_entry__)
+#define __timeline_entry__(x) (&((x)->__parent_timeline_entry__))
 #define __timeline_entry_self__(x) (x)->__self_timeline_entry__
 #define __timeline_entry_self_init__(x, self)	\
   __timeline_entry_self__(x) = self

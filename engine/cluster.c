@@ -12,8 +12,10 @@
 int cluster_init(struct cluster *c, const char *name) {
 
   /* Super */
-  __timeline_super__(c, name, NULL); /* FIXME : still inherit ? */
+  __timeline_super__(c, name, NULL);
   __slist_head_init__(&c->slist_timeline);
+  /* Set options */
+  c->ref = &__timeline__(c)->list_entry;
   
   return 0;
 }
@@ -28,17 +30,55 @@ int cluster_add_timeline(struct cluster *c, struct timeline *t) {
   return 0;
 }
 
+static int cluster_ref(struct cluster *c, struct candle *candle) {
+
+  struct candle *current;
+  struct timeline_entry *entry;
+  
+  if((entry = timeline_entry_find(__list_self__(c->ref),
+				  __timeline_entry__(candle)->time))){
+    /* Just continue filling candle */
+    current = __timeline_entry_self__(entry);
+    current->open += candle->open;
+    current->close += candle->close;
+    current->high += candle->high;
+    current->low += candle->low;
+    current->volume += candle->volume;
+    
+  }else{
+    /* Create missing entry */
+    current = candle_alloc(__timeline_entry__(candle)->time,
+			   __timeline_entry__(candle)->granularity,
+			   candle->open, candle->close, candle->high,
+			   candle->low, candle->volume);
+    /* Add it to list */
+    if(current){
+      list_add_tail(&__timeline__(c)->list_entry,
+		    __list__(__timeline_entry__(current)));
+    }else
+      return -1;
+  }
+
+  /* Update ref for next round */
+  c->ref = __list__(__timeline_entry__(current));
+  return 0;
+}
+
 int cluster_step(struct cluster *c) {
 
   struct timeline *t;
+  struct timeline_entry *__candle__;
+  
   __slist_for_each__(&c->slist_timeline, t){
     /* Step all timelines */
     struct timeline_entry *entry;
     if((entry = timeline_step(t))){
       struct indicator_entry *indicator;
       struct candle *candle = __timeline_entry_self__(entry);
+      /* Candle allocation */
+      cluster_ref(c, candle);
+      /* Indicators management */
       __slist_for_each__(&candle->slist_indicator, indicator){
-	/* Parse indicators */
 	/* TODO : Use function pointer ? */
       }
     }

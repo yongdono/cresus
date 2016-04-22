@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
    * Timeline object
    */
   struct timeline timeline;
-  timeline_init(&timeline, "^FCHI", &ref);
+  timeline_init(&timeline, "^FCHI", __input__(&ref));
 
   /* 
    * Indicators
