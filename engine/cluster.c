@@ -11,7 +11,7 @@
 int cluster_init(struct cluster *c, const char *name) {
 
   /* Super */
-  __timeline_super__(c, name);
+  __timeline_super__(c, name, NULL); /* FIXME : still inherit ? */
   __slist_head_init__(&c->slist_timeline);
   
   return 0;
@@ -28,6 +28,15 @@ int cluster_add_timeline(struct cluster *c, struct timeline *t) {
 }
 
 int cluster_step(struct cluster *c) {
+
+  struct timeline *t;
+  __slist_for_each__(&c->slist_timeline, t){
+    /* Step all timelines */
+    struct timeline_entry *entry;
+    if((entry = timeline_step(t))){
+      /* Indicators here ? */
+    }
+  }
   
   return 0;
 }

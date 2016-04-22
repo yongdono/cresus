@@ -85,8 +85,9 @@ double average_update(struct average *a, double value) {
   case AVERAGE_MATH : ret = __average_update_math(a, value); break;
   case AVERAGE_EXP : ret = __average_update_exp(a, value); break;
   }
-  
-  a->count++; /* FIXME : risk of bug after a certain amout of data */
+
+  /* ? 1 : 0's not needed but i find this easier to read */
+  a->count += ((a->count < a->period) ? 1 : 0);
   return ret;
 }
 

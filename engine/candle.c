@@ -57,28 +57,6 @@ void candle_add_indicator_entry(struct candle *c,
   __slist_insert__(&c->slist_indicator, e);
 }
 
-double candle_get_closest_inf(struct candle *c, double value)
-{
-  /* Chronologically seems more relevant */
-  if(c->open <= value) return c->open;
-  if(c->high <= value) return c->high; /* Not very useful */
-  if(c->low <= value) return c->low;
-  if(c->close <= value) return c->close;
-  
-  return 0.0;
-}
-
-double candle_get_closest_sup(struct candle *c, double value)
-{
-  /* Chronologically seems more relevant */
-  if(c->open >= value) return c->open;
-  if(c->low >= value) return c->low; /* Not very useful */
-  if(c->high >= value) return c->high;
-  if(c->close >= value) return c->close;
-
-  return 0.0;
-}
-
 double candle_get_value(const struct candle *c, candle_value_t value) {
   
   switch(value) {

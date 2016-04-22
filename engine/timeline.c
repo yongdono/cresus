@@ -9,11 +9,13 @@
 #include <stdlib.h>
 #include "timeline.h"
 
-int timeline_init(struct timeline *t, const char *name) {
+int timeline_init(struct timeline *t, const char *name,
+		  struct input *in) {
   
   /* Inheritance */
   __slist_super__(t);
-  /* Name */
+  /* Data */
+  t->in = in;
   strncpy(t->name, name, sizeof(t->name));
   /* Internals */
   __list_head_init__(&t->list_entry);
@@ -38,11 +40,10 @@ int timeline_add_indicator(struct timeline *t, struct indicator *i) {
   __slist_insert__(&t->slist_indicator, i);
 }
 
-struct timeline_entry * timeline_step(struct timeline *t,
-				      struct input *in) {
+struct timeline_entry * timeline_step(struct timeline *t) {
 
   struct indicator *indicator;
-  struct timeline_entry *entry = input_read(in);
+  struct timeline_entry *entry = input_read(t->in);
   
   if(entry != NULL){
     /* Cache data */
@@ -59,12 +60,12 @@ struct timeline_entry * timeline_step(struct timeline *t,
   return entry;
 }
 
-int timeline_execute(struct timeline *t, struct input *in) {
+int timeline_execute(struct timeline *t) {
   
   int n;
   
   for(n = 0;; n++)
-    if(timeline_step(t, in) == NULL)
+    if(timeline_step(t) == NULL)
       break;
   
   return n;

@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
    * Timeline object
    */
   struct timeline timeline;
-  timeline_init(&timeline, "^FCHI");
+  timeline_init(&timeline, "^FCHI", &ref);
 
   /* 
    * Indicators
@@ -81,8 +81,7 @@ int main(int argc, char **argv) {
   
   /* Step by step loop */
   struct timeline_entry *entry;
-  /*__list_for_each__(&timeline.list_entry, entry){ */
-  while((entry = timeline_step(&timeline, __input__(&ref)))){
+  while((entry = timeline_step(&timeline))){
     int n = 0;
     struct indicator_entry *ientry;
     struct candle *c = __timeline_entry_self__(entry);

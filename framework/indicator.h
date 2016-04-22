@@ -65,9 +65,7 @@ int indicator_init(struct indicator *i, indicator_id_t id,
 		   indicator_feed_ptr feed);
 void indicator_free(struct indicator *i);
 
-/* FIXME : Use timeline_entry ? */
 int indicator_feed(struct indicator *i, struct timeline_entry *e);
-
 
 /* Indicators generated sub-object */
 

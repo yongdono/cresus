@@ -21,9 +21,9 @@
 #define __timeline_self__(x) ((struct timeline*)x)->__self_timeline__
 #define __timeline_self_init__(x, self) (x)->__self_timeline__ = self
 
-#define __timeline_super__(self, name) \
-  __timeline_self_init__(__timeline__(self), self); \
-  timeline_init(__timeline__(self), name);
+#define __timeline_super__(self, name, input)		    \
+  __timeline_self_init__(__timeline__(self), self);	    \
+  timeline_init(__timeline__(self), name, input);
 #define __timeline_free__(self) timeline_free(__timeline__(self));
 
 #define TIMELINE_NAME_MAX 256
@@ -33,6 +33,7 @@ struct timeline {
   __inherits_from_slist__;
   __timeline_is_superclass__;
   /* Data */
+  struct input *in;
   char name[TIMELINE_NAME_MAX];
   /* Main data / graph */
   __list_head__(struct timeline_entry) list_entry;
@@ -40,11 +41,11 @@ struct timeline {
   __slist_head__(struct indicator) slist_indicator;
 };
 
-int timeline_init(struct timeline *t, const char *name);
+int timeline_init(struct timeline *t, const char *name, struct input *in);
 void timeline_free(struct timeline *t);
 
 int timeline_add_indicator(struct timeline *t, struct indicator *i);
-struct timeline_entry *timeline_step(struct timeline *t, struct input *in);
-int timeline_execute(struct timeline *t, struct input *in);
+struct timeline_entry *timeline_step(struct timeline *t);
+int timeline_execute(struct timeline *t);
 
 #endif
