@@ -76,6 +76,9 @@ mobile_indicator_entry_init(struct mobile_indicator_entry *entry,
 
 /* Main object */
 
+#define mobile_alloc(m, id, type, period, cvalue)			\
+  DEFINE_ALLOC(struct mobile, m, mobile_init, id, type, period, cvalue)
+
 struct mobile {
   /* As always */
   __inherits_from_indicator__;

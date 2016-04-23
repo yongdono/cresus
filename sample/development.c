@@ -30,72 +30,16 @@
 #define RSM   4
 #define RSD   5
 
-int main(int argc, char **argv) {
+static void run_timeline(struct timeline *t) {
 
-  /*
-   * Data
-   */
-  
-  /* Load / filter ref data */
-  //struct yahoo ref;
-  //yahoo_init(&ref, "data/FCHI.yahoo", TIME_MIN, TIME_MAX);
-  
-  struct yahoo *yahoo;
-  struct timeline *timeline;
-
-  if(yahoo_alloc(yahoo, "data/FCHI.yahoo", TIME_MIN, TIME_MAX)){
-    if(timeline_alloc(timeline, "^FCHI", __input__(yahoo))){
-      /* */
-    }
-  }
-  
-  /*
-   * Timeline object
-   */
-  //struct timeline timeline;
-  //timeline_init(&timeline, "^FCHI", __input__(yahoo));
-
-  /* 
-   * Indicators
-   */
-  
-  /* Set mobile averages */
-  struct mobile ema40, ema14, ema5;
-  mobile_init(&ema40, EMA40, MOBILE_EMA, 40, CANDLE_CLOSE);
-  mobile_init(&ema14, EMA14, MOBILE_EMA, 14, CANDLE_CLOSE);
-  mobile_init(&ema5, EMA5, MOBILE_EMA, 5, CANDLE_CLOSE);
-  
-  /* MACD */
-  struct macd macd;
-  macd_init(&macd, MACD, 12, 26, 9);
-  
-  /* RS mansfield */
-  struct rs_mansfield rsm;
-  rs_mansfield_init(&rsm, RSM, 14, &timeline->list_entry);
-
-  /* RS Dorsey */
-  struct rs_dorsey rsd;
-  rs_dorsey_init(&rsd, RSD, &timeline->list_entry);
-
-  /* Add all these indicators */
-  timeline_add_indicator(timeline, __indicator__(&ema40));
-  timeline_add_indicator(timeline, __indicator__(&ema14));
-  timeline_add_indicator(timeline, __indicator__(&ema5));
-  timeline_add_indicator(timeline, __indicator__(&macd));
-  timeline_add_indicator(timeline, __indicator__(&rsm));
-  timeline_add_indicator(timeline, __indicator__(&rsd));
-  
-  /* Execute all ops on data */
-  /* timeline_execute(&timeline, __input__(&ref)); */
-  
   /* Step by step loop */
   struct timeline_entry *entry;
-  while((entry = timeline_next_entry(timeline))){
+  while((entry = timeline_next_entry(t))){
     int n = 0;
     struct indicator_entry *ientry;
     struct candle *c = __timeline_entry_self__(entry);
     /* Execute */
-    timeline_step(timeline);
+    timeline_step(t);
     printf("%s - ", candle_str(__timeline_entry_self__(entry)));
     /* Then check results */
     __slist_for_each__(&c->slist_indicator, ientry){
@@ -131,6 +75,50 @@ int main(int argc, char **argv) {
     
     printf("- %d\n", n);
   }
+}
+
+int main(int argc, char **argv) {
+
+  /*
+   * Data
+   */
+  
+  /* Load / filter ref data */
+  //struct yahoo ref;
+  //yahoo_init(&ref, "data/FCHI.yahoo", TIME_MIN, TIME_MAX);
+  
+  struct yahoo *yahoo;
+  struct timeline *timeline;
+
+  if(yahoo_alloc(yahoo, "data/FCHI.yahoo", TIME_MIN, TIME_MAX)){
+    if(timeline_alloc(timeline, "^FCHI", __input__(yahoo))){
+      struct mobile *m;
+      /* Add a series of EMAs */
+      mobile_alloc(m, EMA40, MOBILE_EMA, 40, CANDLE_CLOSE);
+      timeline_add_indicator(timeline, __indicator__(m));
+      mobile_alloc(m, EMA14, MOBILE_EMA, 14, CANDLE_CLOSE);
+      timeline_add_indicator(timeline, __indicator__(m));
+      mobile_alloc(m, EMA5, MOBILE_EMA, 5, CANDLE_CLOSE);
+      timeline_add_indicator(timeline, __indicator__(m));
+      /* Macd */
+      struct macd *macd;
+      macd_alloc(macd, MACD, 12, 26, 9);
+      timeline_add_indicator(timeline, __indicator__(macd));
+      /* RS mansfield */
+      struct rs_mansfield *rsm;
+      rs_mansfield_alloc(rsm, RSM, 14, &timeline->list_entry);
+      timeline_add_indicator(timeline, __indicator__(rsm));
+      /* RS Dorsey */
+      struct rs_dorsey *rsd;
+      rs_dorsey_alloc(rsd, RSD, &timeline->list_entry);
+      timeline_add_indicator(timeline, __indicator__(rsd));
+
+      /* Execute all this */
+      run_timeline(timeline);
+    }
+  }
+  
+  /* TODO : Don't forget to free everything */
   
   return 0;
 }

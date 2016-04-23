@@ -42,6 +42,9 @@ rs_dorsey_indicator_entry_init(struct rs_dorsey_indicator_entry *entry,
 
 /* Maion object */
 
+#define rs_dorsey_alloc(r, id, ref)				\
+  DEFINE_ALLOC(struct rs_dorsey, r, rs_dorsey_init, id, ref)
+
 struct rs_dorsey {
   /* As always, inherits from indicator */
   __inherits_from_indicator__;

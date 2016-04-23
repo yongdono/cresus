@@ -50,6 +50,9 @@ macd_indicator_entry_init(struct macd_indicator_entry *entry,
 #define MACD_DEFAULT_SLOW_P   26
 #define MACD_DEFAULT_SIGNAL_P 9
 
+#define macd_alloc(m, id, fast_p, slow_p, signal_p)			\
+  DEFINE_ALLOC(struct macd, m, macd_init, id, fast_p, slow_p, signal_p)
+
 struct macd {
   /* Parent */
   __inherits_from_indicator__;

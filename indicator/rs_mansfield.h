@@ -50,6 +50,9 @@ rs_mansfield_indicator_entry_init(struct rs_mansfield_indicator_entry *entry,
 
 /* Object */
 
+#define rs_mansfield_alloc(r, id, period, ref)				\
+  DEFINE_ALLOC(struct rs_mansfield, r, rs_mansfield_init, id, period, ref)
+
 struct rs_mansfield {
   /* As always, inherits from indicator */
   __inherits_from_indicator__;
