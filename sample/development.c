@@ -9,8 +9,6 @@
  * Used to determine if interfaces are coherent for the "user"
  * And maybe to implement some kind of script commands 
  *
- * Not usable / does not compile anyway
- *
  */
 
 #include <stdio.h>
@@ -82,11 +80,6 @@ int main(int argc, char **argv) {
   /*
    * Data
    */
-  
-  /* Load / filter ref data */
-  //struct yahoo ref;
-  //yahoo_init(&ref, "data/FCHI.yahoo", TIME_MIN, TIME_MAX);
-  
   struct yahoo *yahoo;
   struct timeline *timeline;
 
