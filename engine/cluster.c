@@ -38,7 +38,9 @@ static int cluster_create_index(struct cluster *c, struct candle *candle) {
   struct candle *current;
   struct timeline_entry *entry;
   
-  if((entry = timeline_entry_find(__list_self__(c->ref),
+  /* FIXME */
+  if((c->ref != &__timeline__(c)->list_entry) &&
+     (entry = timeline_entry_find(__list_self__(c->ref),
 				  __timeline_entry__(candle)->time))){
     /* Just continue filling candle */
     current = __timeline_entry_self__(entry);

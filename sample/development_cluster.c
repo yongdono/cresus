@@ -49,6 +49,7 @@ int main(int argc, char **argv) {
   cluster_add_timeline(&cluster, t2);
 
   /* And then ? */
+  cluster_step(&cluster);
   
   return 0;
 }
