@@ -30,8 +30,8 @@ static int rs_mansfield_feed(struct indicator *i, struct timeline_entry *e) {
     if(average_is_available(&r->mma)){
       /* Finally set value */
       double value = ((rsd / mma) - 1) * 100.0;
-      struct rs_mansfield_indicator_entry *rsm;
-      if(rs_mansfield_indicator_entry_alloc(rsm, i, value, (mma - last)))
+      struct rs_mansfield_entry *rsm;
+      if(rs_mansfield_entry_alloc(rsm, i, value, (mma - last)))
 	candle_add_indicator_entry(c, __indicator_entry__(rsm));
     }
     

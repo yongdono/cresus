@@ -50,7 +50,7 @@ typedef enum {
 
 /* Timeline entries object */
 
-struct mobile_indicator_entry {
+struct mobile_entry {
   /* As below */
   __inherits_from_indicator_entry__;
   /* Single value */
@@ -60,24 +60,31 @@ struct mobile_indicator_entry {
   /* Events ? */
 };
 
-#define mobile_indicator_entry_alloc(entry, parent, value, direction)	\
-  DEFINE_ALLOC(struct mobile_indicator_entry, entry,			\
-	       mobile_indicator_entry_init, parent, value, direction)
+#define mobile_entry_alloc(entry, parent, value, direction)		\
+  DEFINE_ALLOC(struct mobile_entry, entry,				\
+	       mobile_entry_init, parent, value, direction)
+#define mobile_entry_free(entry)			\
+  DEFINE_FREE(entry, mobile_indicator_entry_release)
 
-static inline int
-mobile_indicator_entry_init(struct mobile_indicator_entry *entry,
-			    struct indicator *parent,
-			    double value, double direction){
+static inline int mobile_entry_init(struct mobile_entry *entry,
+				    struct indicator *parent,
+				    double value, double direction){
   __indicator_entry_super__(entry, parent);
   entry->value = value;
   entry->direction = direction;
   return 0;
 }
 
+static inline void mobile_entry_release(struct mobile_entry *entry) {
+  __indicator_entry_release__(entry);
+}
+
 /* Main object */
 
 #define mobile_alloc(m, id, type, period, cvalue)			\
   DEFINE_ALLOC(struct mobile, m, mobile_init, id, type, period, cvalue)
+#define mobile_free(m)				\
+  DEFINE_FREE(m, mobile_release)
 
 struct mobile {
   /* As always */

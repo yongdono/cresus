@@ -36,14 +36,18 @@ timeline_create(const char *filename, const char *name,
   return timeline;
 }
 
+static void
+timeline_destroy(struct timeline *t) {
+}
+
 int main(int argc, char **argv) {
 
   struct cluster cluster;
   struct timeline *t1, *t2;
   
   cluster_init(&cluster, "my cluster");
-  t1 = timeline_create("data/AF.yahoo", "AF", cluster.ref);
-  t2 = timeline_create("data/AIR.yahoo", "AIR", cluster.ref);
+  t1 = timeline_create("data/AF.yahoo", "AF", cluster.ref); /* FIXME : ref */
+  t2 = timeline_create("data/AIR.yahoo", "AIR", cluster.ref); /* FIXME : ref */
 
   cluster_add_timeline(&cluster, t1);
   cluster_add_timeline(&cluster, t2);

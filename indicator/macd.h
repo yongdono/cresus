@@ -15,7 +15,7 @@
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
-struct macd_indicator_entry {
+struct macd_entry {
   /* As always */
   __inherits_from_indicator_entry__;
   /* Own data */
@@ -24,19 +24,24 @@ struct macd_indicator_entry {
   double histogram;
 };
 
-#define macd_indicator_entry_alloc(entry, parent, value, signal)	\
-  DEFINE_ALLOC(struct macd_indicator_entry, entry,			\
-	       macd_indicator_entry_init, parent, value, signal)
+#define macd_entry_alloc(entry, parent, value, signal)		\
+  DEFINE_ALLOC(struct macd_entry, entry,			\
+	       macd_entry_init, parent, value, signal)
+#define macd_entry_free(entry)			\
+  DEFINE_FREE(entry, macd_entry_release)
 
-static inline int
-macd_indicator_entry_init(struct macd_indicator_entry *entry,
-			  struct indicator *parent,
-			  double value, double signal){
+static inline int macd_entry_init(struct macd_entry *entry,
+				  struct indicator *parent,
+				  double value, double signal){
   __indicator_entry_super__(entry, parent);
   entry->value = value;
   entry->signal = signal;
   entry->histogram = (value - signal);
   return 0;
+}
+
+static inline void macd_entry_release(struct macd_entry *entry) {
+  __indicator_entry_release__(entry);
 }
 
 /* Indicator events */
@@ -52,6 +57,8 @@ macd_indicator_entry_init(struct macd_indicator_entry *entry,
 
 #define macd_alloc(m, id, fast_p, slow_p, signal_p)			\
   DEFINE_ALLOC(struct macd, m, macd_init, id, fast_p, slow_p, signal_p)
+#define macd_free(m)				\
+  DEFINE_FREE(m, macd_release)
 
 struct macd {
   /* Parent */

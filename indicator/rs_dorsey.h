@@ -21,29 +21,37 @@
 
 /* Entries */
 
-struct rs_dorsey_indicator_entry {
+struct rs_dorsey_entry {
   /* As below */
   __inherits_from_indicator_entry__;
   /* Single value */
   double value;
 };
 
-#define rs_dorsey_indicator_entry_alloc(entry, parent, value)	\
-  DEFINE_ALLOC(struct rs_dorsey_indicator_entry, entry,		\
-	       rs_dorsey_indicator_entry_init, parent, value)
+#define rs_dorsey_entry_alloc(entry, parent, value)	\
+  DEFINE_ALLOC(struct rs_dorsey_entry, entry,		\
+	       rs_dorsey_entry_init, parent, value)
+#define rs_dorsey_entry_free(entry)		\
+  DEFINE_FREE(entry, rs_dorsey_entry_release);
 
-static inline int
-rs_dorsey_indicator_entry_init(struct rs_dorsey_indicator_entry *entry,
-			       struct indicator *parent, double value) {
+static inline int rs_dorsey_entry_init(struct rs_dorsey_entry *entry,
+				       struct indicator *parent,
+				       double value) {
   __indicator_entry_super__(entry, parent);
   entry->value = value;
   return 0;
+}
+
+static inline void rs_dorsey_entry_release(struct rs_dorsey_entry *entry){
+  __indicator_entry_release__(entry);
 }
 
 /* Maion object */
 
 #define rs_dorsey_alloc(r, id, ref)				\
   DEFINE_ALLOC(struct rs_dorsey, r, rs_dorsey_init, id, ref)
+#define rs_dorsey_free(r)			\
+  DEFINE_FREE(r, rs_dorsey_release)
 
 struct rs_dorsey {
   /* As always, inherits from indicator */

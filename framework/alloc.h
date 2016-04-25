@@ -15,7 +15,6 @@
 
 #define DEFINE_ALLOC(type, ptr, init, ...)			\
   ((ptr = malloc(sizeof(type))) && !init(ptr, ##__VA_ARGS__))
-
 #define DEFINE_FREE(ptr, release)		\
   { release(ptr); free(ptr); }
 

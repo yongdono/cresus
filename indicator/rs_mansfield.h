@@ -23,7 +23,7 @@
 
 /* Entries */
 
-struct rs_mansfield_indicator_entry {
+struct rs_mansfield_entry {
   /* As below */
   __inherits_from_indicator_entry__;
   /* Single value */
@@ -33,25 +33,33 @@ struct rs_mansfield_indicator_entry {
   /* Events ? */
 };
 
-#define rs_mansfield_indicator_entry_alloc(entry, parent, value, direction) \
-  DEFINE_ALLOC(struct rs_mansfield_indicator_entry, entry,		\
-	       rs_mansfield_indicator_entry_init, parent, value,	\
+#define rs_mansfield_entry_alloc(entry, parent, value, direction)	\
+  DEFINE_ALLOC(struct rs_mansfield_entry, entry,			\
+	       rs_mansfield_entry_init, parent, value,			\
 	       direction)
+#define rs_mansfield_entry_free(entry)			\
+  DEFINE_FREE(entry, rs_mansfield_entry_release)
 
-static inline int
-rs_mansfield_indicator_entry_init(struct rs_mansfield_indicator_entry *entry,
-				  struct indicator *parent,
-				  double value, double direction){
+static inline int rs_mansfield_entry_init(struct rs_mansfield_entry *entry,
+					  struct indicator *parent,
+					  double value, double direction){
   __indicator_entry_super__(entry, parent);
   entry->value = value;
   entry->direction = direction;
   return 0;
 }
 
+static inline void
+rs_mansfield_entry_release(struct rs_mansfield_entry *entry) {
+  __indicator_entry_release__(entry);
+}
+
 /* Object */
 
 #define rs_mansfield_alloc(r, id, period, ref)				\
   DEFINE_ALLOC(struct rs_mansfield, r, rs_mansfield_init, id, period, ref)
+#define rs_mansfield_free(r)			\
+  DEFINE_FREE(r, rs_mansfield_release)
 
 struct rs_mansfield {
   /* As always, inherits from indicator */

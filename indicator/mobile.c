@@ -56,7 +56,7 @@ static void mobile_manage_position(struct mobile *m, double avg,
 
 static int mobile_feed(struct indicator *i, struct timeline_entry *e) {
   
-  struct mobile_indicator_entry *entry;
+  struct mobile_entry *entry;
   struct mobile *m = __indicator_self__(i);
   struct candle *c = __timeline_entry_self__(e);
   /* Trying to get average values */
@@ -65,7 +65,7 @@ static int mobile_feed(struct indicator *i, struct timeline_entry *e) {
   
   if(average_is_available(&m->avg)){
     /* Create new entry */
-    if(mobile_indicator_entry_alloc(entry, i, avg, (avg - last_avg))){
+    if(mobile_entry_alloc(entry, i, avg, (avg - last_avg))){
       candle_add_indicator_entry(c, __indicator_entry__(entry));
       return 1;
     }

@@ -32,6 +32,8 @@
 /* Object is allocatable */
 #define timeline_alloc(t, name, input)				\
   DEFINE_ALLOC(struct timeline, t, timeline_init, name, input)
+#define timeline_free(t)			\
+  DEFINE_FREE(t, timeline_release)
 
 struct timeline {
   /* "Listable" & "Heritable" */
