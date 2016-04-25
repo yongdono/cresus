@@ -95,6 +95,59 @@ int cluster_step(struct cluster *c) {
   return 0;
 }
 
+static int cluster_prepare_step(struct cluster *c, time_info_t time) {
+
+  struct timeline *t;
+  struct candle *candle;
+  
+  if(candle_alloc(candle, time, GRANULARITY_DAY, 0, 0, 0, 0, 0))
+    fprintf(stderr, "Alloc candle #%x\n", time);
+  else
+    goto err;
+  
+  __slist_for_each__(&c->slist_timeline, t){
+    struct timeline_entry *entry;
+    /* Why not use granularity here to merge candles in timeline object ? */
+    if((entry = timeline_entry_by_time(t, time))){
+      /* Merge candles */
+      struct candle *c2 = __timeline_entry_self__(entry);
+      candle_merge(candle, c2);
+      
+    }else{
+      /* If we can't get all the data for 1 slot, we let it down and
+       * check for a "complete" one */
+      candle_free(candle);
+      fprintf(stderr, "No data available for %x, letting down\n", time);
+      goto err;
+    }
+  }
+  /* Add data to list */
+  __list_add_tail__(&__timeline__(c)->list_entry,
+		    __timeline_entry__(candle));
+
+  return 0;
+
+ err:
+  return -1;
+}
+
+static int cluster_execute_step(struct cluster *c, time_info_t time) {
+
+  struct timeline *t;
+  __slist_for_each__(&c->slist_timeline, t){
+    struct timeline_entry *entry;
+    /* Error : don't double-filter ! */
+    if((entry = timeline_entry_by_time(t, time))){
+      
+    }
+  }
+  
+  return 0;
+  
+ err:
+  return -1;
+}
+
 int cluster_run(struct cluster *c) {
 
   time_info_t time;
@@ -102,35 +155,9 @@ int cluster_run(struct cluster *c) {
 
   /* TODO : Set time_min & time_max in a realistic way */
   TIME_FOR_EACH(TIME_MIN, TIME_MAX, GRANULARITY_DAY, time){
-    /* PAssing time 'by hand" */
-    struct candle *cur;
-    if(candle_alloc(cur, time, GRANULARITY_DAY, 0, 0, 0, 0, 0))
-      fprintf(stderr, "Alloc candle #%x\n", time);
-    else
-      return -1; /* Error */
-    
-    __slist_for_each__(&c->slist_timeline, t){
-      struct timeline_entry *entry;
-      /* Why not use granularity here to merge candles in timeline object ? */
-      if((entry = timeline_entry_by_time(t, time))){
-	/* Merge candles */
-	struct candle *c = __timeline_entry_self__(entry);
-	candle_merge(cur, c);
-	
-      }else{
-	/* If we can't get all the data for 1 slot, we let it down and
-	 * check for a "complete" one */
-	candle_free(cur);
-	fprintf(stderr, "No data available for %x, letting down\n", time);
-	goto next;
-      }
-    }
-    /* Add data to list */
-    __list_add_tail__(&__timeline__(c)->list_entry,
-		      __timeline_entry__(cur));
-    
-  next:
-    /* We got a "break" */;
+    /* Passing time 'by hand" */
+    if(cluster_prepare_step(c, time) != -1)
+      cluster_execute_step(c, time);
   }
   
   return 0;
