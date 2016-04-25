@@ -67,13 +67,13 @@ int smi_init(struct smi *s, indicator_id_t id, int period, int smooth) {
   return 0;
 }
 
-void smi_free(struct smi *s)
+void smi_release(struct smi *s)
 {
-  __indicator_free__(s);
-  average_free(&s->smpd);
-  average_free(&s->_smpd);
-  average_free(&s->str);
-  average_free(&s->_str);
+  __indicator_release__(s);
+  average_release(&s->smpd);
+  average_release(&s->_smpd);
+  average_release(&s->str);
+  average_release(&s->_str);
   
   if(s->pool)
     free(s->pool);

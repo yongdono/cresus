@@ -24,8 +24,8 @@
 #define __indicator_super__(self, id, feed)		\
   __indicator_self_init__(__indicator__(self), self);	\
   indicator_init(__indicator__(self), id, feed)
-#define __indicator_free__(self)		\
-  indicator_free(__indicator__(self))
+#define __indicator_release__(self)		\
+  indicator_release(__indicator__(self))
 
 /* Set methods */
 #define __indicator_set_string__(self, fmt, ...)			\
@@ -63,7 +63,7 @@ struct indicator {
 
 int indicator_init(struct indicator *i, indicator_id_t id,
 		   indicator_feed_ptr feed);
-void indicator_free(struct indicator *i);
+void indicator_release(struct indicator *i);
 
 int indicator_feed(struct indicator *i, struct timeline_entry *e);
 
@@ -80,8 +80,8 @@ int indicator_feed(struct indicator *i, struct timeline_entry *e);
 #define __indicator_entry_super__(self, indicator)			\
   __indicator_entry_self_init__(__indicator_entry__(self), self);	\
   indicator_entry_init(__indicator_entry__(self), indicator);
-#define __indicator_entry_free__(self)			\
-  indicator_entry_free(__indicator_entry__(self));
+#define __indicator_entry_release__(self)			\
+  indicator_entry_release(__indicator_entry__(self));
 
 struct indicator_entry {
   __inherits_from_slist__;
@@ -96,8 +96,8 @@ static inline void indicator_entry_init(struct indicator_entry *entry,
   entry->indicator = parent;
 }
 
-static inline void indicator_entry_free(struct indicator_entry *entry) {
-  __slist_free__(entry);
+static inline void indicator_entry_release(struct indicator_entry *entry) {
+  __slist_release__(entry);
 }
 
 #endif /* defined(__Cresus_EVO__indicator__) */

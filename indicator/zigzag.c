@@ -118,9 +118,9 @@ int zigzag_init(struct zigzag *z, indicator_id_t id, zigzag_t type,
   return 0;
 }
 
-void zigzag_free(struct zigzag *z)
+void zigzag_release(struct zigzag *z)
 {
-  __indicator_free__(z);
+  __indicator_release__(z);
   z->ref_count = 0;
   z->direction = ZIGZAG_DIR_NONE;
 }

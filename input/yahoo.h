@@ -17,8 +17,11 @@
 #define __yahoo_timeline_entry_t__(x) (struct candle*)(x)
 
 /* Object is allocatable */
+
 #define yahoo_alloc(y, filename, from, to)			\
   DEFINE_ALLOC(struct yahoo, y, yahoo_init, filename, from, to)
+#define yahoo_free(y)				\
+  DEFINE_FREE(y, yahoo_release)
 
 struct yahoo {
   /* Inherits from input */
@@ -32,6 +35,6 @@ struct yahoo {
 
 int yahoo_init(struct yahoo *y, const char *filename,
 	       time_info_t from, time_info_t to);
-void yahoo_free(struct yahoo *y);
+void yahoo_release(struct yahoo *y);
 
 #endif

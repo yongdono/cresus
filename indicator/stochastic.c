@@ -57,8 +57,8 @@ int stochastic_init(struct stochastic *s, indicator_id_t id,
   return 0;
 }
 
-void stochastic_free(struct stochastic *s) {
+void stochastic_release(struct stochastic *s) {
   
-  __indicator_free__(s);
+  __indicator_release__(s);
   free(s->array);
 }

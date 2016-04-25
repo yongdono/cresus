@@ -35,7 +35,7 @@ struct smi {
 };
 
 int smi_init(struct smi *s, indicator_id_t id, int period, int smooth);
-void smi_free(struct smi *s);
+void smi_release(struct smi *s);
 
 /* Indicator-specific */
 double smi_value(struct smi *s);

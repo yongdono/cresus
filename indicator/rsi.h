@@ -32,7 +32,7 @@ struct rsi {
 };
 
 int rsi_init(struct rsi *r, indicator_id_t id, int period);
-void rsi_free(struct rsi *r);
+void rsi_release(struct rsi *r);
 
 /* Indicator-specific */
 double rsi_value(struct rsi *r);

@@ -57,10 +57,10 @@ int rs_mansfield_init(struct rs_mansfield *r, indicator_id_t id, int period,
   return 0;
 }
 
-void rs_mansfield_free(struct rs_mansfield *r) {
+void rs_mansfield_release(struct rs_mansfield *r) {
 
-  __indicator_free__(r);
-  average_free(&r->mma);
+  __indicator_release__(r);
+  average_release(&r->mma);
 }
 
 /* Indicator-specific */

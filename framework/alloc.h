@@ -9,9 +9,14 @@
 #ifndef ALLOC_H
 #define ALLOC_H
 
+#include <stdlib.h>
+
 /* TODO : find a way to make an object easily "allocatable" */
 
 #define DEFINE_ALLOC(type, ptr, init, ...)			\
   ((ptr = malloc(sizeof(type))) && !init(ptr, ##__VA_ARGS__))
+
+#define DEFINE_FREE(ptr, release)		\
+  { release(ptr); free(ptr); }
 
 #endif

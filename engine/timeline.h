@@ -25,7 +25,7 @@
 #define __timeline_super__(self, name, input)		    \
   __timeline_self_init__(__timeline__(self), self);	    \
   timeline_init(__timeline__(self), name, input);
-#define __timeline_free__(self) timeline_free(__timeline__(self));
+#define __timeline_release__(self) timeline_release(__timeline__(self));
 
 #define TIMELINE_NAME_MAX 256
 
@@ -48,7 +48,7 @@ struct timeline {
 };
 
 int timeline_init(struct timeline *t, const char *name, struct input *in);
-void timeline_free(struct timeline *t);
+void timeline_release(struct timeline *t);
 
 int timeline_add_indicator(struct timeline *t, struct indicator *i);
 struct timeline_entry *timeline_next_entry(struct timeline *t);

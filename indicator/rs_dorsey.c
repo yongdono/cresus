@@ -43,7 +43,7 @@ int rs_dorsey_init(struct rs_dorsey *r, indicator_id_t id,
   return 0;
 }
 
-void rs_dorsey_free(struct rs_dorsey *r) {
+void rs_dorsey_release(struct rs_dorsey *r) {
 
-  __indicator_free__(r);
+  __indicator_release__(r);
 }

@@ -26,6 +26,6 @@ struct stochastic {
 
 int stochastic_init(struct stochastic *s, indicator_id_t id,
 		    int period, int k, int d);
-void stochastic_free(struct stochastic *s);
+void stochastic_release(struct stochastic *s);
 
 #endif /* defined(__Cresus_EVO__stochastic__) */

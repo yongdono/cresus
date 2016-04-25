@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
     }
   }
   
-  /* TODO : Don't forget to free everything */
+  /* TODO : Don't forget to release everything */
   
   return 0;
 }

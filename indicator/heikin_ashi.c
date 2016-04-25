@@ -65,9 +65,9 @@ int heikin_ashi_init(struct heikin_ashi *h, indicator_id_t id) {
   return 0;
 }
 
-void heikin_ashi_free(struct heikin_ashi *h) {
+void heikin_ashi_release(struct heikin_ashi *h) {
   
-  __indicator_free__(h);
+  __indicator_release__(h);
 }
 
 int heikin_ashi_get(struct heikin_ashi *h, struct candle *candle) {

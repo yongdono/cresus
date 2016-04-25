@@ -64,6 +64,6 @@ struct macd {
 
 int macd_init(struct macd *m, indicator_id_t id,
 	      int fast_p, int slow_p, int signal_p);
-void macd_free(struct macd *m);
+void macd_release(struct macd *m);
 
 #endif

@@ -34,10 +34,10 @@ int candle_init(struct candle *c,
   return 0;
 }
 
-void candle_free(struct candle *c) {
+void candle_release(struct candle *c) {
   
-  __timeline_entry_free__(c);
-  __slist_head_free__(&c->slist_indicator);
+  __timeline_entry_release__(c);
+  __slist_head_release__(&c->slist_indicator);
 }
 
 void candle_add_indicator_entry(struct candle *c,

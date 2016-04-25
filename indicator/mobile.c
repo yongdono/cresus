@@ -94,10 +94,10 @@ int mobile_init(struct mobile *m, indicator_id_t id, mobile_t type,
   return 0;
 }
 
-void mobile_free(struct mobile *m)
+void mobile_release(struct mobile *m)
 {
-  __indicator_free__(m);
-  average_free(&m->avg);
+  __indicator_release__(m);
+  average_release(&m->avg);
 }
 
 double mobile_average(struct mobile *m)

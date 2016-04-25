@@ -75,9 +75,9 @@ int swing_init(struct swing *s, indicator_id_t id) {
   return 0;
 }
 
-void swing_free(struct swing *s)
+void swing_release(struct swing *s)
 {
-  __indicator_free__(s);
+  __indicator_release__(s);
 }
 
 swing_t swing_type_get(struct swing *s)

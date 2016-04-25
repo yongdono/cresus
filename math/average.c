@@ -34,7 +34,7 @@ int average_init(struct average *a, average_t type, int period) {
   return 0;
 }
 
-void average_free(struct average *a) {
+void average_release(struct average *a) {
   
   if(a->type == AVERAGE_MATH)
     free(a->pool);

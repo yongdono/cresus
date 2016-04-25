@@ -22,12 +22,12 @@ int indicator_init(struct indicator *i, indicator_id_t id,
   return 0;
 }
 
-void indicator_free(struct indicator *i) {
+void indicator_release(struct indicator *i) {
 
-  __slist_free__(i);
-  __list_head_free__(&i->list_entry);
+  __slist_release__(i);
+  __list_head_release__(&i->list_entry);
   
-  /* TODO : don't forget to free() timeline_entries */
+  /* TODO : don't forget to release() timeline_entries */
   i->feed = NULL;
 }
 

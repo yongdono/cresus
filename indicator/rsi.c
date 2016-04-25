@@ -55,11 +55,11 @@ int rsi_init(struct rsi *r, indicator_id_t id, int period)
   return 0;
 }
 
-void rsi_free(struct rsi *r)
+void rsi_release(struct rsi *r)
 {
-  __indicator_free__(r);
-  average_free(&r->h);
-  average_free(&r->b);
+  __indicator_release__(r);
+  average_release(&r->h);
+  average_release(&r->b);
 }
 
 double rsi_value(struct rsi *r) {

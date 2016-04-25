@@ -22,7 +22,7 @@
 #define __slist_super__(self)			\
   __slist_self_init__(__slist__(self), self);	\
   slist_init(__slist__(self))
-#define __slist_free__(self) slist_free(__slist__(self))
+#define __slist_release__(self) slist_release(__slist__(self))
 
 #define __slist_insert__(slist, entry)		\
   slist_insert((slist), __slist__(entry))
@@ -38,7 +38,7 @@
 
 #define __slist_head__(type) struct slist /* Type is indicative */
 #define __slist_head_init__(x) slist_init(x)
-#define __slist_head_free__(x) slist_free(x)
+#define __slist_head_release__(x) slist_release(x)
 
 struct slist {
   __slist_is_superclass__;
@@ -49,7 +49,7 @@ static inline int slist_init(struct slist *s) {
   s->next = NULL;
 }
 
-static inline void slist_free(struct slist *s) {
+static inline void slist_release(struct slist *s) {
   s->next = NULL;
 }
 
@@ -62,6 +62,7 @@ static inline void slist_del(struct slist *s) {
   s->next = s->next->next;
 }
 
+#define slist_is_head(head, ptr) (ptr == head)
 #define slist_for_each(head, ptr)				\
   for(ptr = (head)->next; (ptr) != NULL; ptr = (ptr)->next)
 

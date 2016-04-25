@@ -50,7 +50,7 @@ struct zigzag {
 
 int zigzag_init(struct zigzag *z, indicator_id_t id, zigzag_t type,
 		double thres, candle_value_t cvalue);
-void zigzag_free(struct zigzag *z);
+void zigzag_release(struct zigzag *z);
 
 /* Indicator-specific */
 zigzag_dir_t zigzag_get_last_ref(struct zigzag *z, struct candle *last_ref);

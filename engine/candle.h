@@ -56,7 +56,7 @@ int candle_init(struct candle *c,
 		double open, double close,
 		double high, double low,
 		double volume);
-void candle_free(struct candle *c);
+void candle_release(struct candle *c);
 
 void candle_add_indicator_entry(struct candle *c,
 				struct indicator_entry *e);

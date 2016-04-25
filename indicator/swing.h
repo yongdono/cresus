@@ -29,7 +29,7 @@ struct swing {
 };
 
 int swing_init(struct swing *s, indicator_id_t id);
-void swing_free(struct swing *s);
+void swing_release(struct swing *s);
 
 /* Indicator-specific */
 swing_t swing_type_get(struct swing *s);

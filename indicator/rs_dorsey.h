@@ -53,6 +53,6 @@ struct rs_dorsey {
 
 int rs_dorsey_init(struct rs_dorsey *r, indicator_id_t id,
 		   __list_head__(struct timeline_entry) *ref);
-void rs_dorsey_free(struct rs_dorsey *r);
+void rs_dorsey_release(struct rs_dorsey *r);
 
 #endif

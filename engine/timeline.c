@@ -25,13 +25,13 @@ int timeline_init(struct timeline *t, const char *name, struct input *in) {
   return 0;
 }
 
-void timeline_free(struct timeline *t) {
+void timeline_release(struct timeline *t) {
 
-  __list_head_free__(&t->list_entry);
-  __slist_head_free__(&t->slist_indicator);
+  __list_head_release__(&t->list_entry);
+  __slist_head_release__(&t->slist_indicator);
   
   /* 
-   * TODO : Don't forget to free() & unload data 
+   * TODO : Don't forget to release() & unload data 
    * list_entry AND slist_indicator
    */
 }

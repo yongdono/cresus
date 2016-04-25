@@ -48,9 +48,9 @@ int stoploss_init(struct stoploss *s, indicator_id_t id, double percent) {
   return 0;
 }
 
-void stoploss_free(struct stoploss *s) {
+void stoploss_release(struct stoploss *s) {
   
-  __indicator_free__(s);
+  __indicator_release__(s);
   s->value = 0.0;
   s->trigger = 0;
 }

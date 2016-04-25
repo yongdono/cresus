@@ -91,7 +91,7 @@ struct mobile {
 
 int mobile_init(struct mobile *m, indicator_id_t id, mobile_t type,
 		int period, candle_value_t cvalue);
-void mobile_free(struct mobile *m);
+void mobile_release(struct mobile *m);
 
 /* indicator-specific */
 double mobile_average(struct mobile *m);

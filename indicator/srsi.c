@@ -45,8 +45,8 @@ int srsi_init(struct srsi *s, indicator_id_t id, int max) {
   return 0;
 }
 
-void srsi_free(struct srsi *s) {
+void srsi_release(struct srsi *s) {
   
-  __indicator_free__(s);
+  __indicator_release__(s);
   free(s->array);
 }

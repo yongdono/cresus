@@ -22,7 +22,7 @@
 #define __list_super__(self)			\
   __list_self_init__(__list__(self), self);	\
   list_init(__list__(self));
-#define __list_free__(self) list_free(__list__(self));
+#define __list_release__(self) list_release(__list__(self));
 
 #define __list_add__(list, entry)		\
   list_add((list), __list__(entry))
@@ -44,7 +44,7 @@
   
 #define __list_head__(type) struct list /* Type is purely indicative */
 #define __list_head_init__(x) list_init(x)
-#define __list_head_free__(x) list_free(x)
+#define __list_head_release__(x) list_release(x)
 
 struct list {
   __list_is_superclass__;
@@ -57,7 +57,7 @@ static inline int list_init(struct list *l) {
   l->prev = l;
 }
 
-static inline void list_free(struct list *l) {
+static inline void list_release(struct list *l) {
   l->head = NULL;
   l->next = NULL;
   l->prev = NULL;
@@ -81,5 +81,7 @@ static inline void list_del(struct list *l) {
   l->next->prev = l->prev;
   l->prev->next = l->next;
 }
+
+#define list_is_head(head, ptr) ((ptr) == (head))
 
 #endif

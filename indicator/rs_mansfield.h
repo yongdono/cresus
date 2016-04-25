@@ -65,7 +65,7 @@ struct rs_mansfield {
 
 int rs_mansfield_init(struct rs_mansfield *r, indicator_id_t id, int period,
 		      __list_head__(struct timeline_entry) *ref);
-void rs_mansfield_free(struct rs_mansfield *r);
+void rs_mansfield_release(struct rs_mansfield *r);
 
 /* Indicator-specific */
 double rs_mansfield_value(struct rs_mansfield *r);

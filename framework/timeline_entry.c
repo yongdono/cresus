@@ -11,9 +11,9 @@ int timeline_entry_init(struct timeline_entry *e, time_info_t time,
   return 0;
 }
 
-void timeline_entry_free(struct timeline_entry *e) {
+void timeline_entry_release(struct timeline_entry *e) {
   
-  __list_free__(e);
+  __list_release__(e);
 }
 
 static int timeline_entry_timecmp(struct timeline_entry *e,

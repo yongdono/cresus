@@ -25,8 +25,8 @@
 #define __timeline_entry_super__(self, time, granularity)		\
   __timeline_entry_self_init__(__timeline_entry__(self), self);		\
   timeline_entry_init(__timeline_entry__(self), time, granularity)
-#define __timeline_entry_free__(self)			\
-  timeline_entry_free(__timeline_entry__(self))
+#define __timeline_entry_release__(self)			\
+  timeline_entry_release(__timeline_entry__(self))
 
 #define __timeline_entry_timecmp__(self, time)			\
   timeline_entry_timecmp(__timeline_entry__(self), time)
@@ -46,7 +46,7 @@ struct timeline_entry {
 };
 
 int timeline_entry_init(struct timeline_entry *e, time_info_t time, granularity_t g);
-void timeline_entry_free(struct timeline_entry *e);
+void timeline_entry_release(struct timeline_entry *e);
 
 /* Methods */
 struct timeline_entry *timeline_entry_find(struct timeline_entry *t, time_info_t time);

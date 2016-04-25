@@ -20,10 +20,10 @@ int cluster_init(struct cluster *c, const char *name) {
   return 0;
 }
 
-void cluster_free(struct cluster *c) {
+void cluster_release(struct cluster *c) {
 
-  __timeline_free__(c);
-  __slist_head_free__(&c->slist_timeline);
+  __timeline_release__(c);
+  __slist_head_release__(&c->slist_timeline);
   c->ref = NULL;
 }
 
@@ -38,8 +38,7 @@ static int cluster_create_index(struct cluster *c, struct candle *candle) {
   struct candle *current;
   struct timeline_entry *entry;
   
-  /* FIXME */
-  if((c->ref != &__timeline__(c)->list_entry) &&
+  if(!list_is_head(&__timeline__(c)->list_entry, c->ref) &&
      (entry = timeline_entry_find(__list_self__(c->ref),
 				  __timeline_entry__(candle)->time))){
     /* Just continue filling candle */

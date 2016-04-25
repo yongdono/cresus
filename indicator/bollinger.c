@@ -39,10 +39,10 @@ int bollinger_init(struct bollinger *b, indicator_id_t id, int period,
   return 0;
 }
 
-void bollinger_free(struct bollinger *b)
+void bollinger_release(struct bollinger *b)
 {
-  __indicator_free__(b);
-  average_free(&b->avg);
+  __indicator_release__(b);
+  average_release(&b->avg);
 }
 
 

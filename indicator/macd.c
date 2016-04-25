@@ -52,10 +52,10 @@ int macd_init(struct macd *m, indicator_id_t id,
   return 0;
 }
 
-void macd_free(struct macd *m)
+void macd_release(struct macd *m)
 {
-  __indicator_free__(m);
-  average_free(&m->fast);
-  average_free(&m->slow);
-  average_free(&m->signal);
+  __indicator_release__(m);
+  average_release(&m->fast);
+  average_release(&m->slow);
+  average_release(&m->signal);
 }

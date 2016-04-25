@@ -126,8 +126,8 @@ int yahoo_init(struct yahoo *y, const char *filename,
   return 0;
 }
 
-void yahoo_free(struct yahoo *y) {
+void yahoo_release(struct yahoo *y) {
   
-  __input_free__(y);
+  __input_release__(y);
   if(y->fp) fclose(y->fp);
 }
