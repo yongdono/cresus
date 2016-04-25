@@ -111,6 +111,7 @@ int cluster_run(struct cluster *c) {
     
     __slist_for_each__(&c->slist_timeline, t){
       struct timeline_entry *entry;
+      /* Why not use granularity here to merge candles in timeline object ? */
       if((entry = timeline_entry_by_time(t, time))){
 	/* Merge candles */
 	struct candle *c = __timeline_entry_self__(entry);
