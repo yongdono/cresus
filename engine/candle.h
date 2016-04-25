@@ -33,6 +33,8 @@ typedef enum {
 #define candle_alloc(c, time, g, open, close, high, low, volume)	\
   DEFINE_ALLOC(struct candle, c, candle_init,				\
 	       time, g, open, close, high, low, volume)
+#define candle_free(c)				\
+  DEFINE_FREE(c, candle_release)
 
 struct candle {
   /* Inherits from timeline,
