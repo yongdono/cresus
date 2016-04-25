@@ -18,6 +18,18 @@
 #define RSM   2
 
 static struct timeline *
+timeline_ref_create(const char *filename, const char *name) {
+  
+  struct yahoo *yahoo;
+  struct timeline *timeline;
+  
+  yahoo_alloc(yahoo, filename, TIME_MIN, TIME_MAX);
+  timeline_alloc(timeline, name, __input__(yahoo));
+
+  return timeline;
+}
+
+static struct timeline *
 timeline_create(const char *filename, const char *name,
 		__list_head__(struct timeline_entry) *ref_index) {
 
@@ -43,12 +55,14 @@ timeline_destroy(struct timeline *t) {
 int main(int argc, char **argv) {
 
   struct cluster cluster;
-  struct timeline *t1, *t2;
+  struct timeline *t0, *t1, *t2;
   
   cluster_init(&cluster, "my cluster");
-  t1 = timeline_create("data/AF.yahoo", "AF", cluster.ref); /* FIXME : ref */
-  t2 = timeline_create("data/AIR.yahoo", "AIR", cluster.ref); /* FIXME : ref */
+  t0 = timeline_ref_create("data/FCHI.yahoo", "^FCHI");
+  t1 = timeline_create("data/AF.yahoo", "AF", &t0->list_entry);
+  t2 = timeline_create("data/AIR.yahoo", "AIR", &t0->list_entry);
 
+  cluster_add_timeline(&cluster, t0);
   cluster_add_timeline(&cluster, t1);
   cluster_add_timeline(&cluster, t2);
 
