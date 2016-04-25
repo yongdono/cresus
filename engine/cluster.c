@@ -100,9 +100,7 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time) {
   struct timeline *t;
   struct candle *candle;
   
-  if(candle_alloc(candle, time, GRANULARITY_DAY, 0, 0, 0, 0, 0))
-    fprintf(stderr, "Alloc candle #%x\n", time);
-  else
+  if(!candle_alloc(candle, time, GRANULARITY_DAY, 0, 0, 0, 0, 0))
     goto err;
   
   __slist_for_each__(&c->slist_timeline, t){
@@ -134,17 +132,28 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time) {
 static int cluster_execute_step(struct cluster *c, time_info_t time) {
 
   struct timeline *t;
+  /* Execute indicators */
   __slist_for_each__(&c->slist_timeline, t){
+    /* Step all timelines */
     struct timeline_entry *entry;
-    /* Error : don't double-filter ! */
-    if((entry = timeline_entry_by_time(t, time))){
-      
+    if((entry = timeline_step(t))){
+      struct indicator_entry *indicator;
+      struct candle *candle = __timeline_entry_self__(entry);
+      /* Indicators management */
+      __slist_for_each__(&candle->slist_indicator, indicator){
+	/* TODO : Use function pointer ? */
+      }
     }
   }
-  
+
   return 0;
-  
- err:
+}
+
+int cluster_step(struct cluster *c) {
+
+  if(cluster_prepare_step(c, time) != -1)
+    return cluster_execute_step(c, time);
+
   return -1;
 }
 
