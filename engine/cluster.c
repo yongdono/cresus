@@ -99,23 +99,38 @@ int cluster_run(struct cluster *c) {
 
   time_info_t time;
   struct timeline *t;
-  
+
+  /* TODO : Set time_min & time_max in a realistic way */
   TIME_FOR_EACH(TIME_MIN, TIME_MAX, GRANULARITY_DAY, time){
+    /* PAssing time 'by hand" */
+    struct candle *cur;
+    if(candle_alloc(cur, time, GRANULARITY_DAY, 0, 0, 0, 0, 0))
+      fprintf(stderr, "Alloc candle #%x\n", time);
+    else
+      return -1; /* Error */
+    
     __slist_for_each__(&c->slist_timeline, t){
       struct timeline_entry *entry;
-      if((entry = timeline_entry_by_time(t, time)))
-	cluster_create_index(c, __timeline_entry_self__(entry));
-      
-      else{
-	/* Eliminate last ref cause it's incomplete */
-	struct __list__ *l = c->ref;
-	entry = __list_self__(c->ref);
-	c->ref = c->ref->prev; /* FIXME ? */
-	/* Free */
-	list_del(l);
-	candle_free(__timeline_entry_self__(entry));
-	fprintf(stderr, "No data available for %ll\n", time);
+      if((entry = timeline_entry_by_time(t, time))){
+	/* Merge candles */
+	struct candle *c = __timeline_entry_self__(entry);
+	candle_merge(cur, c);
+	
+      }else{
+	/* If we can't get all the data for 1 slot, we let it down and
+	 * check for a "complete" one */
+	candle_free(cur);
+	fprintf(stderr, "No data available for %x, letting down\n", time);
+	goto next;
       }
     }
+    /* Add data to list */
+    __list_add_tail__(&__timeline__(c)->list_entry,
+		      __timeline_entry__(cur));
+    
+  next:
+    /* We got a "break" */;
   }
+  
+  return 0;
 }

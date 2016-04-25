@@ -46,6 +46,15 @@ void candle_add_indicator_entry(struct candle *c,
   __slist_insert__(&c->slist_indicator, e);
 }
 
+void candle_merge(struct candle *c, struct candle *c2) {
+
+  c->open += c2->open;
+  c->close += c2->close;
+  c->high += c2->high;
+  c->low += c2->low;
+  c->volume += c2->volume;
+}
+
 double candle_get_value(const struct candle *c, candle_value_t value) {
   
   switch(value) {

@@ -67,7 +67,10 @@ int main(int argc, char **argv) {
   cluster_add_timeline(&cluster, t2);
 
   /* And then ? */
-  cluster_step(&cluster);
+  /* set start time ? */
+  while(cluster_step(&cluster)) {
+    
+  }
 
   /* TODO : How to sync all that stuff ? */
   
