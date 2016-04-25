@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
   struct timeline *t0, *t1, *t2;
   
   cluster_init(&cluster, "my cluster");
-  t0 = timeline_ref_create("data/FCHI.yahoo", "^FCHI");
+  t0 = timeline_ref_create("data/%5EFCHI.yahoo", "^FCHI");
   t1 = timeline_create("data/AF.yahoo", "AF", &t0->list_entry);
   t2 = timeline_create("data/AIR.yahoo", "AIR", &t0->list_entry);
 
@@ -68,6 +68,8 @@ int main(int argc, char **argv) {
 
   /* And then ? */
   cluster_step(&cluster);
+
+  /* TODO : How to sync all that stuff ? */
   
   return 0;
 }

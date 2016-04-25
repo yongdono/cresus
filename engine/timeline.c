@@ -29,11 +29,6 @@ void timeline_release(struct timeline *t) {
 
   __list_head_release__(&t->list_entry);
   __slist_head_release__(&t->slist_indicator);
-  
-  /* 
-   * TODO : Don't forget to release() & unload data 
-   * list_entry AND slist_indicator
-   */
 }
 
 int timeline_add_indicator(struct timeline *t, struct indicator *i) {
@@ -48,6 +43,27 @@ struct timeline_entry *timeline_next_entry(struct timeline *t) {
     /* Cache data */
     list_add_tail(&t->list_entry, __list__(entry));
     t->current_timeline_entry = entry; /* Speed up things */
+  }
+  
+  return entry;
+}
+
+struct timeline_entry *timeline_entry_by_time(struct timeline *t,
+					      time_info_t time) {
+  struct timeline_entry *entry;
+  while((entry = input_read(t->in))){
+    /* Granularity is provided by input entry, beware */
+    int res = timeline_entry_timecmp(entry, time);
+    if(!res){
+      /* Cache data */
+      list_add_tail(&t->list_entry, __list__(entry));
+      t->current_timeline_entry = entry; /* Speed up things */
+      break;
+      
+    }else{
+      if(res < 0) continue; /* We're late, let's move on */
+      else return NULL; /* Didn't find any with this timecode */
+    }
   }
   
   return entry;

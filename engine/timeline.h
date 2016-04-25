@@ -53,7 +53,10 @@ int timeline_init(struct timeline *t, const char *name, struct input *in);
 void timeline_release(struct timeline *t);
 
 int timeline_add_indicator(struct timeline *t, struct indicator *i);
+
 struct timeline_entry *timeline_next_entry(struct timeline *t);
+struct timeline_entry *timeline_entry_by_time(struct timeline *t, time_info_t time);
+
 struct timeline_entry *timeline_step(struct timeline *t);
 int timeline_execute(struct timeline *t);
 
