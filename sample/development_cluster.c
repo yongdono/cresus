@@ -43,7 +43,7 @@ timeline_create(const char *filename, const char *name,
   struct rs_mansfield *rsm;
 
   /* TODO : Check return values */
-  yahoo_alloc(yahoo, filename, TIME_MIN, TIME_MAX);
+  yahoo_alloc(yahoo, filename, TIME_MIN, TIME_MAX); /* load everything */
   timeline_alloc(timeline, name, __input__(yahoo));
   mobile_alloc(mobile, EMA30, MOBILE_EMA, 30, CANDLE_CLOSE);
   rs_mansfield_alloc(rsm, RSM, 14, ref_index);
@@ -58,8 +58,14 @@ int main(int argc, char **argv) {
 
   struct cluster cluster;
   struct timeline *t0, *t1, *t2;
+
+  /* 01/01/2000 */
+  time_info_t time;
+  TIME_SET_DAY(time, 1);
+  TIME_SET_MONTH(time, 1);
+  TIME_SET_YEAR(time, 2000);
   
-  cluster_init(&cluster, "my cluster", TIME_MIN, TIME_MAX);
+  cluster_init(&cluster, "my cluster", time, TIME_MAX);
   t0 = timeline_ref_create("data/%5EFCHI.yahoo", "^FCHI");
   t1 = timeline_create("data/AF.yahoo", "AF", &t0->list_entry);
   t2 = timeline_create("data/AIR.yahoo", "AIR", &t0->list_entry);

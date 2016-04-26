@@ -18,7 +18,7 @@ int timeline_init(struct timeline *t, const char *name, struct input *in) {
   __slist_super__(t);
   /* Data */
   strncpy(t->name, name, sizeof(t->name));
-  t->current_timeline_entry = NULL;
+  t->ref = &t->list_entry;
   t->in = in;
   /* Internals */
   __list_head_init__(&t->list_entry);
@@ -44,7 +44,7 @@ struct timeline_entry *timeline_next_entry(struct timeline *t) {
   if((entry = input_read(t->in))){
     /* Cache data */
     list_add_tail(&t->list_entry, __list__(entry));
-    t->current_timeline_entry = entry; /* Speed up things */
+    t->ref = entry; /* Speed up things */
   }
   
   return entry;
@@ -52,44 +52,53 @@ struct timeline_entry *timeline_next_entry(struct timeline *t) {
 
 int timeline_entry_by_time(struct timeline *t, time_info_t time,
 			   struct timeline_entry **ret) {
-  
-  struct timeline_entry *entry;
-  while((entry = input_read(t->in))){
+
+  do {
+    struct timeline_entry *entry = t->ref;
     /* Granularity is provided by input entry, beware */
     int res = timeline_entry_timecmp(entry, time);
     if(!res){
-      /* Cache data */
+      /* Cache data. Is that the right place ? */
       list_add_tail(&t->list_entry, __list__(entry));
-      t->current_timeline_entry = entry; /* Speed up things */
       *ret = entry;
       return 1;
       
     }else{
-      if(res < 0) continue; /* We're late, let's move on */
-      else return 0; /* Didn't find any with this timecode */
+      if(res < 0)
+	/* We're late, let's move on */
+	continue;
+      
+      else{
+	/* Didn't find any with this timecode */
+	PR_WARN("no input data matched timecode %llx\n", time);
+	return 0;
+      }
     }
-  }
-  
-  PR_INFO("no more data in input, it's over\n");
+    
+  }while((t->ref = input_read(t->in)));
+
+  PR_DBG("no more data in input, it's over\n");
   return -1;
 }
 
-static void timeline_step_entry(struct timeline *t) {
+static void timeline_step_entry(struct timeline *t,
+				struct timeline_entry *entry) {
 
   struct indicator *indicator;
   /* Parse indicators */
   __slist_for_each__(&t->slist_indicator, indicator){
-    indicator_feed(indicator, t->current_timeline_entry);
+    indicator_feed(indicator, entry);
     /* printf("indicator %s\n", indicator->str); */
   }
 }
 
-struct timeline_entry * timeline_step(struct timeline *t) {
-
-  struct timeline_entry *entry = t->current_timeline_entry;
+struct timeline_entry *timeline_step(struct timeline *t) {
+  
+  struct timeline_entry *entry = t->ref;
   if(entry != NULL){
-    timeline_step_entry(t);
-    t->current_timeline_entry = NULL;
+    timeline_step_entry(t, t->ref);
+    /* Increment. Beware ? */
+    //t->ref = __list_self__(__list__(t->ref)->next);
   }
   
   return entry;

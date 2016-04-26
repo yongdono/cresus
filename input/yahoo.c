@@ -19,7 +19,7 @@ static struct timeline_entry *yahoo_read(struct input *in) {
   
   y->current_entry = y->list_entry.next;
   if(y->current_entry == &y->list_entry)
-    return NULL;
+    return NULL; /* EOF */
   
   /* Don't forget we'll put it in another list */
   list_del(y->current_entry);
@@ -76,8 +76,8 @@ static int yahoo_load_entry(struct yahoo *y,
 		    open, close, high, low, volume)){
       /* Candle is allocated & init */
       *ret = __timeline_entry__(candle);
-      PR_INFO("%s %.2d/%.2d/%.4d loaded\n", y->filename,
-	      TIME_GET_MONTH(time), TIME_GET_DAY(time), TIME_GET_YEAR(time));
+      PR_DBG("%s %.2d/%.2d/%.4d loaded\n", y->filename,
+	     TIME_GET_MONTH(time), TIME_GET_DAY(time), TIME_GET_YEAR(time));
       
       return 1;
     }

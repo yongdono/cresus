@@ -66,7 +66,7 @@ static int cluster_create_index(struct cluster *c, struct candle *candle) {
 		    __list__(__timeline_entry__(current)));
       /* Update ref for next round */
       c->ref = __list__(__timeline_entry__(current));
-      PR_INFO("candle %llx created\n", __timeline_entry__(current)->time);
+      //PR_DBG("candle %llx created\n", __timeline_entry__(current)->time);
       
     }else
       return -1;
@@ -122,11 +122,11 @@ static int cluster_execute_step(struct cluster *c, time_info_t time) {
       struct indicator_entry *indicator;
       struct candle *candle = __timeline_entry_self__(entry);
       /* Indicators management */
-      __slist_for_each__(&candle->slist_indicator, indicator){
+      //__slist_for_each__(&candle->slist_indicator, indicator){
 	/* TODO : Use function pointer ?
 	 * Find a way to exploit all this data
 	 */
-      }
+      //}
     }
   }
 
@@ -147,7 +147,7 @@ int cluster_step(struct cluster *c) {
   if(ret < 0) /* EOF */
     goto out;
   
-  /* Execute if possible */
+  /* Execute when possible */
   ret = cluster_execute_step(c, time);
   
  out:
