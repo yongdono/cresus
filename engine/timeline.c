@@ -8,7 +8,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+
 #include "timeline.h"
+#include "framework/verbose.h"
 
 int timeline_init(struct timeline *t, const char *name, struct input *in) {
   
@@ -48,8 +50,9 @@ struct timeline_entry *timeline_next_entry(struct timeline *t) {
   return entry;
 }
 
-struct timeline_entry *timeline_entry_by_time(struct timeline *t,
-					      time_info_t time) {
+int timeline_entry_by_time(struct timeline *t, time_info_t time,
+			   struct timeline_entry **ret) {
+  
   struct timeline_entry *entry;
   while((entry = input_read(t->in))){
     /* Granularity is provided by input entry, beware */
@@ -58,15 +61,17 @@ struct timeline_entry *timeline_entry_by_time(struct timeline *t,
       /* Cache data */
       list_add_tail(&t->list_entry, __list__(entry));
       t->current_timeline_entry = entry; /* Speed up things */
-      break;
+      *ret = entry;
+      return 1;
       
     }else{
       if(res < 0) continue; /* We're late, let's move on */
-      else return NULL; /* Didn't find any with this timecode */
+      else return 0; /* Didn't find any with this timecode */
     }
   }
   
-  return entry;
+  PR_INFO("no more data in input, it's over\n");
+  return -1;
 }
 
 static void timeline_step_entry(struct timeline *t) {

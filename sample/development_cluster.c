@@ -14,6 +14,8 @@
 #include "indicator/mobile.h"
 #include "indicator/rs_mansfield.h"
 
+#include "framework/verbose.h"
+
 #define EMA30 1
 #define RSM   2
 
@@ -67,12 +69,9 @@ int main(int argc, char **argv) {
   cluster_add_timeline(&cluster, t2);
 
   /* And then ? */
-  /* set start time ? */
-  while(cluster_step(&cluster)) {
-    
+  while(cluster_step(&cluster) != -1){
+    PR_INFO("executing step %x\n", cluster.time);
   }
 
-  /* TODO : How to sync all that stuff ? */
-  
   return 0;
 }

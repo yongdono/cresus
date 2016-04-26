@@ -11,6 +11,7 @@
 #include <sys/types.h>
 
 #include "candle.h"
+#include "framework/verbose.h"
 
 int candle_init(struct candle *c,
 		time_info_t time, granularity_t g,
@@ -70,7 +71,7 @@ double candle_get_value(struct candle *c, candle_value_t value) {
   }
   
   /* Unknown */
-  fprintf(stderr, "candle_get_info : bad value requested (%d)", value);
+  PR_WARN("bad value requested (%d)", value);
   return 0.0;
 }
 
@@ -92,6 +93,7 @@ struct indicator *candle_find_indicator(struct candle *c,
       return indicator;
   }
 
+  PR_WARN("can't find indicator %d\n", id);
   return NULL;
 }
 

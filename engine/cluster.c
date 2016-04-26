@@ -8,6 +8,7 @@
 
 #include "cluster.h"
 #include "candle.h"
+#include "framework/verbose.h"
 
 int cluster_init(struct cluster *c, const char *name,
 		 time_info_t time_min, time_info_t time_max) {
@@ -65,6 +66,7 @@ static int cluster_create_index(struct cluster *c, struct candle *candle) {
 		    __list__(__timeline_entry__(current)));
       /* Update ref for next round */
       c->ref = __list__(__timeline_entry__(current));
+      PR_INFO("candle %x created\n", __timeline_entry__(current)->time);
       
     }else
       return -1;
@@ -75,33 +77,33 @@ static int cluster_create_index(struct cluster *c, struct candle *candle) {
 
 static int cluster_prepare_step(struct cluster *c, time_info_t time) {
 
+  int res;
   struct timeline *t;
   struct candle *candle;
 
   if(!candle_alloc(candle, time, c->g, 0, 0, 0, 0, 0))
-    return -1;
+    return -1; /* Error. TODO : add some kind of errno */
   
   __slist_for_each__(&c->slist_timeline, t){
     struct timeline_entry *entry;
     /* Why not use granularity here to merge candles in timeline object ? */
-    if((entry = timeline_entry_by_time(t, time))){
-      /* Merge candles */
-      /* TODO : What if there's no more data ? */
-      struct candle *c2 = __timeline_entry_self__(entry);
-      candle_merge(candle, c2);
+    if((res = timeline_entry_by_time(t, time, &entry)) <= 0){
+      candle_free(candle);
+      PR_WARN("not enough data available for %x\n", time);
+      return res; /* EOF or 0 (no data available) */
       
     }else{
-      /* If we can't get all the data for 1 slot, we let it down and
-       * check for a "complete" one */
-      candle_free(candle);
-      fprintf(stderr, "No data available for %x\n", time);
-      return 0;
+      /* Merge candles */
+      struct candle *c2 = __timeline_entry_self__(entry);
+      candle_merge(candle, c2);
     }
   }
+  
   /* Add data to list */
   __list_add_tail__(&__timeline__(c)->list_entry,
 		    __timeline_entry__(candle));
 
+  PR_INFO("added candle %x in cluster\n", time);
   return 1;
 }
 
