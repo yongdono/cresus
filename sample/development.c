@@ -32,7 +32,7 @@ static void run_timeline(struct timeline *t) {
 
   /* Step by step loop */
   struct timeline_entry *entry;
-  while(timeline_entry_next(t, entry) != -1){
+  while(timeline_entry_next(t, &entry) != -1){
     int n = 0;
     struct indicator_entry *ientry;
     struct candle *c = __timeline_entry_self__(entry);

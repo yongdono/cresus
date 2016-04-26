@@ -39,11 +39,11 @@ int timeline_add_indicator(struct timeline *t, struct indicator *i) {
 }
 
 int timeline_entry_next(struct timeline *t, struct timeline_entry **ret) {
-  
+
+  /* Is that function necessary ? */
   struct timeline_entry *entry;
   if((entry = input_read(t->in))){
     /* Cache data */
-    list_add_tail(&t->list_entry, __list__(entry));
     t->ref = entry; /* Speed up things */
     /* Go out */
     *ret = entry;
@@ -58,8 +58,8 @@ int timeline_entry_by_time(struct timeline *t, time_info_t time,
 
 
   do {
+    /* Try to find a matching entry */
     struct timeline_entry *entry = t->ref;
-
     /* No init yet */
     if(!entry)
       continue;
