@@ -11,6 +11,7 @@
 
 #include "yahoo.h"
 #include "engine/candle.h"
+#include "framework/verbose.h"
 
 static struct timeline_entry *yahoo_read(struct input *in) {
   
@@ -75,6 +76,9 @@ static int yahoo_load_entry(struct yahoo *y,
 		    open, close, high, low, volume)){
       /* Candle is allocated & init */
       *ret = __timeline_entry__(candle);
+      PR_INFO("%s %.2d/%.2d/%.4d loaded\n", y->filename,
+	      TIME_GET_MONTH(time), TIME_GET_DAY(time), TIME_GET_YEAR(time));
+      
       return 1;
     }
     
@@ -117,12 +121,14 @@ int yahoo_init(struct yahoo *y, const char *filename,
   __input_super__(y, yahoo_read, from, to);
   __list_head_init__(&y->list_entry);
   
-  if(!(y->fp = fopen(filename, "r")))
+  strncpy(y->filename, filename, sizeof(y->filename));
+  if(!(y->fp = fopen(y->filename, "r"))){
+    PR_ERR("unable to open file %s\n", y->filename);
     return -1;
-
+  }
+  
   /* Load all data */
   yahoo_load(y);
-  
   return 0;
 }
 

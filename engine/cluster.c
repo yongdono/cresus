@@ -66,7 +66,7 @@ static int cluster_create_index(struct cluster *c, struct candle *candle) {
 		    __list__(__timeline_entry__(current)));
       /* Update ref for next round */
       c->ref = __list__(__timeline_entry__(current));
-      PR_INFO("candle %x created\n", __timeline_entry__(current)->time);
+      PR_INFO("candle %llx created\n", __timeline_entry__(current)->time);
       
     }else
       return -1;
@@ -89,7 +89,9 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time) {
     /* Why not use granularity here to merge candles in timeline object ? */
     if((res = timeline_entry_by_time(t, time, &entry)) <= 0){
       candle_free(candle);
-      PR_WARN("not enough data available for %x\n", time);
+      PR_WARN("not enough data available for %.2d/%.2d/%.4d\n",
+	      TIME_GET_MONTH(time), TIME_GET_DAY(time), TIME_GET_YEAR(time));
+      
       return res; /* EOF or 0 (no data available) */
       
     }else{
@@ -103,7 +105,9 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time) {
   __list_add_tail__(&__timeline__(c)->list_entry,
 		    __timeline_entry__(candle));
 
-  PR_INFO("added candle %x in cluster\n", time);
+  PR_INFO("added candle %.2d/%.2d/%.4d in cluster\n", TIME_GET_MONTH(time),
+	  TIME_GET_DAY(time), TIME_GET_YEAR(time));
+  
   return 1;
 }
 

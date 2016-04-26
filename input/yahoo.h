@@ -31,6 +31,8 @@ struct yahoo {
   /* Yahoo file format is LIFO */
   struct list list_entry;
   struct list *current_entry;
+  /* Debug */
+  char filename[256];
 };
 
 int yahoo_init(struct yahoo *y, const char *filename,
