@@ -20,9 +20,12 @@ struct cluster {
   __slist_head__(struct timeline) slist_timeline;
   /* We need to speed things up finding entries */
   __list_head__(struct timeline_entry) *ref;
+  /* Time info */
+  granularity_t g;
+  time_info_t time, time_max;
 };
 
-int cluster_init(struct cluster *c, const char *name);
+int cluster_init(struct cluster *c, const char *name, time_info_t time_min, time_info_t time_max);
 void cluster_release(struct cluster *c);
 
 int cluster_add_timeline(struct cluster *c, struct timeline *t);

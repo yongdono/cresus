@@ -88,8 +88,9 @@ typedef long long granularity_t;
 #define TIME_GET_YEAR(t)   (int)((t & YEAR_MASK)   >> YEAR_SHIFT)
 
 #define TIMECMP(t1, t2, g) ((t1 & g) - (t2 & g))
+#define TIMEADD(t, g, unit) (t = (t + (~g + unit)))
 /* Some kinda sync */
-#define TIME_FOR_EACH(start, stop, granularity, time)		\
-  for(time = start; time < stop; time += (~(granularity) + 1))
+#define TIME_FOR_EACH(start, stop, g, time)		\
+  for(time = start; time < stop; TIMEADD(time, g, 1))
 
 #endif

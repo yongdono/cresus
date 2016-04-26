@@ -55,18 +55,18 @@ void candle_merge(struct candle *c, struct candle *c2) {
   c->volume += c2->volume;
 }
 
-double candle_get_value(const struct candle *c, candle_value_t value) {
+double candle_get_value(struct candle *c, candle_value_t value) {
   
   switch(value) {
-    case CANDLE_OPEN : return c->open;
-    case CANDLE_CLOSE : return c->close;
-    case CANDLE_HIGH : return c->high;
-    case CANDLE_LOW : return c->low;
-    case CANDLE_VOLUME : return c->volume;
-    case CANDLE_TYPICAL : return (c->high + c->low + c->close) / 3.0;
-    case CANDLE_WEIGHTED : return (c->high + c->low + 2 * c->close) / 4.0;
-    case CANDLE_MEDIAN : return (c->high + c->low) / 2.0;
-    case CANDLE_TOTAL : return (c->high + c->low + c->open + c->close) / 4.0;
+  case CANDLE_OPEN : return c->open;
+  case CANDLE_CLOSE : return c->close;
+  case CANDLE_HIGH : return c->high;
+  case CANDLE_LOW : return c->low;
+  case CANDLE_VOLUME : return c->volume;
+  case CANDLE_TYPICAL : return (c->high + c->low + c->close) / 3.0;
+  case CANDLE_WEIGHTED : return (c->high + c->low + 2 * c->close) / 4.0;
+  case CANDLE_MEDIAN : return (c->high + c->low) / 2.0;
+  case CANDLE_TOTAL : return (c->high + c->low + c->open + c->close) / 4.0;
   }
   
   /* Unknown */
@@ -74,13 +74,25 @@ double candle_get_value(const struct candle *c, candle_value_t value) {
   return 0.0;
 }
 
-int candle_get_direction(const struct candle *c)
+int candle_get_direction(struct candle *c)
 {
   /*
   if(c->open > c->close) return -1;
   if(c->open < c->close) return 1;
   */
   return (c->close - c->open);
+}
+
+struct indicator *candle_find_indicator(struct candle *c,
+					indicator_id_t id) {
+
+  struct indicator *indicator;
+  __slist_for_each__(&c->slist_indicator, indicator){
+    if(indicator->id == id)
+      return indicator;
+  }
+
+  return NULL;
 }
 
 /* Debug */

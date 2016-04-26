@@ -64,8 +64,9 @@ void candle_add_indicator_entry(struct candle *c,
 				struct indicator_entry *e);
 
 void candle_merge(struct candle *c, struct candle *c2);
-double candle_get_value(const struct candle *c, candle_value_t value);
-int candle_get_direction(const struct candle *c);
+double candle_get_value(struct candle *c, candle_value_t value);
+int candle_get_direction(struct candle *c);
+struct indicator *candle_find_indicator(struct candle *c, indicator_id_t id);
 
 /* Debug */
 const char *candle_str(struct candle *c);

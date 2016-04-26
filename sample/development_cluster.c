@@ -22,7 +22,8 @@ timeline_ref_create(const char *filename, const char *name) {
   
   struct yahoo *yahoo;
   struct timeline *timeline;
-  
+
+  /* TODO : check */
   yahoo_alloc(yahoo, filename, TIME_MIN, TIME_MAX);
   timeline_alloc(timeline, name, __input__(yahoo));
 
@@ -48,8 +49,7 @@ timeline_create(const char *filename, const char *name,
   return timeline;
 }
 
-static void
-timeline_destroy(struct timeline *t) {
+static void timeline_destroy(struct timeline *t) {
 }
 
 int main(int argc, char **argv) {
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
   struct cluster cluster;
   struct timeline *t0, *t1, *t2;
   
-  cluster_init(&cluster, "my cluster");
+  cluster_init(&cluster, "my cluster", TIME_MIN, TIME_MAX);
   t0 = timeline_ref_create("data/%5EFCHI.yahoo", "^FCHI");
   t1 = timeline_create("data/AF.yahoo", "AF", &t0->list_entry);
   t2 = timeline_create("data/AIR.yahoo", "AIR", &t0->list_entry);
