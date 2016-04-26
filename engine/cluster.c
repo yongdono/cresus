@@ -142,9 +142,9 @@ int cluster_step(struct cluster *c) {
   
   /* Loop-read to ignore missing data */
   do {
+    PR_DBG("cal : %s\n", calendar_str(&c->cal));
     ret = cluster_prepare_step(c, time, &entry);
     calendar_next(&c->cal, &time);
-    PR_DBG("cal : %s\n", calendar_str(&c->cal));
   }while(!ret);
   
   if(ret < 0){ /* EOF */

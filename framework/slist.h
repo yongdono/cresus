@@ -47,6 +47,7 @@ struct slist {
 
 static inline int slist_init(struct slist *s) {
   s->next = NULL;
+  return 0;
 }
 
 static inline void slist_release(struct slist *s) {

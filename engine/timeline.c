@@ -33,7 +33,7 @@ void timeline_release(struct timeline *t) {
   __slist_head_release__(&t->slist_indicator);
 }
 
-int timeline_add_indicator(struct timeline *t, struct indicator *i) {
+void timeline_add_indicator(struct timeline *t, struct indicator *i) {
 
   __slist_insert__(&t->slist_indicator, i);
 }

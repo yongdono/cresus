@@ -55,6 +55,7 @@ static inline int list_init(struct list *l) {
   l->head = l;
   l->next = l;
   l->prev = l;
+  return 0;
 }
 
 static inline void list_release(struct list *l) {

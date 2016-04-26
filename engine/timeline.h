@@ -52,7 +52,7 @@ struct timeline {
 int timeline_init(struct timeline *t, const char *name, struct input *in);
 void timeline_release(struct timeline *t);
 
-int timeline_add_indicator(struct timeline *t, struct indicator *i);
+void timeline_add_indicator(struct timeline *t, struct indicator *i);
 
 /* TODO : find something better. timeline shoud pilot input maybe ? */
 int timeline_entry_next(struct timeline *t, struct timeline_entry **ret);

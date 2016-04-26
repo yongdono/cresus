@@ -54,17 +54,20 @@ timeline_create(const char *filename, const char *name,
 static void timeline_destroy(struct timeline *t) {
 }
 
+#include "engine/calendar.h"
+
 int main(int argc, char **argv) {
 
   struct cluster cluster;
   struct timeline *t0, *t1, *t2;
 
   /* 01/01/2000 */
-  time_info_t time;
+  time_info_t time = 0;
   TIME_SET_DAY(time, 1);
   TIME_SET_MONTH(time, 1);
   TIME_SET_YEAR(time, 2000);
-  
+
+  /*
   cluster_init(&cluster, "my cluster", time, TIME_MAX);
   t0 = timeline_ref_create("data/%5EFCHI.yahoo", "^FCHI");
   t1 = timeline_create("data/AF.yahoo", "AF", &t0->list_entry);
@@ -73,10 +76,22 @@ int main(int argc, char **argv) {
   cluster_add_timeline(&cluster, t0);
   cluster_add_timeline(&cluster, t1);
   cluster_add_timeline(&cluster, t2);
+  */
 
+  int n = 0;
+  struct calendar cal;
+  
+  calendar_init(&cal, time, GRANULARITY_DAY);
+  while(calendar_next(&cal, &time) != -1 && n < 100){
+    PR_DBG("executing step %s\n", calendar_str(&cal));
+    n++;
+  }
+
+  return 0;
+  
   /* And then ? */
   while(cluster_step(&cluster) != -1){
-    PR_DBG("executing step %s\n", calendar_str(&cluster.cal));
+    //PR_DBG("executing step %s\n", calendar_str(&cluster.cal));
   }
 
   return 0;
