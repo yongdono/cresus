@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include "calendar.h"
+#include "framework/verbose.h"
 
 /* TODO : Put this in types.h */
 static int day_max[2][12] = {
-  { 30, 27, 30, 29, 30, 29, 30, 30, 29, 30, 29, 30 },
-  { 30, 28, 30, 29, 30, 29, 30, 30, 29, 30, 29, 30 },
+  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
+  { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
 };
 
 int calendar_init(struct calendar *c, time_info_t time, granularity_t g) {
@@ -27,7 +28,7 @@ static int calendar_is_leap_year(struct calendar *c) {
 
 static int calendar_day_max(struct calendar *c) {
   
-  int month = TIME_GET_MONTH(c->time);
+  int month = TIME_GET_MONTH(c->time) - 1;
   int leap = calendar_is_leap_year(c);
   return day_max[leap][month];
 }
@@ -55,11 +56,11 @@ int calendar_next(struct calendar *c, time_info_t *time) {
   }
   /* This one's more delicate */
   if(TIME_GET_DAY(c->time) > calendar_day_max(c)){
-    TIME_SET_DAY(c->time, 0);
+    TIME_SET_DAY(c->time, 1);
     TIMEADD(c->time, GRANULARITY_MONTH, 1);
   }
   if(TIME_GET_MONTH(c->time) > MONTH_MAX){
-    TIME_SET_MONTH(c->time, 0);
+    TIME_SET_MONTH(c->time, 1);
     TIMEADD(c->time, GRANULARITY_YEAR, 1);
   }
 

@@ -67,7 +67,6 @@ int main(int argc, char **argv) {
   TIME_SET_MONTH(time, 1);
   TIME_SET_YEAR(time, 2000);
 
-  /*
   cluster_init(&cluster, "my cluster", time, TIME_MAX);
   t0 = timeline_ref_create("data/%5EFCHI.yahoo", "^FCHI");
   t1 = timeline_create("data/AF.yahoo", "AF", &t0->list_entry);
@@ -76,8 +75,8 @@ int main(int argc, char **argv) {
   cluster_add_timeline(&cluster, t0);
   cluster_add_timeline(&cluster, t1);
   cluster_add_timeline(&cluster, t2);
-  */
 
+  /*
   int n = 0;
   struct calendar cal;
   
@@ -88,6 +87,7 @@ int main(int argc, char **argv) {
   }
 
   return 0;
+  */
   
   /* And then ? */
   while(cluster_step(&cluster) != -1){
