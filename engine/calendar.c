@@ -2,7 +2,7 @@
 #include "calendar.h"
 
 /* TODO : Put this in types.h */
-int day_max[2][12] = {
+static int day_max[2][12] = {
   { 30, 27, 30, 29, 30, 29, 30, 30, 29, 30, 29, 30 },
   { 30, 28, 30, 29, 30, 29, 30, 30, 29, 30, 29, 30 },
 };
