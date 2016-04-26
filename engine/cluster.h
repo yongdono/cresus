@@ -12,6 +12,7 @@
 #include "framework/list.h"
 #include "framework/slist.h"
 #include "engine/timeline.h"
+#include "engine/calendar.h"
 
 struct cluster {
   /* First, a cluster is a timeline cause it's an indice computer */
@@ -21,8 +22,8 @@ struct cluster {
   /* We need to speed things up finding entries */
   __list_head__(struct timeline_entry) *ref;
   /* Time info */
-  granularity_t g;
-  time_info_t time, time_max;
+  struct calendar cal;
+  time_info_t time_max;
 };
 
 int cluster_init(struct cluster *c, const char *name, time_info_t time_min, time_info_t time_max);

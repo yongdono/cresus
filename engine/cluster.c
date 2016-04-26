@@ -6,8 +6,8 @@
  *
  */
 
-#include "cluster.h"
 #include "candle.h"
+#include "cluster.h"
 #include "framework/verbose.h"
 
 int cluster_init(struct cluster *c, const char *name,
@@ -18,10 +18,8 @@ int cluster_init(struct cluster *c, const char *name,
   __slist_head_init__(&c->slist_timeline);
   /* Set options */
   c->ref = &__timeline__(c)->list_entry;
-  c->time = time_min;
+  calendar_init(&c->cal, time_min, GRANULARITY_DAY); /* FIXME */
   c->time_max = time_max;
-   /* FIXME : make other granularities available */
-  c->g = GRANULARITY_DAY;    
 
   return 0;
 }
@@ -30,7 +28,9 @@ void cluster_release(struct cluster *c) {
 
   __timeline_release__(c);
   __slist_head_release__(&c->slist_timeline);
+
   c->ref = NULL;
+  calendar_release(&c->cal);
 }
 
 int cluster_add_timeline(struct cluster *c, struct timeline *t) {
@@ -82,7 +82,7 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
   struct timeline *t;
   struct candle *candle;
   
-  if(!candle_alloc(candle, time, c->g, 0, 0, 0, 0, 0))
+  if(!candle_alloc(candle, time, c->cal.g, 0, 0, 0, 0, 0)) /* FIXME */
     return -1; /* Error. TODO : add some kind of errno */
   
   __slist_for_each__(&c->slist_timeline, t){
@@ -137,14 +137,14 @@ static int cluster_execute_step(struct cluster *c,
 int cluster_step(struct cluster *c) {
 
   int ret;
-  time_info_t time;
   struct timeline_entry *entry;
+  time_info_t time = c->cal.time; /* FIXME */
   
   /* Loop-read to ignore missing data */
   do {
-    time = c->time;
     ret = cluster_prepare_step(c, time, &entry);
-    TIMEADD(c->time, c->g, 1);
+    calendar_next(&c->cal, &time);
+    PR_DBG("cal : %s\n", calendar_str(&c->cal));
   }while(!ret);
   
   if(ret < 0){ /* EOF */

@@ -13,8 +13,8 @@
 /* SECOND 0-59        (111011) -  6 bits - << 10 */
 /* MINUTE 0-59        (111011) -  6 bits - << 16 */
 /* HOUR   0-23         (10111) -  5 bits - << 22 */
-/* DAY    0-31         (11111) -  5 bits - << 27 */
-/* MONTH  0-12          (1100) -  4 bits - << 32 */
+/* DAY    0-30         (11110) -  5 bits - << 27 */
+/* MONTH  0-11          (1011) -  4 bits - << 32 */
 /* YEAR   0-2047 (11111111111) - 11 bits - << 36 */
 
 /* Limit is 12/31/2047 23:59:59 ::999 */
@@ -45,6 +45,15 @@
 #define MONTH_MASK  (BITMASK(MONTH_NBIT)  << MONTH_SHIFT)
 #define YEAR_MASK   (BITMASK(YEAR_NBIT)   << YEAR_SHIFT)
 
+/* Some max info */
+#define MSEC_MAX   999
+#define SECOND_MAX 59
+#define MINUTE_MAX 59
+#define HOUR_MAX   23
+#define DAY_MAX    30 /* ! */
+#define MONTH_MAX  11
+#define YEAR_MAX   2047
+
 /* Our basic types */
 
 typedef long long time_info_t;
@@ -73,19 +82,21 @@ typedef long long granularity_t;
 #define TIME_SET_HOUR(t, h)						\
   t = ((t & ~HOUR_MASK)   | ((BITMASK(HOUR_NBIT) & h)   << HOUR_SHIFT))
 #define TIME_SET_DAY(t, d)						\
-  t = ((t & ~DAY_MASK)    | ((BITMASK(DAY_NBIT) & d)    << DAY_SHIFT))
-#define TIME_SET_MONTH(t, m)						\
-  t = ((t & ~MONTH_MASK)  | ((BITMASK(MONTH_NBIT) & m)  << MONTH_SHIFT))
+  t = ((t & ~DAY_MASK)    |						\
+       ((BITMASK(DAY_NBIT) & (d - 1))   << DAY_SHIFT))
+#define TIME_SET_MONTH(t, m)					\
+  t = ((t & ~MONTH_MASK)  |					\
+       ((BITMASK(MONTH_NBIT) & (m - 1)) << MONTH_SHIFT)) 
 #define TIME_SET_YEAR(t, y)						\
   t = ((t & ~YEAR_MASK)   | ((BITMASK(YEAR_NBIT) & y)   << YEAR_SHIFT))
 
-#define TIME_GET_MSEC(t)   (int)((t & MSEC_MASK)   >> MSEC_SHIFT)
-#define TIME_GET_SECOND(t) (int)((t & SECOND_MASK) >> SECOND_SHIFT)
-#define TIME_GET_MINUTE(t) (int)((t & MINUTE_MASK) >> MINUTE_SHIFT)
-#define TIME_GET_HOUR(t)   (int)((t & HOUR_MASK)   >> HOUR_SHIFT)
-#define TIME_GET_DAY(t)    (int)((t & DAY_MASK)    >> DAY_SHIFT)
-#define TIME_GET_MONTH(t)  (int)((t & MONTH_MASK)  >> MONTH_SHIFT)
-#define TIME_GET_YEAR(t)   (int)((t & YEAR_MASK)   >> YEAR_SHIFT)
+#define TIME_GET_MSEC(t)   (int)((t & MSEC_MASK)    >> MSEC_SHIFT)
+#define TIME_GET_SECOND(t) (int)((t & SECOND_MASK)  >> SECOND_SHIFT)
+#define TIME_GET_MINUTE(t) (int)((t & MINUTE_MASK)  >> MINUTE_SHIFT)
+#define TIME_GET_HOUR(t)   (int)((t & HOUR_MASK)    >> HOUR_SHIFT)
+#define TIME_GET_DAY(t)    (int)(((t & DAY_MASK)    >> DAY_SHIFT) + 1)
+#define TIME_GET_MONTH(t)  (int)(((t & MONTH_MASK)  >> MONTH_SHIFT) + 1)
+#define TIME_GET_YEAR(t)   (int)((t & YEAR_MASK)    >> YEAR_SHIFT)
 
 #define TIMECMP(t1, t2, g) ((t1 & g) - (t2 & g))
 #define TIMEADD(t, g, unit) (t = (t + (~g + unit)))

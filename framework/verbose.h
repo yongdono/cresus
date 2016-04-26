@@ -13,7 +13,7 @@
   fprintf(stderr, esc "%s: " format "\x1b[1;0m", __func__, ##__VA_ARGS__)
 
 #define PR_DBG(format, ...)  PR(format, "\x1b[1;36m", ##__VA_ARGS__)
-#define PR_INFO(format, ...) PR(format, "\x1b[1;32m",  ##__VA_ARGS__)
+#define PR_INFO(format, ...) PR(format, "\x1b[1;32m", ##__VA_ARGS__)
 #define PR_WARN(format, ...) PR(format, "\x1b[1;33m", ##__VA_ARGS__)
 #define PR_ERR(format, ...)  PR(format, "\x1b[1;31m", ##__VA_ARGS__)
 
