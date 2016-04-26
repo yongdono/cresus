@@ -56,7 +56,6 @@ int timeline_entry_next(struct timeline *t, struct timeline_entry **ret) {
 int timeline_entry_by_time(struct timeline *t, time_info_t time,
 			   struct timeline_entry **ret) {
 
-
   do {
     /* Try to find a matching entry */
     struct timeline_entry *entry = t->ref;

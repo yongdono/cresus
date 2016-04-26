@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 
   /* And then ? */
   while(cluster_step(&cluster) != -1){
-    PR_INFO("executing step %x\n", cluster.time);
+    PR_DBG("executing step %llx\n", cluster.time);
   }
 
   return 0;
