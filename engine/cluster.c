@@ -75,12 +75,13 @@ static int cluster_create_index(struct cluster *c, struct candle *candle) {
   return 0;
 }
 
-static int cluster_prepare_step(struct cluster *c, time_info_t time) {
-
+static int cluster_prepare_step(struct cluster *c, time_info_t time,
+				struct timeline_entry **ret) {
+  
   int res;
   struct timeline *t;
   struct candle *candle;
-
+  
   if(!candle_alloc(candle, time, c->g, 0, 0, 0, 0, 0))
     return -1; /* Error. TODO : add some kind of errno */
   
@@ -89,7 +90,7 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time) {
     /* Why not use granularity here to merge candles in timeline object ? */
     if((res = timeline_entry_by_time(t, time, &entry)) <= 0){
       candle_free(candle);
-      PR_WARN("not enough data available for %.2d/%.2d/%.4d\n",
+      PR_WARN("not enough data available in %s for %.2d/%.2d/%.4d\n", t->name,
 	      TIME_GET_MONTH(time), TIME_GET_DAY(time), TIME_GET_YEAR(time));
       
       return res; /* EOF or 0 (no data available) */
@@ -98,34 +99,34 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time) {
       /* Merge candles */
       struct candle *c2 = __timeline_entry_self__(entry);
       candle_merge(candle, c2);
+      PR_INFO("added candle %s %.2d/%.2d/%.4d in cluster\n", t->name,
+	      TIME_GET_MONTH(time), TIME_GET_DAY(time), TIME_GET_YEAR(time));
     }
   }
   
   /* Add data to list */
+  *ret = __timeline_entry__(candle);
   __list_add_tail__(&__timeline__(c)->list_entry,
 		    __timeline_entry__(candle));
-
-  PR_INFO("added candle %.2d/%.2d/%.4d in cluster\n", TIME_GET_MONTH(time),
-	  TIME_GET_DAY(time), TIME_GET_YEAR(time));
   
   return 1;
 }
 
-static int cluster_execute_step(struct cluster *c, time_info_t time) {
+static int cluster_execute_step(struct cluster *c,
+				struct timeline_entry *entry) {
 
   struct timeline *t;
   /* Execute indicators */
   __slist_for_each__(&c->slist_timeline, t){
     /* Step all timelines */
-    struct timeline_entry *entry;
-    if((entry = timeline_step(t))){
+    if(timeline_step(t, entry)){
       struct indicator_entry *indicator;
       struct candle *candle = __timeline_entry_self__(entry);
       /* Indicators management */
       //__slist_for_each__(&candle->slist_indicator, indicator){
-	/* TODO : Use function pointer ?
-	 * Find a way to exploit all this data
-	 */
+      /* TODO : Use function pointer ?
+       * Find a way to exploit all this data
+       */
       //}
     }
   }
@@ -137,18 +138,22 @@ int cluster_step(struct cluster *c) {
 
   int ret;
   time_info_t time;
+  struct timeline_entry *entry;
+  
   /* Loop-read to ignore missing data */
   do {
     time = c->time;
-    ret = cluster_prepare_step(c, time);
+    ret = cluster_prepare_step(c, time, &entry);
     TIMEADD(c->time, c->g, 1);
   }while(!ret);
   
-  if(ret < 0) /* EOF */
+  if(ret < 0){ /* EOF */
+    PR_ERR("no more data in input(s)\n");
     goto out;
+  }
   
   /* Execute when possible */
-  ret = cluster_execute_step(c, time);
+  ret = cluster_execute_step(c, entry);
   
  out:
   return ret;
@@ -158,12 +163,16 @@ int cluster_run(struct cluster *c) {
 
   time_info_t time;
   struct timeline *t;
-
+  struct timeline_entry *entry;
+  
   /* TODO : Set time_min & time_max in a realistic way */
   TIME_FOR_EACH(TIME_MIN, TIME_MAX, GRANULARITY_DAY, time){
     /* Passing time 'by hand" */
-    if(cluster_prepare_step(c, time) != -1)
-      cluster_execute_step(c, time);
+    if(cluster_prepare_step(c, time, &entry) != -1)
+      cluster_execute_step(c, entry);
+    
+    else
+      break;
   }
   
   return 0;

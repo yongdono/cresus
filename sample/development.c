@@ -32,12 +32,12 @@ static void run_timeline(struct timeline *t) {
 
   /* Step by step loop */
   struct timeline_entry *entry;
-  while((entry = timeline_next_entry(t))){
+  while(timeline_entry_next(t, entry) != -1){
     int n = 0;
     struct indicator_entry *ientry;
     struct candle *c = __timeline_entry_self__(entry);
     /* Execute */
-    timeline_step(t);
+    timeline_step(t, entry);
     printf("%s - ", candle_str(__timeline_entry_self__(entry)));
     /* Then check results */
     __slist_for_each__(&c->slist_indicator, ientry){
