@@ -68,7 +68,7 @@ int timeline_entry_by_time(struct timeline *t, time_info_t time,
       continue;
     
     /* Granularity is provided by input entry, beware */
-    int res = timeline_entry_timecmp(entry, time);
+    time_info_t res = timeline_entry_timecmp(entry, time);
     if(!res){
       /* Cache data. Is that the right place ? */
       PR_DBG("found entry->time = %s (%llx), time = %s (%llx) %lld\n",
