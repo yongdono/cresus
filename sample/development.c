@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
   struct yahoo *yahoo;
   struct timeline *timeline;
 
-  if(yahoo_alloc(yahoo, "data/FCHI.yahoo", TIME_MIN, TIME_MAX)){
+  if(yahoo_alloc(yahoo, "data/%5EFCHI.yahoo", TIME_MIN, TIME_MAX)){
     if(timeline_alloc(timeline, "^FCHI", __input__(yahoo))){
       struct mobile *m;
       /* Add a series of EMAs */
