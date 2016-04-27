@@ -73,23 +73,29 @@ typedef long long granularity_t;
 #define GRANULARITY_MONTH  (MONTH_MASK|YEAR_MASK)
 #define GRANULARITY_YEAR   (YEAR_MASK)
 
-#define TIME_SET_MSEC(t, m)						\
-  t = ((t & ~MSEC_MASK)   | ((BITMASK(MSEC_NBIT) & m)   << MSEC_SHIFT))
-#define TIME_SET_SECOND(t, s)						\
-  t = ((t & ~SECOND_MASK) | ((BITMASK(SECOND_NBIT) & s) << SECOND_SHIFT))
-#define TIME_SET_MINUTE(t, m)						\
-  t = ((t & ~MINUTE_MASK) | ((BITMASK(MINUTE_NBIT) & m) << MINUTE_SHIFT))
-#define TIME_SET_HOUR(t, h)						\
-  t = ((t & ~HOUR_MASK)   | ((BITMASK(HOUR_NBIT) & h)   << HOUR_SHIFT))
-#define TIME_SET_DAY(t, d)						\
-  t = ((t & ~DAY_MASK)    |						\
-       ((BITMASK(DAY_NBIT) & (d - 1))   << DAY_SHIFT))
-#define TIME_SET_MONTH(t, m)					\
-  t = ((t & ~MONTH_MASK)  |					\
-       ((BITMASK(MONTH_NBIT) & (m - 1)) << MONTH_SHIFT)) 
-#define TIME_SET_YEAR(t, y)						\
-  t = ((t & ~YEAR_MASK)   | ((BITMASK(YEAR_NBIT) & y)   << YEAR_SHIFT))
+/* Value generators */
+#define VAL_MSEC(m) ((BITMASK(MSEC_NBIT) & m) << MSEC_SHIFT)
+#define VAL_SECOND(s) ((BITMASK(SECOND_NBIT) & s) << SECOND_SHIFT)
+#define VAL_MINUTE(m) ((BITMASK(MINUTE_NBIT) & m) << MINUTE_SHIFT)
+#define VAL_HOUR(h) ((BITMASK(HOUR_NBIT) & h) << HOUR_SHIFT)
+#define VAL_DAY(d) ((BITMASK(DAY_NBIT) & (d - 1)) << DAY_SHIFT)
+#define VAL_MONTH(m) ((BITMASK(MONTH_NBIT) & (m - 1)) << MONTH_SHIFT)
+#define VAL_YEAR(y) ((BITMASK(YEAR_NBIT) & y) << YEAR_SHIFT)
 
+#define TIME_INIT(y, m, d, h, mn, s, ms)				\
+  (VAL_MSEC(ms) | VAL_SECOND(s) | VAL_MINUTE(mn) | VAL_HOUR(h) |	\
+   VAL_DAY(d) | VAL_MONTH(m) | VAL_YEAR(y))
+
+/* Set accessors */
+#define TIME_SET_MSEC(t, m)   t = ((t & ~MSEC_MASK)   | VAL_MSEC(m))
+#define TIME_SET_SECOND(t, s) t = ((t & ~SECOND_MASK) | VAL_SECOND(s))
+#define TIME_SET_MINUTE(t, m) t = ((t & ~MINUTE_MASK) | VAL_MINUTE(m))
+#define TIME_SET_HOUR(t, h)   t = ((t & ~HOUR_MASK)   | VAL_HOUR(h))
+#define TIME_SET_DAY(t, d)    t = ((t & ~DAY_MASK)    |	VAL_DAY(d))
+#define TIME_SET_MONTH(t, m)  t = ((t & ~MONTH_MASK)  |	VAL_MONTH(m))
+#define TIME_SET_YEAR(t, y)   t = ((t & ~YEAR_MASK)   | VAL_YEAR(y))
+
+/* Get accessors */
 #define TIME_GET_MSEC(t)   (int)((t & MSEC_MASK)    >> MSEC_SHIFT)
 #define TIME_GET_SECOND(t) (int)((t & SECOND_MASK)  >> SECOND_SHIFT)
 #define TIME_GET_MINUTE(t) (int)((t & MINUTE_MASK)  >> MINUTE_SHIFT)

@@ -103,7 +103,7 @@ struct timeline_entry *timeline_step(struct timeline *t,
   /* And execute indicators */
   __slist_for_each__(&t->slist_indicator, indicator){
     indicator_feed(indicator, entry);
-    /* PR_DBG("indicator %s\n", indicator->str); */
+    PR_DBG("%s feed indicator %s\n", t->name, indicator->str);
   }
   
   return entry;

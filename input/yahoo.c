@@ -28,7 +28,7 @@ static struct timeline_entry *yahoo_read(struct input *in) {
 
 static int yahoo_load_entry(struct yahoo *y,
 			    struct timeline_entry **ret,
-			    time_info_t time_min,
+			    time_info_t time_min, /* FIXME */
 			    time_info_t time_max) {
   
   char buf[256];

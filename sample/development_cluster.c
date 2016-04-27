@@ -62,11 +62,7 @@ int main(int argc, char **argv) {
   struct timeline *t0, *t1, *t2;
 
   /* 01/01/2000 */
-  time_info_t time = 0;
-  TIME_SET_DAY(time, 1);
-  TIME_SET_MONTH(time, 1);
-  TIME_SET_YEAR(time, 2000);
-
+  time_info_t time = TIME_INIT(2000, 1, 1, 0, 0, 0, 0);
   cluster_init(&cluster, "my cluster", time, TIME_MAX);
   t0 = timeline_ref_create("data/%5EFCHI.yahoo", "^FCHI", time);
   t1 = timeline_create("data/AF.yahoo", "AF", time, &t0->list_entry);
