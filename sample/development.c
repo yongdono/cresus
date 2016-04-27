@@ -31,6 +31,7 @@
 static void run_timeline(struct timeline *t) {
 
   /* Step by step loop */
+  char buf[256]; /* debug */
   struct timeline_entry *entry;
   while(timeline_entry_next(t, &entry) != -1){
     int n = 0;
@@ -38,7 +39,7 @@ static void run_timeline(struct timeline *t) {
     struct candle *c = __timeline_entry_self__(entry);
     /* Execute */
     timeline_step(t, entry);
-    printf("%s - ", candle_str(__timeline_entry_self__(entry)));
+    printf("%s - ", candle_str(__timeline_entry_self__(entry), buf));
     /* Then check results */
     __slist_for_each__(&c->slist_indicator, ientry){
       /* Beware, some parsing will be required here to determine who's who */

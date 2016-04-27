@@ -48,9 +48,6 @@ struct candle {
   
   /* Indicators information ? */
   __slist_head__(struct indicator_entry) slist_indicator;
-  
-  /* Debug */
-  char str[256];
 };
 
 int candle_init(struct candle *c,
@@ -60,15 +57,14 @@ int candle_init(struct candle *c,
 		double volume);
 void candle_release(struct candle *c);
 
-void candle_add_indicator_entry(struct candle *c,
-				struct indicator_entry *e);
-
 void candle_merge(struct candle *c, struct candle *c2);
 double candle_get_value(struct candle *c, candle_value_t value);
 int candle_get_direction(struct candle *c);
-struct indicator *candle_find_indicator(struct candle *c, indicator_id_t id);
+
+void candle_add_indicator_entry(struct candle *c, struct indicator_entry *e);
+struct indicator_entry *candle_find_indicator_entry(struct candle *c, indicator_id_t id);
 
 /* Debug */
-const char *candle_str(struct candle *c);
+const char *candle_str(struct candle *c, char *buf);
 
 #endif
