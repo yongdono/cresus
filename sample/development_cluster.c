@@ -7,10 +7,8 @@
  */
 
 #include "input/yahoo.h"
-
 #include "engine/cluster.h"
 #include "engine/timeline.h"
-
 #include "indicator/mobile.h"
 #include "indicator/rs_mansfield.h"
 
@@ -56,10 +54,11 @@ static void timeline_destroy(struct timeline *t) {
 
 int main(int argc, char **argv) {
 
-  VERBOSE_LEVEL(INFO);
-  
   struct cluster cluster;
   struct timeline *t0, *t1, *t2;
+
+  if(argc > 1 && !strcmp(argv[1], "-v"))
+    VERBOSE_LEVEL(DBG);
 
   /* 01/01/2000 */
   time_info_t time = TIME_INIT(2000, 1, 1, 0, 0, 0, 0);

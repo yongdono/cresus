@@ -39,42 +39,6 @@ int cluster_add_timeline(struct cluster *c, struct timeline *t) {
   return 0;
 }
 
-static int cluster_create_index(struct cluster *c, struct candle *candle) {
-  
-  struct candle *current;
-  struct timeline_entry *entry;
-  
-  if(!list_is_head(&__timeline__(c)->list_entry, c->ref) &&
-     (entry = timeline_entry_find(__list_self__(c->ref),
-				  __timeline_entry__(candle)->time))){
-    /* Just continue filling candle */
-    current = __timeline_entry_self__(entry);
-    current->open += candle->open;
-    current->close += candle->close;
-    current->high += candle->high;
-    current->low += candle->low;
-    current->volume += candle->volume;
-    
-  }else{
-    /* Create missing entry */
-    if(candle_alloc(current, __timeline_entry__(candle)->time,
-		    __timeline_entry__(candle)->granularity,
-		    candle->open, candle->close, candle->high,
-		    candle->low, candle->volume)){
-      /* Add it to list */
-      list_add_tail(&__timeline__(c)->list_entry,
-		    __list__(__timeline_entry__(current)));
-      /* Update ref for next round */
-      c->ref = __list__(__timeline_entry__(current));
-      //PR_DBG("candle %llx created\n", __timeline_entry__(current)->time);
-      
-    }else
-      return -1;
-  }
-  
-  return 0;
-}
-
 static int cluster_prepare_step(struct cluster *c, time_info_t time,
 				struct timeline_entry **ret) {
   
