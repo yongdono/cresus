@@ -21,6 +21,9 @@
 #include "indicator/rs_dorsey.h"
 #include "indicator/rs_mansfield.h"
 
+#include "framework/verbose.h"
+PROGRAM_USES_VERBOSE(DBG);
+
 #define EMA40 0
 #define EMA14 1
 #define EMA5  2

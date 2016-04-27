@@ -16,6 +16,8 @@
 
 #include "framework/verbose.h"
 
+PROGRAM_USES_VERBOSE(INFO);
+
 #define EMA30 1
 #define RSM   2
 
@@ -53,8 +55,6 @@ timeline_create(const char *filename, const char *name, time_info_t min,
 
 static void timeline_destroy(struct timeline *t) {
 }
-
-#include "engine/calendar.h"
 
 int main(int argc, char **argv) {
 
