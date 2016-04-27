@@ -1,3 +1,11 @@
+/*
+ * Cresus EVO - calendar.c
+ *
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 26/04/2016
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
+ *
+ */
+
 #include <stdio.h>
 #include "calendar.h"
 #include "framework/verbose.h"

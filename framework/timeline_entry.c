@@ -1,3 +1,11 @@
+/*
+ * Cresus EVO - timeline_entry.c
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 04/05/16
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
+ *
+ */
+
 #include "timeline_entry.h"
 
 int timeline_entry_init(struct timeline_entry *e, time_info_t time,

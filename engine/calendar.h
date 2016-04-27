@@ -1,3 +1,11 @@
+/*
+ * Cresus EVO - calendar.h
+ *
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 26/04/2016
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
+ *
+ */
+
 #ifndef CALENDAR_H
 #define CALENDAR_H
 

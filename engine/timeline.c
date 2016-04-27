@@ -1,5 +1,5 @@
 /*
- * Cresus EVO - timeline_entry.c 
+ * Cresus EVO - timeline.c
  *
  * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 04/05/16
  * Copyright (c) 2016 Joachim Naulet. All rights reserved.
