@@ -100,6 +100,22 @@ typedef long long granularity_t;
 
 #define TIMECMP(t1, t2, g) ((t1 & g) - (t2 & g))
 #define TIMEADD(t, g, unit) (t = (t + (GRANULARITY_MSEC & (~g + unit))))
+
+/* Display */
+static inline
+const char *time2str(time_info_t t, granularity_t g, char *buf) {
+  *buf = 0;								
+  char *ptr = buf;							
+  if(g & YEAR_MASK) ptr += sprintf(ptr, "%.4d-", TIME_GET_YEAR(t));		
+  if(g & MONTH_MASK) ptr += sprintf(ptr, "%.2d-", TIME_GET_MONTH(t));		
+  if(g & DAY_MASK) ptr += sprintf(ptr, "%.2d-", TIME_GET_DAY(t));		
+  if(g & HOUR_MASK) ptr += sprintf(ptr, " %.02d", TIME_GET_HOUR(t));		
+  if(g & MINUTE_MASK) ptr += sprintf(ptr, ":%.02d", TIME_GET_MINUTE(t));	
+  if(g & SECOND_MASK) ptr += sprintf(ptr, ":%.02d-", TIME_GET_SECOND(t));	
+  if(g & MSEC_MASK) ptr += sprintf(ptr, " ::%.03d-", TIME_GET_MSEC(t));
+  return buf;
+}
+
 /* Some kinda sync */
 #define TIME_FOR_EACH(start, stop, g, time)		\
   for(time = start; time < stop; TIMEADD(time, g, 1))

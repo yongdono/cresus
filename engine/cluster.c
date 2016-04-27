@@ -123,11 +123,11 @@ static int cluster_execute_step(struct cluster *c,
       struct indicator_entry *indicator;
       struct candle *candle = __timeline_entry_self__(entry);
       /* Indicators management */
-      //__slist_for_each__(&candle->slist_indicator, indicator){
-      /* TODO : Use function pointer ?
-       * Find a way to exploit all this data
-       */
-      //}
+      __slist_for_each__(&candle->slist_indicator, indicator){
+	/* TODO : Use function pointer ?
+	 * Find a way to exploit all this data
+	 */
+      }
     }
   }
 

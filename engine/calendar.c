@@ -70,23 +70,5 @@ int calendar_next(struct calendar *c, time_info_t *time) {
 
 const char *calendar_str(struct calendar *c) {
 
-  char *ptr = c->str;
-  
-  *c->str = 0; /* Zero str */
-  if(c->g & YEAR_MASK)
-    ptr += sprintf(ptr, "%.4d-", TIME_GET_YEAR(c->time));
-  if(c->g & MONTH_MASK)
-    ptr += sprintf(ptr, "%.2d-", TIME_GET_MONTH(c->time));
-  if(c->g & DAY_MASK)
-    ptr += sprintf(ptr, "%.2d", TIME_GET_DAY(c->time));
-  if(c->g & HOUR_MASK)
-    ptr += sprintf(ptr, " %.02d", TIME_GET_HOUR(c->time));
-  if(c->g & MINUTE_MASK)
-    ptr += sprintf(ptr, ":%.02d", TIME_GET_MINUTE(c->time));
-  if(c->g & SECOND_MASK)
-    ptr += sprintf(ptr, ":%.02d", TIME_GET_SECOND(c->time));
-  if(c->g & MSEC_MASK)
-    ptr += sprintf(ptr, " :%.03d", TIME_GET_MSEC(c->time));
-  
-  return c->str;
+  return time2str(c->time, c->g, c->str);
 }

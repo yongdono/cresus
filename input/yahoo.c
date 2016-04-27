@@ -18,7 +18,7 @@ static struct timeline_entry *yahoo_read(struct input *in) {
   struct yahoo *y = __input_self__(in);
   
   y->current_entry = y->list_entry.next;
-  if(y->current_entry == &y->list_entry)
+  if(list_is_head(&y->list_entry, y->current_entry))
     return NULL; /* EOF */
   
   /* Don't forget we'll put it in another list */
