@@ -43,13 +43,41 @@ timeline_create(const char *filename, const char *name, time_info_t min,
   /* TODO : Check return values */
   yahoo_alloc(yahoo, filename, min, TIME_MAX); /* load everything */
   timeline_alloc(timeline, name, __input__(yahoo));
+  /* Indicators alloc */
   mobile_alloc(mobile, EMA30, MOBILE_EMA, 30, CANDLE_CLOSE);
   rs_mansfield_alloc(rsm, RSM, 14, ref_index);
-
+  /* And insert */
+  timeline_add_indicator(timeline, __indicator__(mobile));
+  timeline_add_indicator(timeline, __indicator__(rsm));
+  
   return timeline;
 }
 
 static void timeline_destroy(struct timeline *t) {
+}
+
+static void timeline_display_info(struct timeline *t) {
+
+  /* FIXME : change interface */
+  struct timeline_entry *entry;
+  if(timeline_entry_current(t, &entry) != -1){
+    struct indicator_entry *ientry;
+    struct candle *candle = __timeline_entry_self__(entry);
+    /* Indicators management */
+    __slist_for_each__(&candle->slist_indicator, ientry){
+      switch(ientry->indicator->id){
+      case EMA30 : PR_ERR("%s EMA30 is %.2f\n",
+			  ((struct mobile_entry*)
+			   __indicator_entry_self__(ientry))->value);
+	break;
+	
+      case RSM : PR_ERR("%s RSM is %.2f\n",
+			((struct rs_mansfield_entry*)
+			 __indicator_entry_self__(ientry))->value);
+	break;
+      }
+    }
+  }
 }
 
 int main(int argc, char **argv) {
@@ -73,7 +101,9 @@ int main(int argc, char **argv) {
   
   /* And then ? */
   while(cluster_step(&cluster) != -1){
-    //PR_DBG("executing step %s\n", calendar_str(&cluster.cal));
+    timeline_display_info(t0);
+    timeline_display_info(t1);
+    timeline_display_info(t2);
   }
 
   return 0;

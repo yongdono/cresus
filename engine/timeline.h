@@ -54,7 +54,7 @@ void timeline_release(struct timeline *t);
 
 void timeline_add_indicator(struct timeline *t, struct indicator *i);
 
-/* TODO : find something better. timeline shoud pilot input maybe ? */
+int timeline_entry_current(struct timeline *t, struct timeline_entry **ret);
 int timeline_entry_next(struct timeline *t, struct timeline_entry **ret);
 int timeline_entry_by_time(struct timeline *t, time_info_t time, struct timeline_entry **ret);
 

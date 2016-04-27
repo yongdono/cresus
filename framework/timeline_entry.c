@@ -65,12 +65,12 @@ timeline_entry_find_backwards(struct timeline_entry *e, time_info_t time) {
 struct timeline_entry *
 timeline_entry_find(struct timeline_entry *e, time_info_t time) {
   
-  int tm = timeline_entry_timecmp(e, time);
-  if(!tm)
+  time_info_t cmp;
+  if(!(cmp = timeline_entry_timecmp(e, time)))
     /* time is the same */
     goto out;
   
-  if(tm < 0)
+  if(cmp < 0)
     return timeline_entry_find_forward(e, time);
   /* else */
   return timeline_entry_find_backwards(e, time);

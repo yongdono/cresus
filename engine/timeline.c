@@ -38,6 +38,12 @@ void timeline_add_indicator(struct timeline *t, struct indicator *i) {
   __slist_insert__(&t->slist_indicator, i);
 }
 
+int timeline_entry_current(struct timeline *t, struct timeline_entry **ret) {
+
+  *ret = t->ref; /* Current candle */
+  return 0;
+}
+
 int timeline_entry_next(struct timeline *t, struct timeline_entry **ret) {
 
   /* Is that function necessary ? */
