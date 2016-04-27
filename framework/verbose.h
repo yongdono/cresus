@@ -25,16 +25,16 @@ extern int __verbose__;
 #define ERR_FONT  "\x1b[1;31m"
 #define NO_FONT   "\x1b[1;0m"
 
-#define PR(level, format, color, ...)					\
+#define PR(level, format, font, ...)					\
   if(level >= __verbose__)						\
-    fprintf(stderr, color "%s: " format "\x1b[1;0m",			\
+    fprintf(stderr, font "%s: " format NO_FONT,				\
 	    __func__, ##__VA_ARGS__)
 
 #define VERBOSE_LEVEL(level) __verbose__ = level
 
-#define PR_DBG(format, ...)  PR(DBG, format, "\x1b[1;36m", ##__VA_ARGS__)
-#define PR_INFO(format, ...) PR(INFO, format, "\x1b[1;32m", ##__VA_ARGS__)
-#define PR_WARN(format, ...) PR(WARN, format, "\x1b[1;33m", ##__VA_ARGS__)
-#define PR_ERR(format, ...)  PR(ERR, format, "\x1b[1;31m", ##__VA_ARGS__)
+#define PR_DBG(format, ...)  PR(DBG, format, DBG_FONT, ##__VA_ARGS__)
+#define PR_INFO(format, ...) PR(INFO, format, INFO_FONT, ##__VA_ARGS__)
+#define PR_WARN(format, ...) PR(WARN, format, WARN_FONT, ##__VA_ARGS__)
+#define PR_ERR(format, ...)  PR(ERR, format, ERR_FONT, ##__VA_ARGS__)
 
 #endif
