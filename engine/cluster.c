@@ -47,8 +47,14 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
   struct timeline *t;
   struct candle *candle;
   
-  if(!candle_alloc(candle, time, c->cal.g, 0, 0, 0, 0, 0)) /* FIXME */
-    return -1; /* Error. TODO : add some kind of errno */
+  if(!candle_alloc(candle, time, calendar_granularity(&c->cal),
+		   0, 0, 0, 0, 0)){
+    /* Error */
+    PR_ERR("can't allocate candle %s\n",
+	   time2str(time, calendar_granularity(&c->cal), buf));
+    /* TODO : add some kind of errno */
+    return -1;
+  }
   
   __slist_for_each__(&c->slist_timeline, t){
     struct timeline_entry *entry;

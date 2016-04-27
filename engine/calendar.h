@@ -28,4 +28,8 @@ static inline time_info_t calendar_time(struct calendar *c) {
   return c->time;
 }
 
+static inline granularity_t calendar_granularity(struct calendar *c) {
+  return c->g;
+}
+
 #endif

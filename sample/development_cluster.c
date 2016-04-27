@@ -70,19 +70,6 @@ int main(int argc, char **argv) {
   cluster_add_timeline(&cluster, t0);
   cluster_add_timeline(&cluster, t1);
   cluster_add_timeline(&cluster, t2);
-
-  /*
-  int n = 0;
-  struct calendar cal;
-  
-  calendar_init(&cal, time, GRANULARITY_DAY);
-  while(calendar_next(&cal, &time) != -1 && n < 100){
-    PR_DBG("executing step %s\n", calendar_str(&cal));
-    n++;
-  }
-
-  return 0;
-  */
   
   /* And then ? */
   while(cluster_step(&cluster) != -1){
