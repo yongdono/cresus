@@ -68,8 +68,7 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
       
     }else{
       /* Merge candles */
-      struct candle *c2 = __timeline_entry_self__(entry);
-      candle_merge(candle, c2);
+      candle_merge(candle, __timeline_entry_self__(entry));
       PR_INFO("added candle %s %s in cluster\n", t->name,
 	      timeline_entry_str(entry, buf, sizeof buf));
     }
