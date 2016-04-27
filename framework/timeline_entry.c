@@ -16,7 +16,8 @@ void timeline_entry_release(struct timeline_entry *e) {
   __list_release__(e);
 }
 
-int timeline_entry_timecmp(struct timeline_entry *e, time_info_t time) {
+long long timeline_entry_timecmp(struct timeline_entry *e,
+				 time_info_t time) {
   
   return TIMECMP(e->time, time, e->granularity);
 }

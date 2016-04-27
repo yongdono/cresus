@@ -49,7 +49,7 @@ int timeline_entry_init(struct timeline_entry *e, time_info_t time, granularity_
 void timeline_entry_release(struct timeline_entry *e);
 
 /* Methods */
-int timeline_entry_timecmp(struct timeline_entry *e, time_info_t time);
+long long timeline_entry_timecmp(struct timeline_entry *e, time_info_t time);
 struct timeline_entry *timeline_entry_find(struct timeline_entry *t, time_info_t time);
 const char *timeline_entry_str(struct timeline_entry *e, char *buf, size_t len);
 

@@ -56,27 +56,25 @@ int timeline_entry_next(struct timeline *t, struct timeline_entry **ret) {
 int timeline_entry_by_time(struct timeline *t, time_info_t time,
 			   struct timeline_entry **ret) {
 
+  char buf[256], buf2[256];
+  PR_DBG("requested time is %s (%llx)\n",
+	 time2str(time, GRANULARITY_DAY, buf), time);
+  
   do {
-    char buf[256];
     /* Try to find a matching entry */
     struct timeline_entry *entry = t->ref;
     /* No init yet */
     if(!entry)
       continue;
-
-    PR_DBG("1) entry->time = %s, time = %s\n",
-	   time2str(entry->time, GRANULARITY_DAY, buf),
-	   time2str(time, GRANULARITY_DAY, buf));
     
     /* Granularity is provided by input entry, beware */
     int res = timeline_entry_timecmp(entry, time);
-    PR_DBG("entry->time = %llx, time = %llx\n", entry->time, time);
-    
     if(!res){
       /* Cache data. Is that the right place ? */
-      PR_DBG("2) entry->time = %s, time = %s\n",
-	     time2str(entry->time, GRANULARITY_DAY, buf),
-	     time2str(time, GRANULARITY_DAY, buf));
+      PR_DBG("found entry->time = %s (%llx), time = %s (%llx) %lld\n",
+	     time2str(entry->time, GRANULARITY_DAY, buf), entry->time,
+	     time2str(time, GRANULARITY_DAY, buf2), time,
+	     TIMECMP(entry->time, time, GRANULARITY_DAY));
       
       *ret = entry;
       return 1;

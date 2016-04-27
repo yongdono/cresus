@@ -20,20 +20,20 @@
 #define RSM   2
 
 static struct timeline *
-timeline_ref_create(const char *filename, const char *name) {
+timeline_ref_create(const char *filename, const char *name, time_info_t min) {
   
   struct yahoo *yahoo;
   struct timeline *timeline;
-
+  
   /* TODO : check */
-  yahoo_alloc(yahoo, filename, TIME_MIN, TIME_MAX);
+  yahoo_alloc(yahoo, filename, min, TIME_MAX);
   timeline_alloc(timeline, name, __input__(yahoo));
 
   return timeline;
 }
 
 static struct timeline *
-timeline_create(const char *filename, const char *name,
+timeline_create(const char *filename, const char *name, time_info_t min,
 		__list_head__(struct timeline_entry) *ref_index) {
 
   struct yahoo *yahoo;
@@ -43,7 +43,7 @@ timeline_create(const char *filename, const char *name,
   struct rs_mansfield *rsm;
 
   /* TODO : Check return values */
-  yahoo_alloc(yahoo, filename, TIME_MIN, TIME_MAX); /* load everything */
+  yahoo_alloc(yahoo, filename, min, TIME_MAX); /* load everything */
   timeline_alloc(timeline, name, __input__(yahoo));
   mobile_alloc(mobile, EMA30, MOBILE_EMA, 30, CANDLE_CLOSE);
   rs_mansfield_alloc(rsm, RSM, 14, ref_index);
@@ -68,9 +68,9 @@ int main(int argc, char **argv) {
   TIME_SET_YEAR(time, 2000);
 
   cluster_init(&cluster, "my cluster", time, TIME_MAX);
-  t0 = timeline_ref_create("data/%5EFCHI.yahoo", "^FCHI");
-  t1 = timeline_create("data/AF.yahoo", "AF", &t0->list_entry);
-  t2 = timeline_create("data/AIR.yahoo", "AIR", &t0->list_entry);
+  t0 = timeline_ref_create("data/%5EFCHI.yahoo", "^FCHI", time);
+  t1 = timeline_create("data/AF.yahoo", "AF", time, &t0->list_entry);
+  t2 = timeline_create("data/AIR.yahoo", "AIR", time, &t0->list_entry);
 
   cluster_add_timeline(&cluster, t0);
   cluster_add_timeline(&cluster, t1);
