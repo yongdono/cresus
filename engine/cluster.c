@@ -79,6 +79,7 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
 				struct timeline_entry **ret) {
   
   int res;
+  char buf[256]; /* debug */
   struct timeline *t;
   struct candle *candle;
   
@@ -89,18 +90,18 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
     struct timeline_entry *entry;
     /* Why not use granularity here to merge candles in timeline object ? */
     if((res = timeline_entry_by_time(t, time, &entry)) <= 0){
-      candle_free(candle);
-      PR_WARN("not enough data available in %s for %.2d/%.2d/%.4d\n", t->name,
-	      TIME_GET_MONTH(time), TIME_GET_DAY(time), TIME_GET_YEAR(time));
+      PR_WARN("not enough data available in %s for %s\n", t->name,
+	      timeline_entry_str(entry, buf, sizeof buf));
       
+      candle_free(candle);
       return res; /* EOF or 0 (no data available) */
       
     }else{
       /* Merge candles */
       struct candle *c2 = __timeline_entry_self__(entry);
       candle_merge(candle, c2);
-      PR_INFO("added candle %s %.2d/%.2d/%.4d in cluster\n", t->name,
-	      TIME_GET_MONTH(time), TIME_GET_DAY(time), TIME_GET_YEAR(time));
+      PR_INFO("added candle %s %s in cluster\n", t->name,
+	      timeline_entry_str(entry, buf, sizeof buf));
     }
   }
   
