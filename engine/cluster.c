@@ -91,7 +91,7 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
     /* Why not use granularity here to merge candles in timeline object ? */
     if((res = timeline_entry_by_time(t, time, &entry)) <= 0){
       PR_WARN("not enough data available in %s for %s\n", t->name,
-	      timeline_entry_str(entry, buf, sizeof buf));
+	      time2str(time, entry->granularity, buf));
       
       candle_free(candle);
       return res; /* EOF or 0 (no data available) */
