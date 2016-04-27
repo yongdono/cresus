@@ -138,11 +138,10 @@ int cluster_step(struct cluster *c) {
 
   int ret;
   struct timeline_entry *entry;
-  time_info_t time = c->cal.time; /* FIXME */
+  time_info_t time = calendar_time(&c->cal);
   
   /* Loop-read to ignore missing data */
   do {
-    PR_DBG("cal : %s\n", calendar_str(&c->cal));
     ret = cluster_prepare_step(c, time, &entry);
     calendar_next(&c->cal, &time);
   }while(!ret);

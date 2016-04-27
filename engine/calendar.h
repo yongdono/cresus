@@ -24,4 +24,8 @@ void calendar_release(struct calendar *c);
 int calendar_next(struct calendar *c, time_info_t *time);
 const char *calendar_str(struct calendar *c);
 
+static inline time_info_t calendar_time(struct calendar *c) {
+  return c->time;
+}
+
 #endif
