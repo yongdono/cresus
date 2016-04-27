@@ -50,7 +50,7 @@
 #define SECOND_MAX 59
 #define MINUTE_MAX 59
 #define HOUR_MAX   23
-#define DAY_MAX    30 /* ! */
+#define DAY_MAX(t) /* TBD */
 #define MONTH_MAX  11
 #define YEAR_MAX   2047
 

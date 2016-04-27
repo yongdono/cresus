@@ -22,7 +22,6 @@
 #include "indicator/rs_mansfield.h"
 
 #include "framework/verbose.h"
-PROGRAM_USES_VERBOSE(DBG);
 
 #define EMA40 0
 #define EMA14 1
@@ -75,6 +74,8 @@ static void run_timeline(struct timeline *t) {
 
 int main(int argc, char **argv) {
 
+  VERBOSE_LEVEL(DBG);
+  
   /*
    * Data
    */

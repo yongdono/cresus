@@ -16,8 +16,6 @@
 
 #include "framework/verbose.h"
 
-PROGRAM_USES_VERBOSE(INFO);
-
 #define EMA30 1
 #define RSM   2
 
@@ -58,6 +56,8 @@ static void timeline_destroy(struct timeline *t) {
 
 int main(int argc, char **argv) {
 
+  VERBOSE_LEVEL(INFO);
+  
   struct cluster cluster;
   struct timeline *t0, *t1, *t2;
 
