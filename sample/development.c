@@ -40,7 +40,8 @@ static void run_timeline(struct timeline *t) {
     struct indicator_entry *ientry;
     struct candle *c = __timeline_entry_self__(entry);
     /* Execute */
-    timeline_step(t, entry);
+    timeline_add_entry(t, entry);
+    timeline_step(t);
     printf("%s - ", candle_str(__timeline_entry_self__(entry), buf));
     /* Then check results */
     __slist_for_each__(&c->slist_indicator, ientry){

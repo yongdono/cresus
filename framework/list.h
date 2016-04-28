@@ -29,7 +29,7 @@
 #define __list_add_tail__(list, entry)		\
   list_add_tail((list), __list__(entry))
 #define __list_del__(entry)			\
-  list_del(&__list__(entry))
+  list_del(__list__(entry))
 /* Iteration */
 #define __list_for_each__(head, self)			\
   for(struct list *ptr = (head)->next;			\
@@ -81,6 +81,7 @@ static inline void list_add_tail(struct list *l, struct list *entry) {
 static inline void list_del(struct list *l) {
   l->next->prev = l->prev;
   l->prev->next = l->next;
+  l->head = l;
 }
 
 #define list_is_head(head, ptr) ((ptr) == (head))

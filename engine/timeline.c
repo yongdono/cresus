@@ -100,19 +100,24 @@ int timeline_entry_by_time(struct timeline *t, time_info_t time,
   return -1;
 }
 
-struct timeline_entry *timeline_step(struct timeline *t,
-				     struct timeline_entry *entry) {
+void timeline_add_entry(struct timeline *t,
+			struct timeline_entry *entry) {
+  
+  /* Simply add candle to list */
+  list_add_tail(&t->list_entry, __list__(entry));
+  t->ref = entry; /* FIXME : find something better */
+}
+
+struct timeline_entry *timeline_step(struct timeline *t) {
   
   struct indicator *indicator;
-  /* Add candle to list */
-  list_add_tail(&t->list_entry, __list__(entry));
-  /* And execute indicators */
+  /* Execute indicators */
   __slist_for_each__(&t->slist_indicator, indicator){
-    indicator_feed(indicator, entry);
+    indicator_feed(indicator, t->ref);
     PR_DBG("%s feed indicator %s\n", t->name, indicator->str);
   }
   
-  return entry;
+  return t->ref;
 }
 
 int timeline_execute(struct timeline *t) {
@@ -122,7 +127,7 @@ int timeline_execute(struct timeline *t) {
   
   for(n = 0;; n++){
     if(timeline_entry_next(t, &entry) != -1)
-      timeline_step(t, entry);
+      timeline_step(t);
     
     else
       break;

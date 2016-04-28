@@ -68,14 +68,14 @@ static void timeline_display_info(struct timeline *t) {
     /* Indicators management */
     __slist_for_each__(&candle->slist_indicator, ientry){
       switch(ientry->indicator->id){
-      case EMA30 : PR_ERR("%s EMA30 is %.2f\n", t->name,
-			  ((struct mobile_entry*)
+      case EMA30 : PR_WARN("%s EMA30 is %.2f\n", t->name,
+			   ((struct mobile_entry*)
 			   __indicator_entry_self__(ientry))->value);
 	break;
 	
-      case RSM : PR_ERR("%s RSM is %.2f\n", t->name,
-			((struct rs_mansfield_entry*)
-			 __indicator_entry_self__(ientry))->value);
+      case RSM : PR_WARN("%s RSM is %.2f\n", t->name,
+			 ((struct rs_mansfield_entry*)
+			  __indicator_entry_self__(ientry))->value);
 	break;
       }
     }

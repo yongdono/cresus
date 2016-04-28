@@ -67,6 +67,7 @@ struct rs_mansfield {
   
   struct average mma;
   __list_head__(struct timeline_entry) *ref;
+  struct list *ref_ptr;
 
   double value;
 };
