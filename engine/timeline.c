@@ -108,6 +108,13 @@ void timeline_add_entry(struct timeline *t,
   t->ref = entry; /* FIXME : find something better */
 }
 
+void timeline_del_entry(struct timeline *t,
+			struct timeline_entry *entry) {
+
+  t->ref = __list_self__(__list__(entry)->prev);
+  __list_del__(entry);
+}
+
 struct timeline_entry *timeline_step(struct timeline *t) {
   
   struct indicator *indicator;

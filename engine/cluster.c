@@ -45,7 +45,7 @@ static void cluster_delete_by_time(struct cluster *c, time_info_t time) {
   __slist_for_each__(&c->slist_timeline, t){
     struct timeline_entry *entry;
     if(timeline_entry_by_time(t, time, &entry) > 0)
-      __list_del__(entry);
+      timeline_del_entry(t, entry);
   }
 }
 

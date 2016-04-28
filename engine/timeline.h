@@ -62,6 +62,8 @@ int timeline_entry_next(struct timeline *t, struct timeline_entry **ret);
 int timeline_entry_by_time(struct timeline *t, time_info_t time, struct timeline_entry **ret);
 
 void timeline_add_entry(struct timeline *t, struct timeline_entry *entry);
+void timeline_del_entry(struct timeline *t, struct timeline_entry *entry);
+
 struct timeline_entry *timeline_step(struct timeline *t);
 int timeline_execute(struct timeline *t);
 
