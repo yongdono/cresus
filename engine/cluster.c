@@ -44,8 +44,10 @@ static void cluster_delete_by_time(struct cluster *c, time_info_t time) {
   struct timeline *t;
   __slist_for_each__(&c->slist_timeline, t){
     struct timeline_entry *entry;
-    if(timeline_entry_by_time(t, time, &entry) > 0)
-      timeline_del_entry(t, entry);
+    if(timeline_entry_current(t, &entry) != -1){
+      if((entry = timeline_entry_find(entry, time)))
+	timeline_trim_entry(t, entry);
+    }
   }
 }
 
@@ -80,7 +82,7 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
       
     }else{
       /* Add entry in timeline */
-      timeline_add_entry(t, entry);
+      timeline_append_entry(t, entry);
       /* Merge candles */
       candle_merge(candle, __timeline_entry_self__(entry));
       PR_INFO("added candle %s %s in cluster\n", t->name,
@@ -90,7 +92,7 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
   
   /* Add data to list */
   *ret = __timeline_entry__(candle);
-  __timeline_add_entry__(c, __timeline_entry__(candle));
+  __timeline_append_entry__(c, __timeline_entry__(candle));
   
   return 1;
 }

@@ -41,7 +41,7 @@ void timeline_add_indicator(struct timeline *t, struct indicator *i) {
 int timeline_entry_current(struct timeline *t, struct timeline_entry **ret) {
 
   *ret = t->ref; /* Current candle */
-  return 0;
+  return (t->ref == NULL ? -1 : 0);
 }
 
 int timeline_entry_next(struct timeline *t, struct timeline_entry **ret) {
@@ -100,24 +100,26 @@ int timeline_entry_by_time(struct timeline *t, time_info_t time,
   return -1;
 }
 
-void timeline_add_entry(struct timeline *t,
-			struct timeline_entry *entry) {
+void timeline_append_entry(struct timeline *t,
+			   struct timeline_entry *entry) {
   
   /* Simply add candle to list */
   list_add_tail(&t->list_entry, __list__(entry));
-  t->ref = entry; /* FIXME : find something better */
+  t->ref = entry; /* FIXME */
 }
 
-void timeline_del_entry(struct timeline *t,
-			struct timeline_entry *entry) {
+void timeline_trim_entry(struct timeline *t,
+			 struct timeline_entry *entry) {
 
-  t->ref = __list_self__(__list__(entry)->prev);
+  t->ref = __list_self__(__list__(entry)->prev); /* FIXME */
   __list_del__(entry);
 }
 
 struct timeline_entry *timeline_step(struct timeline *t) {
-  
+
   struct indicator *indicator;
+  /* t->ref = &t->list_entry.prev; */
+  
   /* Execute indicators */
   __slist_for_each__(&t->slist_indicator, indicator){
     indicator_feed(indicator, t->ref);
