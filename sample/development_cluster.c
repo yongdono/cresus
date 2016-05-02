@@ -68,8 +68,8 @@ static void timeline_display_info(struct timeline *t) {
     struct candle *candle = __timeline_entry_self__(entry);
     /* Indicators management */
     /* This interface is not easy to use. Find something better */
-    candle_indicator_for_each(candle, ientry, indicator_id) {
-      switch(indicator_id){
+    candle_indicator_for_each(candle, ientry) {
+      switch(ientry->iid){
       case EMA30 : PR_WARN("%s EMA30 is %.2f\n", t->name,
 			   ((struct mobile_entry*)
 			    __indicator_entry_self__(ientry))->value);
