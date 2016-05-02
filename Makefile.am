@@ -15,7 +15,7 @@ libcresus_la_SOURCES = framework/indicator.c framework/timeline_entry.c \
                        indicator/macd.c indicator/mobile.c indicator/rsi.c \
                        indicator/smi.c indicator/srsi.c \
                        indicator/stochastic.c indicator/stoploss.c \
-		       indicator/rs_mansfield.c \
+		       indicator/rs_mansfield.c indicator/jtrend.c \
                        indicator/swing.c indicator/zigzag.c
 #		       input/google.c input/yahoo.c \
                        framework/module.c engine/engine.c \

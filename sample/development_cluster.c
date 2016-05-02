@@ -63,7 +63,6 @@ static void timeline_display_info(struct timeline *t) {
   /* FIXME : change interface */
   struct timeline_entry *entry;
   if(timeline_entry_current(t, &entry) != -1){
-    int indicator_id;
     struct indicator_entry *ientry;
     struct candle *candle = __timeline_entry_self__(entry);
     /* Indicators management */
