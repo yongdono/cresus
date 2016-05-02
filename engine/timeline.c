@@ -113,6 +113,10 @@ void timeline_trim_entry(struct timeline *t,
 
   t->ref = __list_self__(__list__(entry)->prev); /* FIXME */
   __list_del__(entry);
+
+  char buf[256]; /* debug */
+  PR_DBG("%s %s trimmed off\n", t->name,
+	 time2str(entry->time, entry->granularity, buf));
 }
 
 struct timeline_entry *timeline_step(struct timeline *t) {

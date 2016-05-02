@@ -36,6 +36,12 @@ typedef enum {
 #define candle_free(c)				\
   DEFINE_FREE(c, candle_release)
 
+/* Beware, indicator id must be != 0 */
+#define candle_indicator_for_each(candle, ientry, _id_)			\
+  for(struct slist *ptr = (candle)->slist_indicator.next;		\
+      ptr != NULL && (ientry = __slist_self__(ptr)) &&			\
+	(_id_ = (ientry)->indicator->id); ptr = ptr->next)
+  
 struct candle {
   /* Inherits from timeline,
    * so we don't need time management */
