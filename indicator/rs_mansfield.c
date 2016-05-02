@@ -54,7 +54,7 @@ static int rs_mansfield_feed(struct indicator *i, struct timeline_entry *e) {
 }
 
 int rs_mansfield_init(struct rs_mansfield *r, indicator_id_t id, int period,
-		      __list_head__(struct timeline_entry) *ref) {
+		      list_head_t(struct timeline_entry) *ref) {
 
   __indicator_super__(r, id, rs_mansfield_feed);
   __indicator_set_string__(r, "rsm[%d]", period);

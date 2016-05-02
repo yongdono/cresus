@@ -21,16 +21,16 @@ int timeline_init(struct timeline *t, const char *name, struct input *in) {
   t->ref = NULL;
   t->in = in;
   /* Internals */
-  __list_head_init__(&t->list_entry);
-  __slist_head_init__(&t->slist_indicator);
+  list_head_init(&t->list_entry);
+  slist_head_init(&t->slist_indicator);
   
   return 0;
 }
 
 void timeline_release(struct timeline *t) {
 
-  __list_head_release__(&t->list_entry);
-  __slist_head_release__(&t->slist_indicator);
+  list_head_release(&t->list_entry);
+  slist_head_release(&t->slist_indicator);
 }
 
 void timeline_add_indicator(struct timeline *t, struct indicator *i) {

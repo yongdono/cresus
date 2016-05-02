@@ -119,7 +119,7 @@ int yahoo_init(struct yahoo *y, const char *filename,
   
   /* super */
   __input_super__(y, yahoo_read, from, to);
-  __list_head_init__(&y->list_entry);
+  list_head_init(&y->list_entry);
   
   strncpy(y->filename, filename, sizeof(y->filename));
   if(!(y->fp = fopen(y->filename, "r"))){

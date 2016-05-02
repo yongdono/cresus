@@ -25,13 +25,13 @@ struct jtrend_entry {
 #define jtrend_entry_free(entry)		\
   DEFINE_FREE(entry, jtrend_entry_release)
 
-static inline jtrend_entry_init(struct jtrend_entry *entry,
-				struct indicator *parent){
+static inline int jtrend_entry_init(struct jtrend_entry *entry,
+				    struct indicator *parent){
   __indicator_entry_super__(entry, parent);
   return 0;
 }
 
-static inline jtrend_entry_release(struct jtrend_entry *entry) {
+static inline void jtrend_entry_release(struct jtrend_entry *entry) {
   __indicator_entry_release__(entry);
 }
 

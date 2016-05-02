@@ -34,7 +34,7 @@ timeline_ref_create(const char *filename, const char *name, time_info_t min) {
 
 static struct timeline *
 timeline_create(const char *filename, const char *name, time_info_t min,
-		__list_head__(struct timeline_entry) *ref_index) {
+		list_head_t(struct timeline_entry) *ref_index) {
 
   struct yahoo *yahoo;
   struct timeline *timeline;

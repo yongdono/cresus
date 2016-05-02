@@ -36,9 +36,9 @@
 
 /* Basic slist object */
 
-#define __slist_head__(type) struct slist /* Type is indicative */
-#define __slist_head_init__(x) slist_init(x)
-#define __slist_head_release__(x) slist_release(x)
+#define slist_head_t(type) struct slist /* Type is indicative */
+#define slist_head_init(x) slist_init(x)
+#define slist_head_release(x) slist_release(x)
 
 struct slist {
   __slist_is_superclass__;

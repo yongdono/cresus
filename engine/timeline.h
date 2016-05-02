@@ -46,10 +46,10 @@ struct timeline {
   struct input *in;
   char name[TIMELINE_NAME_MAX];
   /* Main data / graph */
-  __list_head__(struct timeline_entry) list_entry;
+  list_head_t(struct timeline_entry) list_entry;
   struct timeline_entry *ref;
   /* Secondary graphs */
-  __slist_head__(struct indicator) slist_indicator;
+  slist_head_t(struct indicator) slist_indicator;
 };
 
 int timeline_init(struct timeline *t, const char *name, struct input *in);

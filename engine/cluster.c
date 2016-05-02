@@ -15,7 +15,7 @@ int cluster_init(struct cluster *c, const char *name,
 
   /* Super */
   __timeline_super__(c, name, NULL);
-  __slist_head_init__(&c->slist_timeline);
+  slist_head_init(&c->slist_timeline);
   /* Set options */
   c->ref = &__timeline__(c)->list_entry;
   calendar_init(&c->cal, time_min, GRANULARITY_DAY); /* FIXME */
@@ -27,7 +27,7 @@ int cluster_init(struct cluster *c, const char *name,
 void cluster_release(struct cluster *c) {
 
   __timeline_release__(c);
-  __slist_head_release__(&c->slist_timeline);
+  slist_head_release(&c->slist_timeline);
 
   c->ref = NULL;
   calendar_release(&c->cal);

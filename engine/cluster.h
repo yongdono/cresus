@@ -18,9 +18,9 @@ struct cluster {
   /* First, a cluster is a timeline cause it's an indice computer */
   __inherits_from_timeline__;
   /* Second, a cluster's a list of timelines */
-  __slist_head__(struct timeline) slist_timeline;
+  slist_head_t(struct timeline) slist_timeline;
   /* We need to speed things up finding entries */
-  __list_head__(struct timeline_entry) *ref;
+  list_head_t(struct timeline_entry) *ref;
   /* Time info */
   struct calendar cal;
   time_info_t time_max;

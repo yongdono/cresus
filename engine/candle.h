@@ -51,7 +51,7 @@ struct candle {
   double volume;
   
   /* Indicators information ? */
-  __slist_head__(struct indicator_entry) slist_indicator;
+  slist_head_t(struct indicator_entry) slist_indicator;
 };
 
 int candle_init(struct candle *c,

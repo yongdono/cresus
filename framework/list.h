@@ -42,9 +42,9 @@
 
 /* Basic list object */
   
-#define __list_head__(type) struct list /* Type is purely indicative */
-#define __list_head_init__(x) list_init(x)
-#define __list_head_release__(x) list_release(x)
+#define list_head_t(type) struct list /* Type is purely indicative */
+#define list_head_init(x) list_init(x)
+#define list_head_release(x) list_release(x)
 
 struct list {
   __list_is_superclass__;

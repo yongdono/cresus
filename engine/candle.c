@@ -30,7 +30,7 @@ int candle_init(struct candle *c,
   c->volume = volume;
 
   /* Indicators */
-  __slist_head_init__(&c->slist_indicator);
+  slist_head_init(&c->slist_indicator);
   
   return 0;
 }
@@ -38,7 +38,7 @@ int candle_init(struct candle *c,
 void candle_release(struct candle *c) {
   
   __timeline_entry_release__(c);
-  __slist_head_release__(&c->slist_indicator);
+  slist_head_release(&c->slist_indicator);
 }
 
 void candle_add_indicator_entry(struct candle *c,
