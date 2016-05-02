@@ -13,7 +13,7 @@ libcresus_la_SOURCES = framework/indicator.c framework/timeline_entry.c \
 		       indicator/atr.c indicator/bollinger.c \
                        indicator/heikin_ashi.c indicator/rs_dorsey.c \
                        indicator/macd.c indicator/mobile.c indicator/rsi.c \
-                       indicator/smi.c indicator/srsi.c \
+                       indicator/smi.c indicator/srsi.c indicator/roc.c \
                        indicator/stochastic.c indicator/stoploss.c \
 		       indicator/rs_mansfield.c indicator/jtrend.c \
                        indicator/swing.c indicator/zigzag.c
