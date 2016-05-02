@@ -1,3 +1,11 @@
+/*
+ * Cresus EVO - jtrend.c
+ *
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 02/05/2016
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
+ *
+ */
+
 #include "jtrend.h"
 
 static int jtrend_feed(struct indicator *i,
