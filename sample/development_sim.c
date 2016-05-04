@@ -1,0 +1,110 @@
+/*
+ * Cresus EVO - development_sim.c
+ *
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 05/04/16
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
+ *
+ */
+
+#include "sim/sim.h"
+#include "input/yahoo.h"
+#include "engine/cluster.h"
+#include "engine/timeline.h"
+#include "indicator/mobile.h"
+#include "indicator/rs_mansfield.h"
+
+#include "framework/verbose.h"
+
+#include <string.h>
+
+#define EMA30 1
+#define RSM   2
+
+static struct timeline *
+timeline_create(const char *filename, const char *name, time_info_t min,
+		list_head_t(struct timeline_entry) *ref_index) {
+
+  struct yahoo *yahoo;
+  struct timeline *timeline;
+  
+  struct mobile *mobile;
+  struct rs_mansfield *rsm;
+
+  /* TODO : Check return values */
+  yahoo_alloc(yahoo, filename, min, TIME_MAX); /* load everything */
+  timeline_alloc(timeline, name, __input__(yahoo));
+  /* Indicators alloc */
+  mobile_alloc(mobile, EMA30, MOBILE_EMA, 30, CANDLE_CLOSE);
+  rs_mansfield_alloc(rsm, RSM, 14, ref_index);
+  /* And insert */
+  timeline_add_indicator(timeline, __indicator__(mobile));
+  timeline_add_indicator(timeline, __indicator__(rsm));
+  
+  return timeline;
+}
+
+static void timeline_destroy(struct timeline *t) {
+}
+
+static void timeline_display_info(struct timeline *t) {
+
+  /* FIXME : change interface */
+  struct timeline_entry *entry;
+  if(timeline_entry_current(t, &entry) != -1){
+    struct indicator_entry *ientry;
+    struct candle *candle = __timeline_entry_self__(entry);
+    /* Indicators management */
+    /* This interface is not easy to use. Find something better */
+    candle_indicator_for_each(candle, ientry) {
+      switch(ientry->iid){
+      case EMA30 : PR_WARN("%s EMA30 is %.2f\n", t->name,
+			   ((struct mobile_entry*)
+			    __indicator_entry_self__(ientry))->value);
+	break;
+	
+      case RSM : PR_WARN("%s RSM is %.2f\n", t->name,
+			 ((struct rs_mansfield_entry*)
+			  __indicator_entry_self__(ientry))->value);
+	break;
+      }
+    }
+  }
+}
+
+/* sim interface */
+
+static int sim_feed(struct sim *s, struct cluster *c) {
+
+  struct timeline *t;
+  __slist_for_each__(&c->slist_timeline, t)
+    timeline_display_info(t);
+  
+  return 0;
+}
+
+int main(int argc, char **argv) {
+
+  struct sim sim;
+  struct cluster cluster;
+  struct timeline *t0, *t1;
+
+  if(argc > 1 && !strcmp(argv[1], "-v"))
+    VERBOSE_LEVEL(DBG);
+
+  /* 01/01/2000 */
+  time_info_t time = TIME_INIT(2000, 1, 1, 0, 0, 0, 0);
+  cluster_init(&cluster, "my cluster", time, TIME_MAX);
+  t0 = timeline_create("data/AF.yahoo", "AF", time,
+		       &__timeline__(&cluster)->list_entry); /* FIXME */
+  t1 = timeline_create("data/AIR.yahoo", "AIR", time,
+		       &__timeline__(&cluster)->list_entry);
+  
+  cluster_add_timeline(&cluster, t0);
+  cluster_add_timeline(&cluster, t1);
+
+  /* Now create sim */
+  sim_init(&sim, &cluster);
+  sim_run(&sim, sim_feed);
+  
+  return 0;
+}

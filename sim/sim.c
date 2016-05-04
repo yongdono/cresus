@@ -18,7 +18,7 @@ void sim_free(struct sim *s) {
   /* Nothing to do */
 }
 
-int sim_run(struct sim *s, sim_feed_ptr *feed) {
+int sim_run(struct sim *s, sim_feed_ptr feed) {
 
   while(cluster_step(s->cluster) != -1)
     feed(s, s->cluster);
