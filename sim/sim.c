@@ -24,8 +24,10 @@ int sim_run(struct sim *s, sim_feed_ptr feed) {
 
   while(cluster_step(s->cluster)){
     /* First : check if there are pending positions */
-    __slist_for_each__(&s->slist_position_pending, p){
-      __slist_del__(p); /* FIXME ? */
+    while(!slist_is_empty(&s->slist_position_pending)){
+      /* FIXME */
+      p = __slist_self__(s->slist_position_pending.next);
+      slist_del(&s->slist_position_pending);
       __slist_insert__(&s->slist_position, p);
     }
     

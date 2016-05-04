@@ -63,7 +63,7 @@ static inline void slist_del(struct slist *s) {
   s->next = s->next->next;
 }
 
-#define slist_is_head(head, ptr) (ptr == head)
+#define slist_is_empty(head) ((head)->next == NULL)
 #define slist_for_each(head, ptr)				\
   for(ptr = (head)->next; (ptr) != NULL; ptr = (ptr)->next)
 
