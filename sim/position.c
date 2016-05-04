@@ -1,3 +1,11 @@
+/*
+ * Cresus EVO - position.c
+ *
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 04.05.2016
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
+ *
+ */
+
 #include "position.h"
 
 int position_init(struct position *p, struct timeline *t) {

@@ -1,3 +1,11 @@
+/*
+ * Cresus EVO - position.h
+ *
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 04.05.2016
+ * Copyright (c) 2016 Joachim Naulet. All rights reserved.
+ *
+ */
+
 #ifndef POSITION_H
 #define POSITION_H
 
