@@ -13,9 +13,12 @@
 
 static int roc_feed(struct indicator *i, struct timeline_entry *e) {
 
-  int ret = 0;
   struct roc *r = __indicator_self__(i);
   struct candle *c = __timeline_entry_self__(e);
+
+  /* TODO : make things better */
+  struct timeline_entry *ref = __list_relative__(e, -(r->period));
+  struct candle *cref = __timeline_entry_self__(ref);
   
   if(!i->is_empty){
     
@@ -24,19 +27,18 @@ static int roc_feed(struct indicator *i, struct timeline_entry *e) {
      */
     
     struct roc_entry *entry;
-    double value = ((c->close / r->last->close) - 1) * 100.0;
+    double value = ((c->close / cref->close) - 1) * 100.0;
     double average = average_update(&r->average, value);
 
     if(average_is_available(&r->average)){
       if(roc_entry_alloc(entry, i, value, average)){
 	candle_add_indicator_entry(c, __indicator_entry__(entry));
-	ret = 1;
+	return 1;
       }
     }
   }
 
-  r->last = c;
-  return ret;
+  return 0;
 }
 
 int roc_init(struct roc *r, indicator_id_t id, int period, int average)
@@ -45,7 +47,7 @@ int roc_init(struct roc *r, indicator_id_t id, int period, int average)
   __indicator_super__(r, id, roc_feed);
   __indicator_set_string__(r, "roc[%d %d]", period, average);
   
-  r->last = NULL;
+  r->period = period;
   average_init(&r->average, AVERAGE_MATH, period);
   return 0;
 }

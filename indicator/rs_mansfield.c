@@ -26,7 +26,7 @@ static int rs_mansfield_feed(struct indicator *i, struct timeline_entry *e) {
     /* Increment in list */
     r->ref_ptr = r->ref->next;
   
-  if(list_is_head(r->ref, r->ref_ptr)){
+  if(list_is_head(r->ref_ptr)){
     PR_ERR("timeline_entry ref list is empty\n");
     goto err;
   }

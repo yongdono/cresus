@@ -39,6 +39,9 @@
   for(struct list *ptr = (head)->prev;			\
       ptr != (head) && (self = __list_self__(ptr));	\
       ptr = ptr->prev)
+/* Relative functions */
+#define __list_relative__(entry, n)			\
+  __list_self__(list_relative(__list__(entry), n))
 
 /* Basic list object */
   
@@ -84,6 +87,23 @@ static inline void list_del(struct list *l) {
   l->head = l;
 }
 
-#define list_is_head(head, ptr) ((ptr) == (head))
+/* #define list_is_head(head, ptr) ((ptr) == (head)) */
+#define list_is_head(ptr) ((ptr) == (ptr)->head)
+
+/* Relative functions */
+
+static inline struct list *list_prev_n(struct list *l, int n) {
+  for(int i = n; !list_is_head(l) && i--;) l = l->prev;
+  return l;
+}
+
+static inline struct list *list_next_n(struct list *l, int n) {
+  for(int i = n; !list_is_head(l) && i--;) l = l->next;
+  return l;
+}
+
+#define list_relative(list, n)			\
+  (((n) < 0) ? list_prev_n((list), -(n)) :	\
+   list_next_n((list), (n)))
 
 #endif

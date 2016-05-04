@@ -15,6 +15,19 @@ static int jtrend_feed(struct indicator *i,
   struct jtrend *j = __indicator_self__(i);
   struct candle *c = __timeline_entry_self__(e);
 
+  if(!i->is_empty){
+
+    /* jtrend formula :
+     * average[n](roc[x][1](self) / roc[x][1](ref))
+     */
+    
+    /* self ROC */
+    //double roc = ((c->close / r->last->close) - 1) * 100.0;
+    //double roc_ref = ((ref->close / r->ref_last->close) - 1) * 100.0;
+    
+  }
+  
+  //r->last = c;
   /* Do something here */
   return 0;
 }

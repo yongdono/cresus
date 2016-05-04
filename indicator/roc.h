@@ -58,8 +58,8 @@ struct roc {
   /* Inherits from indicator */
   __inherits_from_indicator__;
   
+  int period;
   struct average average;
-  struct candle *last;
 };
 
 int roc_init(struct roc *r, indicator_id_t id, int period, int average);
