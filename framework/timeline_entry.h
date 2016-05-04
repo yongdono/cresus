@@ -35,6 +35,10 @@
 #define __timeline_entry_str__(self, buf, len)		\
   timeline_entry_str(__timeline_entry__(self), buf, len)
 
+#define __timeline_entry_relative_self__(entry, n)		\
+  __timeline_entry_self__((struct timeline_entry*)		\
+			  __list_relative__((entry), n))
+
 struct timeline_entry {
   /* parent */
   __inherits_from_list__;

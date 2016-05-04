@@ -15,10 +15,7 @@ static int roc_feed(struct indicator *i, struct timeline_entry *e) {
 
   struct roc *r = __indicator_self__(i);
   struct candle *c = __timeline_entry_self__(e);
-
-  /* TODO : make things better */
-  struct timeline_entry *ref = __list_relative__(e, -(r->period));
-  struct candle *cref = __timeline_entry_self__(ref);
+  struct candle *ref = __timeline_entry_relative_self__(e, -(r->period));
   
   if(!i->is_empty){
     
@@ -27,9 +24,9 @@ static int roc_feed(struct indicator *i, struct timeline_entry *e) {
      */
     
     struct roc_entry *entry;
-    double value = ((c->close / cref->close) - 1) * 100.0;
+    double value = ((c->close / ref->close) - 1) * 100.0;
     double average = average_update(&r->average, value);
-
+    
     if(average_is_available(&r->average)){
       if(roc_entry_alloc(entry, i, value, average)){
 	candle_add_indicator_entry(c, __indicator_entry__(entry));
