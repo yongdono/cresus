@@ -8,13 +8,14 @@
 
 #include "position.h"
 
-int position_init(struct position *p, struct timeline *t) {
+int position_init(struct position *p, struct timeline *t, int n) {
 
   /* super() */
   __slist_super__(p);
   
   p->t = t;
   p->c = NULL;
+  p->n = n;
   
   return 0;
 }

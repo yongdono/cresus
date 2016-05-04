@@ -19,9 +19,10 @@ struct position {
   /* Some data */
   struct timeline *t;
   struct candle *c;
+  int n;
 };
 
-int position_init(struct position *p, struct timeline *t);
+int position_init(struct position *p, struct timeline *t, int n);
 void position_release(struct position *p);
 
 /* FIXME */
