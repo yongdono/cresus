@@ -9,10 +9,14 @@
 #ifndef SIM_H
 #define SIM_H
 
+#include "sim/position.h"
 #include "engine/cluster.h"
+#include "framework/slist.h"
 
 struct sim {
   struct cluster *cluster;
+  slist_head_t(struct position) slist_position;
+  slist_head_t(struct position) slist_position_pending;
 };
 
 /* types */
@@ -23,5 +27,6 @@ int sim_init(struct sim *s, struct cluster *c);
 void sim_free(struct sim *s);
 
 int sim_run(struct sim *s, sim_feed_ptr feed);
+int sim_add_position(struct sim *s, struct position *p);
 
 #endif
