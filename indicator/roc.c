@@ -22,7 +22,7 @@ static int roc_feed(struct indicator *i, struct timeline_entry *e) {
     /* ROC formula :
      * ((candle[n] / candle[n - period]) - 1) * 100.0
      */
-
+    
     struct roc_entry *entry;
     double value = ((c->close / r->last->close) - 1) * 100.0;
     double average = average_update(&r->average, value);
