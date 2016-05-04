@@ -15,16 +15,20 @@ static int roc_feed(struct indicator *i, struct timeline_entry *e) {
 
   struct roc *r = __indicator_self__(i);
   struct candle *c = __timeline_entry_self__(e);
-  struct candle *ref = __timeline_entry_relative_self__(e, -(r->period));
+  struct timeline_entry *ref = __list_relative__(e, -(r->period));
   
-  if(!i->is_empty){
+  if(!i->is_empty &&
+     /* Check timeline entry is correct */
+     !__list_is_head__(ref)){
     
     /* ROC formula :
      * ((candle[n] / candle[n - period]) - 1) * 100.0
      */
     
     struct roc_entry *entry;
-    double value = ((c->close / ref->close) - 1) * 100.0;
+    struct candle *cref = __timeline_entry_self__(ref);
+    
+    double value = ((c->close / cref->close) - 1) * 100.0;
     double average = average_update(&r->average, value);
     
     if(average_is_available(&r->average)){
@@ -34,7 +38,7 @@ static int roc_feed(struct indicator *i, struct timeline_entry *e) {
       }
     }
   }
-
+  
   return 0;
 }
 

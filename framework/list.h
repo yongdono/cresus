@@ -88,7 +88,8 @@ static inline void list_del(struct list *l) {
 }
 
 /* #define list_is_head(head, ptr) ((ptr) == (head)) */
-#define list_is_head(ptr) ((ptr) == (ptr)->head)
+#define list_is_head(list) ((list) == (list)->head)
+#define __list_is_head__(entry) (__list__(entry) == __list__(entry)->head)
 
 /* Relative functions */
 
