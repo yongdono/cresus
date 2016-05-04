@@ -21,13 +21,17 @@ void sim_free(struct sim *s) {
 int sim_run(struct sim *s, sim_feed_ptr feed) {
 
   struct position *p;
-  __slist_for_each__(&s->slist_position_pending, p){
-    __slist_del__(p); /* FIXME ? */
-    __slist_insert__(&s->slist_position, p);
-  }
-  
-  while(cluster_step(s->cluster) != -1)
+
+  while(cluster_step(s->cluster)){
+    /* First : check if there are pending positions */
+    __slist_for_each__(&s->slist_position_pending, p){
+      __slist_del__(p); /* FIXME ? */
+      __slist_insert__(&s->slist_position, p);
+    }
+    
+    /* Second  : feed the sim */
     feed(s, s->cluster);
+  }
 
   return 0;
 }
