@@ -15,9 +15,10 @@
 
 struct sim {
   struct cluster *cluster;
+  slist_head_t(struct position) slist_position_to_open;
   slist_head_t(struct position) slist_position_opened;
+  slist_head_t(struct position) slist_position_to_close;
   slist_head_t(struct position) slist_position_closed;
-  slist_head_t(struct position) slist_position_pending;
 };
 
 /* types */
@@ -28,6 +29,7 @@ int sim_init(struct sim *s, struct cluster *c);
 void sim_free(struct sim *s);
 
 int sim_run(struct sim *s, sim_feed_ptr feed);
-int sim_add_position(struct sim *s, struct position *p);
+int sim_open_position(struct sim *s, struct position *p);
+int sim_close_position(struct sim *s, struct position *p);
 
 #endif

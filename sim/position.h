@@ -35,7 +35,7 @@ int position_init(struct position *p, struct timeline *t,
 		  position_t type, int n);
 void position_release(struct position *p);
 
-/* FIXME */
-int position_confirm(struct position *p);
+int position_in(struct position *p);
+int position_out(struct position *p);
 
 #endif

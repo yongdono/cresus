@@ -11,6 +11,12 @@
 int sim_init(struct sim *s, struct cluster *c) {
 
   s->cluster = c;
+  /* Init slists */
+  slist_init(&s->slist_position_to_open);
+  slist_init(&s->slist_position_opened);
+  slist_init(&s->slist_position_to_close);
+  slist_init(&s->slist_position_closed);
+
   return 0;
 }
 
@@ -18,30 +24,45 @@ void sim_free(struct sim *s) {
   /* Nothing to do */
 }
 
-int sim_run(struct sim *s, sim_feed_ptr feed) {
-
+static void sim_xfer_positions(struct sim *s,
+			       slist_head_t(struct position) *dst,
+			       slist_head_t(struct position) *src) {
+  
   struct position *p;
 
+  while(!slist_is_empty(src)){
+    /* FIXME ? LIFO */
+    p = __slist_self__(src->next);
+    slist_del(src);
+    /* Insert confirmed position */
+    position_in(p);
+    __slist_insert__(dst, p);
+  }
+}
+
+int sim_run(struct sim *s, sim_feed_ptr feed) {
+
   while(cluster_step(s->cluster)){
-    /* First : check if there are pending positions */
-    while(!slist_is_empty(&s->slist_position_pending)){
-      /* FIXME */
-      p = __slist_self__(s->slist_position_pending.next);
-      slist_del(&s->slist_position_pending);
-      /* Insert confirmed position */
-      position_confirm(p);
-      __slist_insert__(&s->slist_position_opened, p);
-    }
-    
-    /* Second  : feed the sim */
+    /* First : check if there are opening positions */
+    sim_xfer_positions(s, &s->slist_position_opened,
+		       &s->slist_position_to_open);
+    /* Second : check if there are closing positions */
+    sim_xfer_positions(s, &s->slist_position_closed,
+		       &s->slist_position_to_close);
+    /* Third  : feed the sim */
     feed(s, s->cluster);
   }
 
   return 0;
 }
 
-int sim_add_position(struct sim *s, struct position *p) {
+int sim_open_position(struct sim *s, struct position *p) {
 
-  __slist_insert__(&s->slist_position_pending, p);
+  __slist_insert__(&s->slist_position_to_open, p);
   return 0;
+}
+
+int sim_close_position(struct sim *s, struct position *p) {
+
+  /* FIXME : how to find position ? */
 }

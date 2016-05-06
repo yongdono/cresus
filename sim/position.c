@@ -31,12 +31,23 @@ void position_release(struct position *p) {
   p->out = NULL;
 }
 
-/* FIXME */
-int position_confirm(struct position *p) {
+/* FIXME : find better names */
+
+static int position_exec(struct position *p, struct candle **c) {
 
   struct timeline_entry *entry;
   int ret = timeline_entry_current(p->t, &entry);
-  p->in = __timeline_entry_self__(entry);
+  *c = __timeline_entry_self__(entry);
   
   return ret;
+}
+
+int position_in(struct position *p) {
+
+  return position_exec(p, &p->in);
+}
+
+int position_out(struct position *p) {
+
+  return position_exec(p, &p->out);
 }
