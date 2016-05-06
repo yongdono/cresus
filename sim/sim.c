@@ -28,7 +28,9 @@ int sim_run(struct sim *s, sim_feed_ptr feed) {
       /* FIXME */
       p = __slist_self__(s->slist_position_pending.next);
       slist_del(&s->slist_position_pending);
-      __slist_insert__(&s->slist_position, p);
+      /* Insert confirmed position */
+      position_confirm(p);
+      __slist_insert__(&s->slist_position_opened, p);
     }
     
     /* Second  : feed the sim */

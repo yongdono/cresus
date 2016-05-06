@@ -8,14 +8,18 @@
 
 #include "position.h"
 
-int position_init(struct position *p, struct timeline *t, int n) {
+int position_init(struct position *p, struct timeline *t,
+		  position_t type, int n) {
 
   /* super() */
   __slist_super__(p);
   
   p->t = t;
-  p->c = NULL;
+  p->in = NULL;
+  p->out = NULL;
+  
   p->n = n;
+  p->type = type;
   
   return 0;
 }
@@ -23,11 +27,16 @@ int position_init(struct position *p, struct timeline *t, int n) {
 void position_release(struct position *p) {
 
   __slist_release__(p);
-  p->c = NULL;
+  p->in = NULL;
+  p->out = NULL;
 }
 
 /* FIXME */
 int position_confirm(struct position *p) {
 
-  return timeline_entry_current(p->t, &p->c);
+  struct timeline_entry *entry;
+  int ret = timeline_entry_current(p->t, &entry);
+  p->in = __timeline_entry_self__(entry);
+  
+  return ret;
 }

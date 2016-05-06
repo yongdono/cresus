@@ -15,7 +15,8 @@
 
 struct sim {
   struct cluster *cluster;
-  slist_head_t(struct position) slist_position;
+  slist_head_t(struct position) slist_position_opened;
+  slist_head_t(struct position) slist_position_closed;
   slist_head_t(struct position) slist_position_pending;
 };
 

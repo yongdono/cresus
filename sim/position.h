@@ -13,16 +13,26 @@
 #include "engine/timeline.h"
 #include "framework/slist.h"
 
+typedef enum {
+  POSITION_LONG,
+  POSITION_SHORT
+} position_t;
+
 struct position {
   /* slistable */
   __inherits_from_slist__;
   /* Some data */
   struct timeline *t;
-  struct candle *c;
+  
+  struct candle *in;
+  struct candle *out;
+  
   int n;
+  position_t type;
 };
 
-int position_init(struct position *p, struct timeline *t, int n);
+int position_init(struct position *p, struct timeline *t,
+		  position_t type, int n);
 void position_release(struct position *p);
 
 /* FIXME */
