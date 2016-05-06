@@ -12,11 +12,17 @@
 #include "engine/candle.h"
 #include "engine/timeline.h"
 #include "framework/slist.h"
+#include "framework/alloc.h"
 
 typedef enum {
   POSITION_LONG,
   POSITION_SHORT
 } position_t;
+
+#define position_alloc(p, timeline, type, n)			\
+  DEFINE_ALLOC(struct position, p, position_init, t, type, n)
+#define position_free(p)			\
+  DEFINE_FREE(p, position_release)
 
 struct position {
   /* slistable */

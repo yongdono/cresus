@@ -66,3 +66,15 @@ int sim_close_position(struct sim *s, struct position *p) {
 
   /* FIXME : how to find position ? */
 }
+
+int sim_new_position(struct sim *s, struct timeline *t, 
+		     position_t type, int n) {
+  
+  struct position *p;
+  if(position_alloc(p, t, type, n)){
+    sim_open_position(s, p);
+    return 0;
+  }
+
+  return -1;
+}
