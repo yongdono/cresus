@@ -65,4 +65,7 @@ struct roc {
 int roc_init(struct roc *r, indicator_id_t id, int period, int average);
 void roc_release(struct roc *r);
 
+int roc_compute(struct roc *r, struct timeline_entry *e,
+		double *rvalue, double *raverage);
+
 #endif
