@@ -11,7 +11,7 @@
 
 #include "engine/candle.h"
 #include "engine/timeline.h"
-#include "framework/slist.h"
+#include "framework/list.h"
 #include "framework/alloc.h"
 
 typedef enum {
@@ -26,7 +26,7 @@ typedef enum {
 
 struct position {
   /* slistable */
-  __inherits_from_slist__;
+  __inherits_from_list__;
   /* Some data */
   struct timeline *t;
   
@@ -41,7 +41,8 @@ int position_init(struct position *p, struct timeline *t,
 		  position_t type, int n);
 void position_release(struct position *p);
 
-int position_in(struct position *p);
-int position_out(struct position *p);
+typedef int (*position_action_t)(struct position *p);
+int position_in(struct position *p); /* position_action_t */
+int position_out(struct position *p); /* position_action_t */
 
 #endif

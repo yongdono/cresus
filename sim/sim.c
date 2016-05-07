@@ -12,10 +12,10 @@ int sim_init(struct sim *s, struct cluster *c) {
 
   s->cluster = c;
   /* Init slists */
-  slist_init(&s->slist_position_to_open);
-  slist_init(&s->slist_position_opened);
-  slist_init(&s->slist_position_to_close);
-  slist_init(&s->slist_position_closed);
+  list_init(&s->list_position_to_open);
+  list_init(&s->list_position_opened);
+  list_init(&s->list_position_to_close);
+  list_init(&s->list_position_closed);
 
   return 0;
 }
@@ -25,18 +25,17 @@ void sim_free(struct sim *s) {
 }
 
 static void sim_xfer_positions(struct sim *s,
-			       slist_head_t(struct position) *dst,
-			       slist_head_t(struct position) *src) {
+			       list_head_t(struct position) *dst,
+			       list_head_t(struct position) *src,
+			       position_action_t position_action) {
   
   struct position *p;
-
-  while(!slist_is_empty(src)){
-    /* FIXME ? LIFO */
-    p = __slist_self__(src->next);
-    slist_del(src);
-    /* Insert confirmed position */
-    position_in(p);
-    __slist_insert__(dst, p);
+  __list_for_each__(src, p){
+    __list_del__(p); /* FIXME : use safe ? */
+    /* Insert in dst */
+    __list_add_tail__(dst, p);
+    /* Act on position */
+    position_action(p);
   }
 }
 
@@ -44,11 +43,13 @@ int sim_run(struct sim *s, sim_feed_ptr feed) {
 
   while(cluster_step(s->cluster)){
     /* First : check if there are opening positions */
-    sim_xfer_positions(s, &s->slist_position_opened,
-		       &s->slist_position_to_open);
+    sim_xfer_positions(s, &s->list_position_opened,
+		       &s->list_position_to_open,
+		       position_in);
     /* Second : check if there are closing positions */
-    sim_xfer_positions(s, &s->slist_position_closed,
-		       &s->slist_position_to_close);
+    sim_xfer_positions(s, &s->list_position_closed,
+		       &s->list_position_to_close,
+		       position_out);
     /* Third  : feed the sim */
     feed(s, s->cluster);
   }
@@ -58,13 +59,14 @@ int sim_run(struct sim *s, sim_feed_ptr feed) {
 
 int sim_open_position(struct sim *s, struct position *p) {
 
-  __slist_insert__(&s->slist_position_to_open, p);
+  __list_add__(&s->list_position_to_open, p);
   return 0;
 }
 
 int sim_close_position(struct sim *s, struct position *p) {
 
   /* FIXME : how to find position ? */
+  return 0;
 }
 
 int sim_new_position(struct sim *s, struct timeline *t, 
@@ -72,9 +74,25 @@ int sim_new_position(struct sim *s, struct timeline *t,
   
   struct position *p;
   if(position_alloc(p, t, type, n)){
-    sim_open_position(s, p);
+    __list_add__(&s->list_position_to_open, p); /* open could be removed */
     return 0;
   }
 
   return -1;
+}
+
+int sim_end_position(struct sim *s, struct timeline *t) {
+
+  int n = 0;
+  struct position *p;
+
+  __list_for_each__(&s->list_position_opened, p){
+    if(p->t == t){ /* FIXME : use timeline's name ? */
+      __list_del__(p); /* FIXME : use safe */
+      __list_add_tail__(&s->list_position_to_close, p);
+      n++;
+    }
+  }
+
+  return n;
 }

@@ -12,7 +12,7 @@ int position_init(struct position *p, struct timeline *t,
 		  position_t type, int n) {
 
   /* super() */
-  __slist_super__(p);
+  __list_super__(p);
   
   p->t = t;
   p->in = NULL;
@@ -26,7 +26,7 @@ int position_init(struct position *p, struct timeline *t,
 
 void position_release(struct position *p) {
 
-  __slist_release__(p);
+  __list_release__(p);
   p->in = NULL;
   p->out = NULL;
 }

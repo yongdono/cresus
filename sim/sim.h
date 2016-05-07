@@ -15,10 +15,10 @@
 
 struct sim {
   struct cluster *cluster;
-  slist_head_t(struct position) slist_position_to_open;
-  slist_head_t(struct position) slist_position_opened;
-  slist_head_t(struct position) slist_position_to_close;
-  slist_head_t(struct position) slist_position_closed;
+  list_head_t(struct position) list_position_to_open;
+  list_head_t(struct position) list_position_opened;
+  list_head_t(struct position) list_position_to_close;
+  list_head_t(struct position) list_position_closed;
 };
 
 /* types */
