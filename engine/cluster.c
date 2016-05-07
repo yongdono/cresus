@@ -89,7 +89,7 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
 	      timeline_entry_str(entry, buf, sizeof buf));
     }
   }
-  
+
   /* Add data to list */
   *ret = __timeline_entry__(candle);
   __timeline_append_entry__(c, __timeline_entry__(candle));
@@ -100,21 +100,11 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
 static int cluster_execute_step(struct cluster *c) {
 
   struct timeline *t;
-  struct timeline_entry *entry;
-  
   /* Execute indicators */
   __slist_for_each__(&c->slist_timeline, t){
     /* Step all timelines */
-    if((entry = timeline_step(t))){
-      struct indicator_entry *indicator;
-      struct candle *candle = __timeline_entry_self__(entry);
-      /* Indicators management */
-      __slist_for_each__(&candle->slist_indicator, indicator){
-	/* TODO : Use function pointer ?
-	 * Find a way to exploit all this data
-	 */
-      }
-    }
+    timeline_step(t);
+    /* TODO : check return ? */
   }
 
   return 0;
@@ -139,26 +129,10 @@ int cluster_step(struct cluster *c) {
 
   /* Execute when possible */
   ret = cluster_execute_step(c);
+  /* Don't forget that we inherit from timeline */
+  timeline_step(__timeline__(c));
   
  out:
   return ret;
 }
 
-int cluster_run(struct cluster *c) {
-
-  time_info_t time;
-  struct timeline *t;
-  struct timeline_entry *entry;
-  
-  /* TODO : Set time_min & time_max in a realistic way */
-  TIME_FOR_EACH(TIME_MIN, TIME_MAX, GRANULARITY_DAY, time){
-    /* Passing time 'by hand" */
-    if(cluster_prepare_step(c, time, &entry) != -1)
-      cluster_execute_step(c);
-    
-    else
-      break;
-  }
-  
-  return 0;
-}

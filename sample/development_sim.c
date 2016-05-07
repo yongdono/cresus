@@ -85,8 +85,21 @@ static void timeline_display_info(struct timeline *t) {
 static int sim_feed(struct sim *s, struct cluster *c) {
 
   struct timeline *t;
-  __slist_for_each__(&c->slist_timeline, t)
+  struct timeline_entry *entry;
+  
+  __slist_for_each__(&c->slist_timeline, t){
     timeline_display_info(t);
+    
+    if(timeline_entry_current(t, &entry) != -1){
+      struct candle *candle = __timeline_entry_self__(entry);
+      struct indicator_entry *ientry = 
+	candle_find_indicator_entry(candle, JTREND);
+
+      if(ientry) {
+	PR_INFO("");
+      }
+    }
+  }
   
   return 0;
 }
