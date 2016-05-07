@@ -20,7 +20,9 @@ static int jtrend_feed(struct indicator *i,
   if((entry = timeline_entry_find(__list_self__(j->ref), e->time))){
     double value, average;
     roc_compute(&j->roc, e, &value, &average);
-    roc_compute(&j->roc_ref, __timeline_entry_self__(entry), &value, &average);
+    roc_compute(&j->roc_ref, __timeline_entry_self__(entry),
+		&value, &average);
+
     /* TODO : Alloc jentry & store in candle */
 
     j->ref = __list__(entry);
