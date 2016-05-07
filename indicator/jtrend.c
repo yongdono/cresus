@@ -12,25 +12,34 @@ static int jtrend_feed(struct indicator *i,
 		       struct timeline_entry *e) {
 
   struct jtrend_entry *jentry;
-  struct timeline_entry *entry;
+  struct timeline_entry *tentry;
 
   struct jtrend *j = __indicator_self__(i);
   struct candle *c = __timeline_entry_self__(e);
 
-  if((entry = timeline_entry_find(__list_self__(j->ref), e->time))){
+  if((tentry = timeline_entry_find(__list_self__(j->ref), e->time))){
     double value, average;
-    roc_compute(&j->roc, e, &value, &average);
-    roc_compute(&j->roc_ref, __timeline_entry_self__(entry),
-		&value, &average);
+    struct jtrend_entry *entry;
+    double ref_value, ref_average;
 
-    /* TODO : Alloc jentry & store in candle */
+    if(roc_compute(&j->roc, e, &value, &average) != -1){
+      /* FIXME : check return */
+      roc_compute(&j->roc_ref, __timeline_entry_self__(tentry),
+		  &ref_value, &ref_average);
 
-    j->ref = __list__(entry);
-    return 1;
+      /* Alloc jentry & store in candle */
+      value = value - ref_value;
+      average = average - ref_average;
+      if(jtrend_entry_alloc(entry, i, value, average))
+	candle_add_indicator_entry(c, __indicator_entry__(entry));
+    }
+
+    j->ref = __list__(tentry);
+    return 0;
   }
 
   /* Do something here */
-  return 0;
+  return -1;
 }
 
 int jtrend_init(struct jtrend *j, indicator_id_t id,

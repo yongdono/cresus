@@ -21,18 +21,21 @@ struct jtrend_entry {
   __inherits_from_indicator_entry__;
   /* Value type ? */
   double value;
+  double average;
 };
 
-#define jtrend_entry_alloc(entry, parent)				\
-  DEFINE_ALLOC(struct jtrend_entry, entry, jtrend_entry_init, parent)
+#define jtrend_entry_alloc(entry, parent, value, average)		\
+  DEFINE_ALLOC(struct jtrend_entry, entry, jtrend_entry_init,		\
+	       parent, value, average)
 #define jtrend_entry_free(entry)		\
   DEFINE_FREE(entry, jtrend_entry_release)
 
 static inline int jtrend_entry_init(struct jtrend_entry *entry,
 				    struct indicator *parent,
-				    double value){
+				    double value, double average){
   __indicator_entry_super__(entry, parent);
   entry->value = value;
+  entry->average = average;
   return 0;
 }
 
