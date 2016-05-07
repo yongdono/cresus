@@ -11,14 +11,15 @@
 #include "engine/cluster.h"
 #include "engine/timeline.h"
 #include "indicator/mobile.h"
-#include "indicator/rs_mansfield.h"
-
+#include "indicator/roc.h"
+#include "indicator/jtrend.h"
 #include "framework/verbose.h"
 
 #include <string.h>
 
-#define EMA30 1
-#define RSM   2
+#define EMA30  1
+#define ROC    2
+#define JTREND 3
 
 static struct timeline *
 timeline_create(const char *filename, const char *name, time_info_t min,
@@ -27,18 +28,21 @@ timeline_create(const char *filename, const char *name, time_info_t min,
   struct yahoo *yahoo;
   struct timeline *timeline;
   
+  struct roc *roc;
   struct mobile *mobile;
-  struct rs_mansfield *rsm;
+  struct jtrend *jtrend;
 
   /* TODO : Check return values */
   yahoo_alloc(yahoo, filename, min, TIME_MAX); /* load everything */
   timeline_alloc(timeline, name, __input__(yahoo));
   /* Indicators alloc */
   mobile_alloc(mobile, EMA30, MOBILE_EMA, 30, CANDLE_CLOSE);
-  rs_mansfield_alloc(rsm, RSM, 14, ref_index);
+  roc_alloc(roc, ROC, 1, 1);
+  jtrend_alloc(jtrend, JTREND, 1, 1, ref_index);
   /* And insert */
   timeline_add_indicator(timeline, __indicator__(mobile));
-  timeline_add_indicator(timeline, __indicator__(rsm));
+  timeline_add_indicator(timeline, __indicator__(roc));
+  timeline_add_indicator(timeline, __indicator__(jtrend));
   
   return timeline;
 }
@@ -62,9 +66,14 @@ static void timeline_display_info(struct timeline *t) {
 			    __indicator_entry_self__(ientry))->value);
 	break;
 	
-      case RSM : PR_WARN("%s RSM is %.2f\n", t->name,
-			 ((struct rs_mansfield_entry*)
+      case ROC : PR_WARN("%s ROC is %.2f\n", t->name,
+			 ((struct roc_entry*)
 			  __indicator_entry_self__(ientry))->value);
+	break;
+
+      case JTREND : PR_WARN("%s JTREND is %.2f\n", t->name,
+			    ((struct jtrend_entry*)
+			     __indicator_entry_self__(ientry))->value);
 	break;
       }
     }
@@ -105,6 +114,7 @@ int main(int argc, char **argv) {
   /* Now create sim */
   sim_init(&sim, &cluster);
   sim_run(&sim, sim_feed);
+  sim_display_report(&sim);
   
   return 0;
 }
