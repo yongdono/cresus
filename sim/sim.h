@@ -29,10 +29,8 @@ int sim_init(struct sim *s, struct cluster *c);
 void sim_free(struct sim *s);
 
 int sim_run(struct sim *s, sim_feed_ptr feed);
-int sim_open_position(struct sim *s, struct position *p);
-int sim_close_position(struct sim *s, struct position *p);
-
-int sim_new_position(struct sim *s, struct timeline *t,
-		     position_t type, int n);
+int sim_open_position(struct sim *s, struct timeline *t,
+		      position_t type, int n);
+int sim_close_position(struct sim *s, struct timeline *t);
 
 #endif

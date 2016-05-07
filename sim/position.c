@@ -51,3 +51,21 @@ int position_out(struct position *p) {
 
   return position_exec(p, &p->out);
 }
+
+double position_value(struct position *p) {
+
+  double out;
+  if(p->out == NULL){
+    /* If we're not out of position */
+    struct candle *c;
+    struct timeline_entry *e;
+    /* TODO : check */
+    timeline_entry_current(p->t, &e);
+    c = __timeline_entry_self__(e);
+    out = c->open;
+  }else
+    out = p->out->open;
+
+  /* FIXME : forced candle open value comparison */
+  return (out - p->in->open);
+}

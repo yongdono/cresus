@@ -6,7 +6,9 @@
  *
  */
 
-#include "sim.h"
+#include "sim/sim.h"
+#include "sim/statistics.h"
+#include "framework/verbose.h"
 
 int sim_init(struct sim *s, struct cluster *c) {
 
@@ -57,20 +59,8 @@ int sim_run(struct sim *s, sim_feed_ptr feed) {
   return 0;
 }
 
-int sim_open_position(struct sim *s, struct position *p) {
-
-  __list_add__(&s->list_position_to_open, p);
-  return 0;
-}
-
-int sim_close_position(struct sim *s, struct position *p) {
-
-  /* FIXME : how to find position ? */
-  return 0;
-}
-
-int sim_new_position(struct sim *s, struct timeline *t, 
-		     position_t type, int n) {
+int sim_open_position(struct sim *s, struct timeline *t, 
+		      position_t type, int n) {
   
   struct position *p;
   if(position_alloc(p, t, type, n)){
@@ -81,8 +71,8 @@ int sim_new_position(struct sim *s, struct timeline *t,
   return -1;
 }
 
-int sim_end_position(struct sim *s, struct timeline *t) {
-
+int sim_close_position(struct sim *s, struct timeline *t) {
+  
   int n = 0;
   struct position *p;
 
@@ -95,4 +85,33 @@ int sim_end_position(struct sim *s, struct timeline *t) {
   }
 
   return n;
+}
+
+static int sim_report(struct sim *s,
+		      list_head_t(struct position) *list) {
+
+  struct position *p;
+  struct statistics stat;
+
+  statistics_init(&stat, 0.0);
+
+  __list_for_each__(list, p)
+    /* Feed stats for any list here */
+    statistics_feed(&stat, position_value(p));
+
+  statistics_printf(&stat);
+  statistics_release(&stat);
+
+  return 0;
+}
+
+int sim_display_report(struct sim *s) {
+  
+  PR_INFO("Statistics for still opened positions\n");
+  sim_report(s, &s->list_position_opened);
+
+  PR_INFO("Statistics for closed positions\n");
+  sim_report(s, &s->list_position_closed);
+
+  return 0;
 }
