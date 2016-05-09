@@ -54,7 +54,8 @@ int position_out(struct position *p) {
 
 double position_value(struct position *p) {
 
-  double out;
+  double out, ret;
+  
   if(p->out == NULL){
     /* If we're not out of position */
     struct candle *c;
@@ -67,5 +68,10 @@ double position_value(struct position *p) {
     out = p->out->open;
 
   /* FIXME : forced candle open value comparison */
-  return (out - p->in->open);
+  if(p->type == POSITION_LONG)
+    ret = (out - p->in->open);
+  else
+    ret = (p->in->open - out);
+  
+  return ret;
 }

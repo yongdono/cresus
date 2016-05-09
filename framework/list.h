@@ -45,16 +45,13 @@
 
 /* Basic list object */
   
-#define list_head_t(type) struct list /* Type is purely indicative */
-#define list_head_init(x) list_init(x)
-#define list_head_release(x) list_release(x)
-
 struct list {
   __list_is_superclass__;
   struct list *head, *prev, *next;
 };
 
 static inline int list_init(struct list *l) {
+  /* Inside */
   l->head = l;
   l->next = l;
   l->prev = l;
@@ -87,6 +84,20 @@ static inline void list_del(struct list *l) {
   l->head = l;
 }
 
+/* Head */
+
+#define list_head_t(type) struct list /* Type is purely indicative */
+
+static inline int list_head_init(list_head_t(void) *l) {
+  /* Ensure head has no __self__ */
+  __list_self_init__(l, NULL);
+  return list_init(l);
+}
+
+static inline void list_head_release(list_head_t(void) *l) {
+  list_release(l);
+}
+
 /* #define list_is_head(head, ptr) ((ptr) == (head)) */
 #define list_is_head(list) ((list) == (list)->head)
 #define __list_is_head__(entry) (__list__(entry) == __list__(entry)->head)
@@ -94,12 +105,12 @@ static inline void list_del(struct list *l) {
 /* Relative functions */
 
 static inline struct list *list_prev_n(struct list *l, int n) {
-  for(int i = n; !list_is_head(l) && i--;) l = l->prev;
+  while(!list_is_head(l) && n--) l = l->prev;
   return l;
 }
 
 static inline struct list *list_next_n(struct list *l, int n) {
-  for(int i = n; !list_is_head(l) && i--;) l = l->next;
+  while(!list_is_head(l) && n--) l = l->next;
   return l;
 }
 

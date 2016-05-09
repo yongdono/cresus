@@ -12,7 +12,7 @@ libcresus_la_SOURCES = framework/indicator.c framework/timeline_entry.c \
 	               engine/calendar.c \
 		       math/average.c \
 		       input/yahoo.c \
-		       sim/sim.c sim/position.c \
+		       sim/sim.c sim/position.c sim/statistics.c \
 		       indicator/atr.c indicator/bollinger.c \
                        indicator/heikin_ashi.c indicator/rs_dorsey.c \
                        indicator/macd.c indicator/mobile.c indicator/rsi.c \

@@ -38,12 +38,10 @@ int roc_compute(struct roc *r, struct timeline_entry *e,
   struct candle *c = __timeline_entry_self__(e);
   struct timeline_entry *ref = __list_relative__(e, -(r->period));
   
-  if(!__list_is_head__(ref)){
-    
+  if(ref != NULL){
     /* ROC formula :
      * ((candle[n] / candle[n - period]) - 1) * 100.0
      */
-    
     struct candle *cref = __timeline_entry_self__(ref);
     double value = ((c->close / cref->close) - 1) * 100.0;
     double average = average_update(&r->average, value);

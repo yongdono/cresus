@@ -17,6 +17,9 @@ static int jtrend_feed(struct indicator *i,
   struct jtrend *j = __indicator_self__(i);
   struct candle *c = __timeline_entry_self__(e);
 
+  if(!__list_self__(j->ref))
+    j->ref = j->ref->next;
+  
   if((tentry = timeline_entry_find(__list_self__(j->ref), e->time))){
     double value, average;
     struct jtrend_entry *entry;
