@@ -37,8 +37,8 @@ timeline_create(const char *filename, const char *name, time_info_t min,
   timeline_alloc(timeline, name, __input__(yahoo));
   /* Indicators alloc */
   mobile_alloc(mobile, EMA30, MOBILE_EMA, 30, CANDLE_CLOSE);
-  roc_alloc(roc, ROC, 1, 1);
-  jtrend_alloc(jtrend, JTREND, 1, 1, ref_index);
+  roc_alloc(roc, ROC, 1, 2);
+  jtrend_alloc(jtrend, JTREND, 1, 2, ref_index);
   /* And insert */
   timeline_add_indicator(timeline, __indicator__(mobile));
   timeline_add_indicator(timeline, __indicator__(roc));
@@ -66,14 +66,14 @@ static void timeline_display_info(struct timeline *t) {
 			    __indicator_entry_self__(ientry))->value);
 	break;
 	
-      case ROC : PR_WARN("%s ROC is %.2f\n", t->name,
-			 ((struct roc_entry*)
-			  __indicator_entry_self__(ientry))->value);
+      case ROC :{
+	struct roc_entry *e = __indicator_entry_self__(ientry);
+	PR_WARN("%s ROC is %.2f, %.2f\n", t->name, e->value, e->average); }
 	break;
-
-      case JTREND : PR_WARN("%s JTREND is %.2f\n", t->name,
-			    ((struct jtrend_entry*)
-			     __indicator_entry_self__(ientry))->value);
+	
+      case JTREND : {
+	struct jtrend_entry *e = __indicator_entry_self__(ientry);
+	PR_WARN("%s JTREND is %.2f, %.2f\n", t->name, e->value, e->average); }
 	break;
       }
     }
