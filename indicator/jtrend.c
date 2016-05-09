@@ -50,12 +50,13 @@ int jtrend_init(struct jtrend *j, indicator_id_t id,
 		list_head_t(struct timeline_entry) *ref) {
 
   __indicator_super__(j, id, jtrend_feed);
+  __indicator_set_string__(j, "jtrend[%d,%d]", period, average);
+  
   /* Our sub-indicators */
   roc_init(&j->roc, id, period, average);
   roc_init(&j->roc_ref, id, period, average);
-
+  
   j->ref = ref;
-
   return 0;
 }
 
