@@ -43,7 +43,7 @@ static void sim_xfer_positions(struct sim *s,
 
 int sim_run(struct sim *s, sim_feed_ptr feed) {
 
-  while(cluster_step(s->cluster)){
+  while(cluster_step(s->cluster) != -1){
     /* First : check if there are opening positions */
     sim_xfer_positions(s, &s->list_position_opened,
 		       &s->list_position_to_open,
