@@ -17,9 +17,13 @@
 
 #include <string.h>
 
-#define EMA30  1
+#define EMA    1
 #define ROC    2
 #define JTREND 3
+
+/* Main info */
+#define PERIOD 24
+#define AVERAGE 9
 
 static struct timeline *
 timeline_create(const char *filename, const char *name, time_info_t min,
@@ -28,7 +32,6 @@ timeline_create(const char *filename, const char *name, time_info_t min,
   struct yahoo *yahoo;
   struct timeline *timeline;
   
-  struct roc *roc;
   struct mobile *mobile;
   struct jtrend *jtrend;
 
@@ -36,12 +39,10 @@ timeline_create(const char *filename, const char *name, time_info_t min,
   yahoo_alloc(yahoo, filename, min, TIME_MAX); /* load everything */
   timeline_alloc(timeline, name, __input__(yahoo));
   /* Indicators alloc */
-  mobile_alloc(mobile, EMA30, MOBILE_EMA, 30, CANDLE_CLOSE);
-  roc_alloc(roc, ROC, 1, 2);
-  jtrend_alloc(jtrend, JTREND, 1, 2, ref_index);
+  mobile_alloc(mobile, EMA, MOBILE_EMA, 30, CANDLE_CLOSE);
+  jtrend_alloc(jtrend, JTREND, PERIOD, AVERAGE, ref_index);
   /* And insert */
   timeline_add_indicator(timeline, __indicator__(mobile));
-  timeline_add_indicator(timeline, __indicator__(roc));
   timeline_add_indicator(timeline, __indicator__(jtrend));
   
   return timeline;
@@ -52,6 +53,8 @@ static void timeline_destroy(struct timeline *t) {
 
 static void timeline_display_info(struct timeline *t) {
 
+  char buf[256]; /* debug */
+  
   /* FIXME : change interface */
   struct timeline_entry *entry;
   if(timeline_entry_current(t, &entry) != -1){
@@ -61,19 +64,25 @@ static void timeline_display_info(struct timeline *t) {
     /* This interface is not easy to use. Find something better */
     candle_indicator_for_each(candle, ientry) {
       switch(ientry->iid){
-      case EMA30 : PR_WARN("%s EMA30 is %.2f\n", t->name,
-			   ((struct mobile_entry*)
-			    __indicator_entry_self__(ientry))->value);
-	break;
-	
-      case ROC :{
-	struct roc_entry *e = __indicator_entry_self__(ientry);
-	PR_WARN("%s ROC is %.2f\n", t->name, e->value); }
+      case EMA : PR_WARN("%s EMA is %.2f\n", t->name,
+			 ((struct mobile_entry*)
+			  __indicator_entry_self__(ientry))->value);
 	break;
 	
       case JTREND : {
 	struct jtrend_entry *e = __indicator_entry_self__(ientry);
-	PR_WARN("%s JTREND is %.2f\n", t->name, e->value); }
+	PR_WARN("%s JTREND is %.2f, %.2f\n", t->name,
+		e->value, e->ref_value);
+	
+	if(e->value > 0 && e->ref_value > 0){
+	  PR_ERR("Taking LONG position on %s at %s\n",
+		 t->name, candle_str(candle, buf));
+	}
+	
+	if(e->value < 0 && e->ref_value < 0){
+	  PR_ERR("Taking SHORT position on %s at %s\n",
+		 t->name, candle_str(candle, buf));
+	}}
 	break;
       }
     }
@@ -86,7 +95,16 @@ static int sim_feed(struct sim *s, struct cluster *c) {
 
   struct timeline *t;
   struct timeline_entry *entry;
-  
+
+  /* TODO : how do i extract data from cluster's own candles ? */
+  if(timeline_entry_current(__timeline__(c), &entry) != -1){
+    struct indicator_entry *ientry;
+    struct candle *candle = __timeline_entry_self__(entry);
+    if((ientry = candle_find_indicator_entry(candle, ROC)))
+      PR_WARN("%s ROC is %.2f\n", __timeline__(c)->name,
+	      ((struct roc_entry*)ientry)->value);
+  }
+     
   __slist_for_each__(&c->slist_timeline, t){
     timeline_display_info(t);
     
@@ -96,7 +114,7 @@ static int sim_feed(struct sim *s, struct cluster *c) {
 	candle_find_indicator_entry(candle, JTREND);
 
       if(ientry) {
-	PR_INFO("");
+	PR_INFO("\n");
       }
     }
   }
@@ -104,26 +122,36 @@ static int sim_feed(struct sim *s, struct cluster *c) {
   return 0;
 }
 
+/* more final functions */
+
+static void add_timeline_to_cluster(struct cluster *c, const char *path,
+				    const char *name, time_info_t time) {
+
+  struct timeline *sub;
+  sub = timeline_create(path, name, time, &__timeline__(c)->list_entry);
+  cluster_add_timeline(c, sub);
+}
+
 int main(int argc, char **argv) {
 
   struct sim sim;
+  struct roc roc;
   struct cluster cluster;
-  struct timeline *t0, *t1;
-
+  
   if(argc > 1 && !strcmp(argv[1], "-v"))
     VERBOSE_LEVEL(DBG);
-
+  
   /* 01/01/2000 */
   time_info_t time = TIME_INIT(2000, 1, 1, 0, 0, 0, 0);
   cluster_init(&cluster, "my cluster", time, TIME_MAX);
-  t0 = timeline_create("data/AF.yahoo", "AF", time,
-		       &__timeline__(&cluster)->list_entry); /* FIXME */
-  t1 = timeline_create("data/AIR.yahoo", "AIR", time,
-		       &__timeline__(&cluster)->list_entry);
+  /* Init general roc indicator */
+  roc_init(&roc, ROC, PERIOD, AVERAGE);
+  timeline_add_indicator(__timeline__(&cluster), __indicator__(&roc));
   
-  cluster_add_timeline(&cluster, t0);
-  cluster_add_timeline(&cluster, t1);
-
+  /* Sub-timelines */
+  add_timeline_to_cluster(&cluster, "data/AF.yahoo", "AF", time);
+  add_timeline_to_cluster(&cluster, "data/AIR.yahoo", "AIR", time);
+  
   /* Now create sim */
   sim_init(&sim, &cluster);
   sim_run(&sim, sim_feed);

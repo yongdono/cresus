@@ -35,7 +35,7 @@ static inline int jtrend_entry_init(struct jtrend_entry *entry,
 				    double value, double ref_value){
   __indicator_entry_super__(entry, parent);
   entry->value = value;
-  entry->ref_value = value;
+  entry->ref_value = ref_value;
   return 0;
 }
 
