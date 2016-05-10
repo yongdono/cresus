@@ -93,28 +93,45 @@ static void timeline_display_info(struct timeline *t) {
 
 static int sim_feed(struct sim *s, struct cluster *c) {
 
+  char buf[256];
+  int status = 0;
+  
   struct timeline *t;
   struct timeline_entry *entry;
-
-  /* TODO : how do i extract data from cluster's own candles ? */
+  struct indicator_entry *ientry;
+  
+  /* TODO : better management of this ? */
   if(timeline_entry_current(__timeline__(c), &entry) != -1){
-    struct indicator_entry *ientry;
     struct candle *candle = __timeline_entry_self__(entry);
-    if((ientry = candle_find_indicator_entry(candle, ROC)))
-      PR_WARN("%s ROC is %.2f\n", __timeline__(c)->name,
-	      ((struct roc_entry*)ientry)->value);
+    if((ientry = candle_find_indicator_entry(candle, ROC))){
+      struct roc_entry *rentry = __indicator_entry_self__(ientry);
+      PR_WARN("%s ROC is %.2f\n", __timeline__(c)->name, rentry->value);
+      /* Manage cluster's status here */
+      if(rentry->value > 0) status = 1;
+      else status = -1;
+    }
   }
-     
+  
   __slist_for_each__(&c->slist_timeline, t){
-    timeline_display_info(t);
-    
+    /* TODO : this is facultative */
+    //timeline_display_info(t);
+    /* This is mandatory */
     if(timeline_entry_current(t, &entry) != -1){
       struct candle *candle = __timeline_entry_self__(entry);
-      struct indicator_entry *ientry = 
-	candle_find_indicator_entry(candle, JTREND);
+      if((ientry = candle_find_indicator_entry(candle, JTREND))){
+	struct jtrend_entry *jentry = __indicator_entry_self__(ientry);
+	PR_WARN("%s JTREND is %.2f, %.2f\n", t->name,
+		jentry->value, jentry->ref_value);
 
-      if(ientry) {
-	PR_INFO("\n");
+	if(jentry->value > 0 && status > 0){
+	  PR_ERR("Taking LONG position on %s at %s\n",
+		 t->name, candle_str(candle, buf));  
+	}
+
+	if(jentry->value < 0 && status < 0){
+	  PR_ERR("Taking SHORT position on %s at %s\n",
+		 t->name, candle_str(candle, buf));
+	}
       }
     }
   }
