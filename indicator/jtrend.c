@@ -21,22 +21,18 @@ static int jtrend_feed(struct indicator *i,
     j->ref = j->ref->next;
   
   if((tentry = timeline_entry_find(__list_self__(j->ref), e->time))){
-    double value, average;
+    double value, ref_value;
     struct jtrend_entry *entry;
-    double ref_value, ref_average;
-
-    if(roc_compute(&j->roc, e, &value, &average) != -1){
+    
+    if(roc_compute(&j->roc, e, &value) != -1){
       /* FIXME : check return */
-      roc_compute(&j->roc_ref, __timeline_entry_self__(tentry),
-		  &ref_value, &ref_average);
-
+      roc_compute(&j->roc_ref, __timeline_entry_self__(tentry), &ref_value);
       /* Alloc jentry & store in candle */
       value = value - ref_value;
-      average = average - ref_average;
-      if(jtrend_entry_alloc(entry, i, value, average))
+      if(jtrend_entry_alloc(entry, i, value, ref_value))
 	candle_add_indicator_entry(c, __indicator_entry__(entry));
     }
-
+    
     j->ref = __list__(tentry);
     return 0;
   }

@@ -68,12 +68,12 @@ static void timeline_display_info(struct timeline *t) {
 	
       case ROC :{
 	struct roc_entry *e = __indicator_entry_self__(ientry);
-	PR_WARN("%s ROC is %.2f, %.2f\n", t->name, e->value, e->average); }
+	PR_WARN("%s ROC is %.2f\n", t->name, e->value); }
 	break;
 	
       case JTREND : {
 	struct jtrend_entry *e = __indicator_entry_self__(ientry);
-	PR_WARN("%s JTREND is %.2f, %.2f\n", t->name, e->value, e->average); }
+	PR_WARN("%s JTREND is %.2f\n", t->name, e->value); }
 	break;
       }
     }
