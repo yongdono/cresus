@@ -44,6 +44,7 @@ void position_release(struct position *p);
 typedef int (*position_action_t)(struct position *p);
 int position_in(struct position *p); /* position_action_t */
 int position_out(struct position *p); /* position_action_t */
+int position_nop(struct position *p); /* position_action_t */
 
 double position_value(struct position *p);
 

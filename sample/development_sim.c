@@ -25,6 +25,24 @@
 #define PERIOD 24
 #define AVERAGE 9
 
+typedef enum {
+  TREND_NONE,
+  TREND_UP,
+  TREND_DOWN,
+} trend_t;
+
+/* Global */
+static trend_t __trend__;
+
+static int trend_set(trend_t trend) {
+  
+  trend_t old = __trend__;
+  __trend__ = trend;
+  /* Choose what's best here */
+  return !(__trend__ == old);
+}
+
+
 static struct timeline *
 timeline_create(const char *filename, const char *name, time_info_t min,
 		list_head_t(struct timeline_entry) *ref_index) {
@@ -107,8 +125,13 @@ static int sim_feed(struct sim *s, struct cluster *c) {
       struct roc_entry *rentry = __indicator_entry_self__(ientry);
       PR_WARN("%s ROC is %.2f\n", __timeline__(c)->name, rentry->value);
       /* Manage cluster's status here */
-      if(rentry->value > 0) status = 1;
-      else status = -1;
+      if(trend_set(rentry->value > 0 ? TREND_UP : TREND_DOWN)){
+	/* We got a change here */
+	PR_INFO("General trend switched to %s\n",
+		__trend__ == TREND_UP ? "up" : "down");
+	/* Close all positions */
+	sim_close_all_positions(s);
+      }
     }
   }
   
@@ -123,14 +146,18 @@ static int sim_feed(struct sim *s, struct cluster *c) {
 	PR_WARN("%s JTREND is %.2f, %.2f\n", t->name,
 		jentry->value, jentry->ref_value);
 
-	if(jentry->value > 0 && status > 0){
+	if(jentry->value > 0 && __trend__ == TREND_UP){
 	  PR_ERR("Taking LONG position on %s at %s\n",
-		 t->name, candle_str(candle, buf));  
+		 t->name, candle_str(candle, buf));
+
+	  sim_open_position(s, t, POSITION_LONG, 1);
 	}
 
-	if(jentry->value < 0 && status < 0){
+	if(jentry->value < 0 && __trend__ == TREND_DOWN){
 	  PR_ERR("Taking SHORT position on %s at %s\n",
 		 t->name, candle_str(candle, buf));
+
+	  sim_open_position(s, t, POSITION_SHORT, 1);
 	}
       }
     }
