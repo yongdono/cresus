@@ -19,6 +19,11 @@ int sim_init(struct sim *s, struct cluster *c) {
   list_head_init(&s->list_position_to_close);
   list_head_init(&s->list_position_closed);
 
+  /* Stats */
+  s->factor = 1.0;
+  s->nwin = 0;
+  s->nloss = 0;
+
   return 0;
 }
 
@@ -103,6 +108,15 @@ int sim_close_all_positions(struct sim *s) {
   return 0;
 }
 
+static void sim_stat(struct sim *s, double factor) {
+
+  PR_INFO("stat factor is %.3lf / %.3lf\n", factor, s->factor);
+
+  s->factor *= factor;
+  if(factor > 1.0) s->nwin++;
+  else s->nloss++;
+}
+
 static int sim_report(struct sim *s,
 		      list_head_t(struct position) *list) {
 
@@ -111,12 +125,18 @@ static int sim_report(struct sim *s,
 
   statistics_init(&stat, 0.0);
 
-  __list_for_each__(list, p)
+  __list_for_each__(list, p){
     /* Feed stats for any list here */
     statistics_feed(&stat, position_value(p));
+    sim_stat(s, position_factor(p));
+  }
 
   statistics_printf(&stat);
   statistics_release(&stat);
+
+  PR_ERR("SIM FACTOR : %.3lf\n", s->factor);
+  PR_ERR("SIM_NWIN : %d\n", s->nwin);
+  PR_ERR("SIM_NLOSS : %d\n", s->nloss);
 
   return 0;
 }
