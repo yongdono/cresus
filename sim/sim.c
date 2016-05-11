@@ -75,7 +75,7 @@ int sim_open_position(struct sim *s, struct timeline *t,
   
   struct position *p;
   if(position_alloc(p, t, type, n)){
-    __list_add__(&s->list_position_to_open, p); /* open could be removed */
+    __list_add_tail__(&s->list_position_to_open, p);
     return 0;
   }
 
@@ -108,9 +108,15 @@ int sim_close_all_positions(struct sim *s) {
   return 0;
 }
 
-static void sim_stat(struct sim *s, double factor) {
+static void sim_stat(struct sim *s, struct position *p) {
 
-  PR_INFO("stat factor is %.3lf / %.3lf\n", factor, s->factor);
+  char buf[256], buf2[245];
+  double factor = position_factor(p);
+
+  PR_DBG("%s at [%s:%s] is %.3lf / %.3lf\n",
+	 p->t->name, __timeline_entry_str__(p->in, buf, sizeof buf),
+	 p->out ? __timeline_entry_str__(p->out, buf2, sizeof buf2) : "N/A",
+	 factor, s->factor);
 
   s->factor *= factor;
   if(factor > 1.0) s->nwin++;
@@ -128,7 +134,7 @@ static int sim_report(struct sim *s,
   __list_for_each__(list, p){
     /* Feed stats for any list here */
     statistics_feed(&stat, position_value(p));
-    sim_stat(s, position_factor(p));
+    sim_stat(s, p);
   }
 
   statistics_printf(&stat);
