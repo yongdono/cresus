@@ -37,6 +37,9 @@ int sim_open_position(struct sim *s, struct timeline *t,
 int sim_close_position(struct sim *s, struct timeline *t);
 int sim_close_all_positions(struct sim *s);
 
+int sim_find_opened_position(struct sim *s, struct timeline *t,
+			     struct position **ret_p) ;
+
 int sim_display_report(struct sim *s);
 
 #endif

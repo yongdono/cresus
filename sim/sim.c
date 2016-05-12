@@ -108,6 +108,30 @@ int sim_close_all_positions(struct sim *s) {
   return 0;
 }
 
+static int sim_find_position(struct sim *s,
+			     list_head_t(struct position) *list,
+			     struct timeline *t,
+			     struct position **ret_p) {
+  
+  /* TODO : if ret_p != NULL, start with ret_p */
+  struct position *p;
+  __list_for_each__(list, p) {
+    if(p->t == t){
+      *ret_p = p;
+      return 1;
+    }
+  }
+
+  *ret_p = NULL;
+  return 0;
+}
+
+int sim_find_opened_position(struct sim *s, struct timeline *t,
+			     struct position **ret_p) {
+
+  return sim_find_position(s, &s->list_position_opened, t, ret_p);
+}
+
 static void sim_stat(struct sim *s, struct position *p) {
 
   char buf[256], buf2[245];

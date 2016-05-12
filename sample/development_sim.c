@@ -24,8 +24,8 @@
 #define START_TIME VAL_YEAR(2012) | VAL_MONTH(1) | VAL_DAY(1)
 
 /* Main info */
-#define PERIOD 24
-#define AVERAGE 9
+#define PERIOD  1
+#define AVERAGE 3
 
 typedef enum {
   TREND_NONE,
@@ -142,24 +142,49 @@ static int sim_feed(struct sim *s, struct cluster *c) {
     //timeline_display_info(t);
     /* This is mandatory */
     if(timeline_entry_current(t, &entry) != -1){
+      struct position *p;
       struct candle *candle = __timeline_entry_self__(entry);
       if((ientry = candle_find_indicator_entry(candle, JTREND))){
 	struct jtrend_entry *jentry = __indicator_entry_self__(ientry);
 	PR_WARN("%s JTREND is %.2f, %.2f\n", t->name,
 		jentry->value, jentry->ref_value);
 
-	if(jentry->value > 0 && __trend__ == TREND_UP){
-	  PR_ERR("Taking LONG position on %s at %s\n",
-		 t->name, candle_str(candle, buf));
+	/* Always check if something's open */
+	sim_find_opened_position(s, t, &p);
 
-	  sim_open_position(s, t, POSITION_LONG, 1);
+	/* LONG positions */
+	if(__trend__ == TREND_UP){
+	  
+	  if(jentry->value > 0.0){	    
+	    if(p == NULL){
+	      sim_open_position(s, t, POSITION_LONG, 1);
+	      PR_ERR("Taking LONG position on %s at %s\n",
+		     t->name, candle_str(candle, buf));
+	    }
+	  }else{
+	    if(p != NULL){
+	      sim_close_position(s, t);
+	      PR_ERR("Leaving LONG position on %s at %s\n",
+		     t->name, candle_str(candle, buf));
+	    }
+	  }
 	}
 
-	if(jentry->value < 0 && __trend__ == TREND_DOWN){
-	  PR_ERR("Taking SHORT position on %s at %s\n",
-		 t->name, candle_str(candle, buf));
-
-	  sim_open_position(s, t, POSITION_SHORT, 1);
+	/* SHORT positions */
+	if(__trend__ == TREND_DOWN){
+	  if(jentry->value < 0.0){	    
+	    if(p == NULL){
+	      sim_open_position(s, t, POSITION_SHORT, 1);
+	      PR_ERR("Taking SHORT position on %s at %s\n",
+		     t->name, candle_str(candle, buf));
+	    }
+	  }else{
+	    if(p != NULL){
+	      sim_close_position(s, t);
+	      PR_ERR("Leaving SHORT position on %s at %s\n",
+		     t->name, candle_str(candle, buf));
+	    }
+	  }
 	}
       }
     }
