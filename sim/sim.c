@@ -152,11 +152,12 @@ static void sim_todo(struct sim *s) {
   struct position *p;
   PR_ERR("Positions to open : \n");
   __list_for_each__(&s->list_position_to_open, p)
-    PR_INFO("OPEN %s\n", p->t->name);
+    PR_INFO("open %s for %s\n", p->t->name,
+	    p->type == POSITION_LONG ? "long" : "short");
 
   PR_ERR("Positions to close : \n");
   __list_for_each__(&s->list_position_to_close, p)
-    PR_INFO("CLOSE %s\n", p->t->name);
+    PR_INFO("close %s\n", p->t->name);
 }
 
 static int sim_report(struct sim *s,
