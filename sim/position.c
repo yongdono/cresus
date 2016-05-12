@@ -57,9 +57,9 @@ int position_nop(struct position *p) {
   return 0;
 }
 
-double position_value(struct position *p) {
+static double position_out_value(struct position *p) {
 
-  double out, ret;
+  double out;
   
   if(p->out == NULL){
     /* If we're not out of position */
@@ -73,12 +73,34 @@ double position_value(struct position *p) {
       out = p->in->open;
   }else
     out = p->out->open;
+
+  return out;
+}
+
+double position_value(struct position *p) {
+
+  double ret;
+  double out = position_out_value(p);
   
   /* FIXME : forced candle open value comparison */
   if(p->type == POSITION_LONG)
     ret = (out - p->in->open);
   else
     ret = (p->in->open - out);
+  
+  return ret;
+}
+
+double position_factor(struct position *p) {
+
+  double ret;
+  double out = position_out_value(p);
+  
+  /* FIXME : forced candle open value comparison */
+  if(p->type == POSITION_LONG)
+    ret = (out / p->in->open);
+  else
+    ret = (p->in->open / out);
   
   return ret;
 }

@@ -47,5 +47,6 @@ int position_out(struct position *p); /* position_action_t */
 int position_nop(struct position *p); /* position_action_t */
 
 double position_value(struct position *p);
+double position_factor(struct position *p);
 
 #endif

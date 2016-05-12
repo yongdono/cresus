@@ -19,6 +19,9 @@ struct sim {
   list_head_t(struct position) list_position_opened;
   list_head_t(struct position) list_position_to_close;
   list_head_t(struct position) list_position_closed;
+  /* stats */
+  double factor;
+  int nwin, nloss;
 };
 
 /* types */

@@ -21,6 +21,8 @@
 #define ROC    2
 #define JTREND 3
 
+#define START_TIME VAL_YEAR(2012) | VAL_MONTH(1) | VAL_DAY(1)
+
 /* Main info */
 #define PERIOD 24
 #define AVERAGE 9
@@ -54,7 +56,7 @@ timeline_create(const char *filename, const char *name, time_info_t min,
   struct jtrend *jtrend;
 
   /* TODO : Check return values */
-  yahoo_alloc(yahoo, filename, min, TIME_MAX); /* load everything */
+  yahoo_alloc(yahoo, filename, START_TIME, TIME_MAX); /* load everything */
   timeline_alloc(timeline, name, __input__(yahoo));
   /* Indicators alloc */
   mobile_alloc(mobile, EMA, MOBILE_EMA, 30, CANDLE_CLOSE);
@@ -186,7 +188,7 @@ int main(int argc, char **argv) {
     VERBOSE_LEVEL(DBG);
   
   /* 01/01/2000 */
-  time_info_t time = TIME_INIT(2000, 1, 1, 0, 0, 0, 0);
+  time_info_t time = START_TIME;
   cluster_init(&cluster, "my cluster", time, TIME_MAX);
   /* Init general roc indicator */
   roc_init(&roc, ROC, PERIOD, AVERAGE);
