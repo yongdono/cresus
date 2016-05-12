@@ -39,7 +39,7 @@ static int trend_set(trend_t trend) {
   trend_t old = __trend__;
   __trend__ = trend;
   /* Choose what's best here */
-  return !(__trend__ == old);
+  return (__trend__ != old);
 }
 
 
