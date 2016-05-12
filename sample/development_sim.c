@@ -24,7 +24,7 @@
 #define START_TIME VAL_YEAR(2012) | VAL_MONTH(1) | VAL_DAY(1)
 
 /* Main info */
-#define PERIOD  1
+#define PERIOD  9
 #define AVERAGE 3
 
 typedef enum {
@@ -220,8 +220,46 @@ int main(int argc, char **argv) {
   timeline_add_indicator(__timeline__(&cluster), __indicator__(&roc));
   
   /* Sub-timelines */
-  add_timeline_to_cluster(&cluster, "data/AF.yahoo", "AF", time);
-  add_timeline_to_cluster(&cluster, "data/AIR.yahoo", "AIR", time);
+  //add_timeline_to_cluster(&cluster, "data/AC.yahoo",    "AC", time);
+  add_timeline_to_cluster(&cluster, "data/ACA.yahoo",   "ACA", time);
+  add_timeline_to_cluster(&cluster, "data/AI.yahoo",    "AI", time);
+  add_timeline_to_cluster(&cluster, "data/AIR.yahoo",   "AIR", time);
+  //add_timeline_to_cluster(&cluster, "data/BN.yahoo",    "BN", time);
+  add_timeline_to_cluster(&cluster, "data/BNP.yahoo",   "BNP", time);
+  add_timeline_to_cluster(&cluster, "data/CA.yahoo",    "CA", time);
+  //add_timeline_to_cluster(&cluster, "data/CAP.yahoo",   "CAP", time);
+  add_timeline_to_cluster(&cluster, "data/CS.yahoo",    "CS", time);
+  add_timeline_to_cluster(&cluster, "data/DG.yahoo",    "DG", time);
+  add_timeline_to_cluster(&cluster, "data/EI.yahoo",    "EI", time);
+  //add_timeline_to_cluster(&cluster, "data/EN.yahoo",    "EN", time);
+  //add_timeline_to_cluster(&cluster, "data/ENGI.yahoo",  "ENGI", time);
+  //add_timeline_to_cluster(&cluster, "data/FP.yahoo",    "FP", time);
+  add_timeline_to_cluster(&cluster, "data/FR.yahoo",    "FR", time);
+  //add_timeline_to_cluster(&cluster, "data/GLE.yahoo",   "GLE", time);
+  add_timeline_to_cluster(&cluster, "data/KER.yahoo",   "KER", time);
+  //add_timeline_to_cluster(&cluster, "data/LHN.yahoo",   "LHN", time);
+  add_timeline_to_cluster(&cluster, "data/LI.yahoo",    "LI", time);
+  //add_timeline_to_cluster(&cluster, "data/LR.yahoo",    "LR", time);
+  //add_timeline_to_cluster(&cluster, "data/MC.yahoo",    "MC", time);
+  add_timeline_to_cluster(&cluster, "data/ML.yahoo",    "ML", time);
+  add_timeline_to_cluster(&cluster, "data/MT.yahoo",    "MT", time);
+  //add_timeline_to_cluster(&cluster, "data/NOKIA.yahoo", "NOKIA", time);
+  //add_timeline_to_cluster(&cluster, "data/OR.yahoo",    "OR", time);
+  add_timeline_to_cluster(&cluster, "data/ORA.yahoo",   "ORA", time);
+  //add_timeline_to_cluster(&cluster, "data/PUB.yahoo",   "PUB", time);
+  //add_timeline_to_cluster(&cluster, "data/RI.yahoo",    "RI", time);
+  add_timeline_to_cluster(&cluster, "data/RNO.yahoo",   "RNO", time);
+  add_timeline_to_cluster(&cluster, "data/SAF.yahoo",   "SAF", time);
+  add_timeline_to_cluster(&cluster, "data/SAN.yahoo",   "SAN", time);
+  //add_timeline_to_cluster(&cluster, "data/SGO.yahoo",   "SGO", time);
+  add_timeline_to_cluster(&cluster, "data/SOLB.yahoo",  "SOLB", time);
+  add_timeline_to_cluster(&cluster, "data/SU.yahoo",    "SU", time);
+  //add_timeline_to_cluster(&cluster, "data/SW.yahoo",    "SW", time);
+  //add_timeline_to_cluster(&cluster, "data/TEC.yahoo",   "TEC", time);
+  add_timeline_to_cluster(&cluster, "data/UG.yahoo",    "UG", time);
+  add_timeline_to_cluster(&cluster, "data/UL.yahoo",    "UL", time);
+  add_timeline_to_cluster(&cluster, "data/VIE.yahoo",   "VIE", time);
+  add_timeline_to_cluster(&cluster, "data/VIV.yahoo",   "VIV", time);
   
   /* Now create sim */
   sim_init(&sim, &cluster);
