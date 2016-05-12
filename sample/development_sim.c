@@ -24,8 +24,8 @@
 #define START_TIME VAL_YEAR(2012) | VAL_MONTH(1) | VAL_DAY(1)
 
 /* Main info */
-#define PERIOD  9
-#define AVERAGE 3
+#define PERIOD  21
+#define AVERAGE 8
 
 typedef enum {
   TREND_NONE,
@@ -248,8 +248,8 @@ int main(int argc, char **argv) {
   add_timeline_to_cluster(&cluster, "data/ORA.yahoo",   "ORA", time);
   //add_timeline_to_cluster(&cluster, "data/PUB.yahoo",   "PUB", time);
   //add_timeline_to_cluster(&cluster, "data/RI.yahoo",    "RI", time);
-  add_timeline_to_cluster(&cluster, "data/RNO.yahoo",   "RNO", time);
-  add_timeline_to_cluster(&cluster, "data/SAF.yahoo",   "SAF", time);
+  //add_timeline_to_cluster(&cluster, "data/RNO.yahoo",   "RNO", time);
+  //add_timeline_to_cluster(&cluster, "data/SAF.yahoo",   "SAF", time);
   add_timeline_to_cluster(&cluster, "data/SAN.yahoo",   "SAN", time);
   //add_timeline_to_cluster(&cluster, "data/SGO.yahoo",   "SGO", time);
   add_timeline_to_cluster(&cluster, "data/SOLB.yahoo",  "SOLB", time);
@@ -258,7 +258,7 @@ int main(int argc, char **argv) {
   //add_timeline_to_cluster(&cluster, "data/TEC.yahoo",   "TEC", time);
   add_timeline_to_cluster(&cluster, "data/UG.yahoo",    "UG", time);
   add_timeline_to_cluster(&cluster, "data/UL.yahoo",    "UL", time);
-  add_timeline_to_cluster(&cluster, "data/VIE.yahoo",   "VIE", time);
+  //add_timeline_to_cluster(&cluster, "data/VIE.yahoo",   "VIE", time);
   add_timeline_to_cluster(&cluster, "data/VIV.yahoo",   "VIV", time);
   
   /* Now create sim */

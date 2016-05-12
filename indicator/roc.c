@@ -61,7 +61,7 @@ int roc_init(struct roc *r, indicator_id_t id, int period, int average) {
   __indicator_set_string__(r, "roc[%d,%d]", period, average);
   
   r->period = period;
-  average_init(&r->average, AVERAGE_MATH, average);
+  average_init(&r->average, AVERAGE_EXP, average);
   return 0;
 }
 
