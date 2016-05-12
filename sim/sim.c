@@ -147,6 +147,18 @@ static void sim_stat(struct sim *s, struct position *p) {
   else s->nloss++;
 }
 
+static void sim_todo(struct sim *s) {
+
+  struct position *p;
+  PR_ERR("Positions to open : \n");
+  __list_for_each__(&s->list_position_to_open, p)
+    PR_INFO("OPEN %s\n", p->t->name);
+
+  PR_ERR("Positions to close : \n");
+  __list_for_each__(&s->list_position_to_close, p)
+    PR_INFO("CLOSE %s\n", p->t->name);
+}
+
 static int sim_report(struct sim *s,
 		      list_head_t(struct position) *list) {
 
@@ -178,6 +190,8 @@ int sim_display_report(struct sim *s) {
 
   PR_ERR("Statistics for closed positions\n");
   sim_report(s, &s->list_position_closed);
+
+  sim_todo(s);
 
   return 0;
 }
