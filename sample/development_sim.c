@@ -15,6 +15,7 @@
 #include "indicator/jtrend.h"
 #include "framework/verbose.h"
 
+#include <getopt.h>
 #include <string.h>
 
 #define EMA    1
@@ -24,7 +25,7 @@
 #define START_TIME VAL_YEAR(2012) | VAL_MONTH(1) | VAL_DAY(1)
 
 /* Main info */
-#define PERIOD  21
+#define PERIOD  60
 #define AVERAGE 8
 
 typedef enum {
@@ -205,27 +206,38 @@ static void add_timeline_to_cluster(struct cluster *c, const char *path,
 
 int main(int argc, char **argv) {
 
+  int c;
   struct sim sim;
   struct roc roc;
   struct cluster cluster;
+
+  int period = PERIOD;
+  int average = AVERAGE;
   
-  if(argc > 1 && !strcmp(argv[1], "-v"))
-    VERBOSE_LEVEL(DBG);
+  /* VERBOSE_LEVEL(WARN); */
+  
+  while((c = getopt(argc, argv, "vp:a:")) != -1){
+    switch(c){
+    case 'v' : VERBOSE_LEVEL(DBG); break;
+    case 'p' : period = atoi(optarg); break;
+    case 'a' : average = atoi(optarg); break;
+    }
+  }
   
   /* 01/01/2000 */
   time_info_t time = START_TIME;
   cluster_init(&cluster, "my cluster", time, TIME_MAX);
   /* Init general roc indicator */
-  roc_init(&roc, ROC, PERIOD, AVERAGE);
+  roc_init(&roc, ROC, period, average);
   timeline_add_indicator(__timeline__(&cluster), __indicator__(&roc));
   
   /* Sub-timelines */
   //add_timeline_to_cluster(&cluster, "data/AC.yahoo",    "AC", time);
-  add_timeline_to_cluster(&cluster, "data/ACA.yahoo",   "ACA", time);
+  //add_timeline_to_cluster(&cluster, "data/ACA.yahoo",   "ACA", time);
   add_timeline_to_cluster(&cluster, "data/AI.yahoo",    "AI", time);
   add_timeline_to_cluster(&cluster, "data/AIR.yahoo",   "AIR", time);
   //add_timeline_to_cluster(&cluster, "data/BN.yahoo",    "BN", time);
-  add_timeline_to_cluster(&cluster, "data/BNP.yahoo",   "BNP", time);
+  //add_timeline_to_cluster(&cluster, "data/BNP.yahoo",   "BNP", time);
   add_timeline_to_cluster(&cluster, "data/CA.yahoo",    "CA", time);
   //add_timeline_to_cluster(&cluster, "data/CAP.yahoo",   "CAP", time);
   add_timeline_to_cluster(&cluster, "data/CS.yahoo",    "CS", time);
@@ -241,7 +253,7 @@ int main(int argc, char **argv) {
   add_timeline_to_cluster(&cluster, "data/LI.yahoo",    "LI", time);
   //add_timeline_to_cluster(&cluster, "data/LR.yahoo",    "LR", time);
   //add_timeline_to_cluster(&cluster, "data/MC.yahoo",    "MC", time);
-  add_timeline_to_cluster(&cluster, "data/ML.yahoo",    "ML", time);
+  //add_timeline_to_cluster(&cluster, "data/ML.yahoo",    "ML", time);
   add_timeline_to_cluster(&cluster, "data/MT.yahoo",    "MT", time);
   //add_timeline_to_cluster(&cluster, "data/NOKIA.yahoo", "NOKIA", time);
   //add_timeline_to_cluster(&cluster, "data/OR.yahoo",    "OR", time);

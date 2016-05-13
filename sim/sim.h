@@ -11,7 +11,39 @@
 
 #include "sim/position.h"
 #include "engine/cluster.h"
+#include "framework/list.h"
 #include "framework/slist.h"
+
+#define sim_share_alloc(s, t)				\
+  DEFINE_ALLOC(struct sim_share, s, sim_share_init, t)
+#define sim_share_free(s)			\
+  DEFINE_FREE(s, sim_share_release)
+
+struct sim_share {
+  /* This is a simple list */
+  __inherits_from_slist__;
+  /* With a few elements */
+  struct timeline *t;
+  double factor;
+  int nwin, nloss;
+};
+
+static inline int sim_share_init(struct sim_share *s,
+				 struct timeline *t) {
+  /* super() */
+  __slist_super__(s);
+  /* params */
+  s->t = t;
+  /* own data */
+  s->factor = 1.0;
+  s->nwin = 0;
+  s->nloss = 0;
+  return 0;
+}
+
+static inline void sim_share_release(struct sim_share *s) {
+  __slist_release__(s);
+}
 
 struct sim {
   struct cluster *cluster;
@@ -19,7 +51,9 @@ struct sim {
   list_head_t(struct position) list_position_opened;
   list_head_t(struct position) list_position_to_close;
   list_head_t(struct position) list_position_closed;
-  /* stats */
+  /* more "personal" */
+  slist_head_t(struct sim_share) slist_share;
+  /* Stats */
   double factor;
   int nwin, nloss;
 };

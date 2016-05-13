@@ -12,6 +12,8 @@
 
 int sim_init(struct sim *s, struct cluster *c) {
 
+  struct timeline *t;
+  
   s->cluster = c;
   /* Init slists */
   list_head_init(&s->list_position_to_open);
@@ -19,11 +21,20 @@ int sim_init(struct sim *s, struct cluster *c) {
   list_head_init(&s->list_position_to_close);
   list_head_init(&s->list_position_closed);
 
-  /* Stats */
+  /* Other stuff */
+  slist_head_init(&s->slist_share);
+  /* Copy data */
+  __slist_for_each__(&c->slist_timeline, t){
+    struct sim_share *share;
+    if(sim_share_alloc(share, t))
+      __slist_insert__(&s->slist_share, share);
+  }
+
+  /* Stat */
   s->factor = 1.0;
   s->nwin = 0;
   s->nloss = 0;
-
+  
   return 0;
 }
 
@@ -134,17 +145,28 @@ int sim_find_opened_position(struct sim *s, struct timeline *t,
 
 static void sim_stat(struct sim *s, struct position *p) {
 
+  double sfactor = 0;
+  struct sim_share *share;
   char buf[256], buf2[245];
   double factor = position_factor(p);
-
+  
+  /* Find corresponding timeline & adjust */
+  __slist_for_each__(&s->slist_share, share){
+    if(p->t == share->t){
+      share->factor = share->factor * factor;
+      if(factor > 1.0) share->nwin++;
+      else share->nloss++;
+      /* Only one available */
+      sfactor = share->factor;
+      break;
+    }
+  }
+  
+  /* What to do here */
   PR_DBG("%s at [%s:%s] is %.3lf / %.3lf\n",
 	 p->t->name, __timeline_entry_str__(p->in, buf, sizeof buf),
 	 p->out ? __timeline_entry_str__(p->out, buf2, sizeof buf2) : "N/A",
-	 factor, s->factor);
-
-  s->factor *= factor;
-  if(factor > 1.0) s->nwin++;
-  else s->nloss++;
+	 factor, sfactor);
 }
 
 static void sim_todo(struct sim *s) {
@@ -165,7 +187,11 @@ static int sim_report(struct sim *s,
 
   struct position *p;
   struct statistics stat;
+  struct sim_share *share;
 
+  int n = 0;
+  double total = 0.0;
+  
   statistics_init(&stat, 0.0);
 
   __list_for_each__(list, p){
@@ -177,22 +203,44 @@ static int sim_report(struct sim *s,
   statistics_printf(&stat);
   statistics_release(&stat);
 
-  PR_ERR("SIM FACTOR : %.3lf\n", s->factor);
-  PR_ERR("SIM_NWIN : %d\n", s->nwin);
-  PR_ERR("SIM_NLOSS : %d\n", s->nloss);
+  /* Display factors */
+  PR_ERR("timeline factor nwin nloss\n");
+  __slist_for_each__(&s->slist_share, share){
+    PR_INFO("%.8s %.3lf %d %d\n", share->t->name,
+	    share->factor, share->nwin, share->nloss);
 
+    s->factor += share->factor;
+    s->nwin += share->nwin;
+    s->nloss += share->nloss;
+    /* Inc */
+    n++;
+  }
+
+  /* Finish stats */
+  s->factor = s->factor / n;
+  PR_WARN("total %.3lf %d %d\n", s->factor, s->nwin, s->nloss);
+  
   return 0;
 }
 
 int sim_display_report(struct sim *s) {
   
   PR_ERR("Statistics for still opened positions\n");
-  sim_report(s, &s->list_position_opened);
+  //sim_report(s, &s->list_position_opened);
 
   PR_ERR("Statistics for closed positions\n");
   sim_report(s, &s->list_position_closed);
 
   sim_todo(s);
 
+  /* Some cool info */
+  struct timeline_entry *e =
+    __list_self__(__timeline__(s->cluster)->list_entry.next);
+  struct candle *first = __timeline_entry_self__(e);
+  /* Next */
+  e =  __list_self__(__timeline__(s->cluster)->list_entry.prev);
+  struct candle *last = __timeline_entry_self__(e);
+  PR_ERR("factor to match : %.2lf\n", last->close / first->open);
+  
   return 0;
 }
