@@ -41,11 +41,20 @@ static int jtrend_feed(struct indicator *i,
   return -1;
 }
 
+static void jtrend_reset(struct indicator *i) {
+  
+  struct jtrend *j = __indicator_self__(i);
+  /* Reset sub-indicators */
+  roc_reset(&j->roc);
+  roc_reset(&j->roc_ref);
+  /* TODO : what about j->ref ? */
+}
+
 int jtrend_init(struct jtrend *j, indicator_id_t id,
 		int period, int average,
 		list_head_t(struct timeline_entry) *ref) {
 
-  __indicator_super__(j, id, jtrend_feed);
+  __indicator_super__(j, id, jtrend_feed, jtrend_reset);
   __indicator_set_string__(j, "jtrend[%d,%d]", period, average);
   
   /* Our sub-indicators */

@@ -64,11 +64,22 @@ static int zigzag_feed(struct indicator *i, struct timeline_entry *e) {
   return 0;
 }
 
+static void zigzag_reset(struct indicator *i) {
+
+  struct zigzag *z = __indicator_self__(i);
+  /* RAZ */
+  z->dir = ZIGZAG_NONE;
+  /* Refs */
+  z->ref = NULL;
+  z->base_ref = NULL;
+  z->ref_count = 0;
+}
+
 int zigzag_init(struct zigzag *z, indicator_id_t id,
 		double threshold, candle_value_t cvalue) {
   
   /* Super */
-  __indicator_super__(z, id, zigzag_feed);
+  __indicator_super__(z, id, zigzag_feed, zigzag_reset);
   __indicator_set_string__(z, "zigzag[%.2f%%]", threshold * 100.0);
 
   z->dir = ZIGZAG_NONE;

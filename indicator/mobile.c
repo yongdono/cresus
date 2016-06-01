@@ -77,7 +77,7 @@ static int mobile_feed(struct indicator *i, struct timeline_entry *e) {
 static void mobile_reset(struct indicator *i) {
 
   struct mobile *m = __indicator_self__(i);
-  average_reset(m->avg);
+  average_reset(&m->avg);
 }
 
 int mobile_init(struct mobile *m, indicator_id_t id, mobile_t type,
