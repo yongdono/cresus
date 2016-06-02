@@ -97,8 +97,8 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
   return 1;
 }
 
-static int cluster_prepare_step_ref(struct cluster *c,
-				    struct timeline_entry **ret) {
+static int cluster_step_ref(struct cluster *c,
+			    struct timeline_entry **ret) {
   
   int res;
   char buf[256]; /* debug */
@@ -110,7 +110,12 @@ static int cluster_prepare_step_ref(struct cluster *c,
   if(timeline_entry_next(__timeline__(c), &e) < 0)
     /* No more data */
     return -1;
+
+  /* Add data to our own list */
+  timeline_append_entry(__timeline__(c), e);
+  timeline_step(__timeline__(c));
   
+  /* Parse internal list */
   __slist_for_each__(&c->slist_timeline, t){
     struct timeline_entry *entry;
     if((res = timeline_entry_by_time(t, e->time, &entry)) <= 0){
@@ -125,16 +130,20 @@ static int cluster_prepare_step_ref(struct cluster *c,
     
     /* Add entry in timeline */
     timeline_append_entry(t, entry);
+    timeline_step(t);
   }
   
-  /* Add data to list */
-  *ret = e;
+  *ret = e; /* TODO : remove this */
   return 1;
 }
 
 static int cluster_execute_step(struct cluster *c) {
 
   struct timeline *t;
+
+  /* Don't forget that we inherit from timeline */
+  timeline_step(__timeline__(c));
+  
   /* Execute indicators */
   __slist_for_each__(&c->slist_timeline, t){
     /* Step all timelines */
@@ -153,7 +162,11 @@ int cluster_step(struct cluster *c) {
 
   if(__timeline__(c)->in != NULL){
     /* Ref acts as a calendar */
-    ret = cluster_prepare_step_ref(c, &entry);
+    if((ret = cluster_step_ref(c, &entry)) < 0){
+      PR_ERR("no more data in ref input(s)\n");
+      goto out;
+    }
+    
   }else{
     /* No ref. 
      * Using calendar & loop-read to ignore missing data */
@@ -161,17 +174,15 @@ int cluster_step(struct cluster *c) {
       ret = cluster_prepare_step(c, time, &entry);
       calendar_next(&c->cal, &time);
     }while(!ret);
+    
+    if(ret < 0){ /* EOF */
+      PR_ERR("no more data in input(s)\n");
+      goto out;
+    }
+    
+    /* Execute when possible */
+    ret = cluster_execute_step(c);
   }
-  
-  if(ret < 0){ /* EOF */
-    PR_ERR("no more data in input(s)\n");
-    goto out;
-  }
-
-  /* Execute when possible */
-  ret = cluster_execute_step(c);
-  /* Don't forget that we inherit from timeline */
-  timeline_step(__timeline__(c));
   
  out:
   return ret;

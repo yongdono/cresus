@@ -228,7 +228,7 @@ int main(int argc, char **argv) {
   struct yahoo *yahoo;
   time_info_t time = START_TIME;
   /* Load ref data */
-  yahoo_alloc(yahoo, "data/%5EFCHI", START_TIME, TIME_MAX);
+  yahoo_alloc(yahoo, "data/%5EFCHI.yahoo", START_TIME, TIME_MAX);
   cluster_init(&cluster, "my cluster", __input__(yahoo), time, TIME_MAX);
   /* Init general roc indicator */
   roc_init(&roc, ROC, period, average);
