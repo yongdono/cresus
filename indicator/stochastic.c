@@ -35,7 +35,7 @@ static int stochastic_feed(struct indicator *i, struct timeline_entry *e) {
   return 0;
 }
 
-static int stochastic_reset(struct indicator *i) {
+static void stochastic_reset(struct indicator *i) {
 
   struct stochastic *s = __indicator_self__(i);
   /* Reset */

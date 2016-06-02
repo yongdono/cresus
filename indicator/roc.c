@@ -40,7 +40,7 @@ static void _roc_reset_(struct indicator *i) {
 
 void roc_reset(struct roc *r) {
   
-  roc_reset(__indicator__(r));
+  _roc_reset_(__indicator__(r));
 }
 
 int roc_compute(struct roc *r, struct timeline_entry *e, double *rvalue) {

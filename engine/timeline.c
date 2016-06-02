@@ -38,6 +38,16 @@ void timeline_add_indicator(struct timeline *t, struct indicator *i) {
   __slist_insert__(&t->slist_indicator, i);
 }
 
+void timeline_reset_indicators(struct timeline *t) {
+
+  struct indicator *indicator;
+  
+  __slist_for_each__(&t->slist_indicator, indicator){
+    indicator_reset(indicator);
+    PR_DBG("%s reset indicator %s\n", t->name, indicator->str);
+  }
+}
+
 int timeline_entry_current(struct timeline *t, struct timeline_entry **ret) {
 
   *ret = t->ref; /* Current candle */

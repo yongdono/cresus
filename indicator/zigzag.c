@@ -57,7 +57,7 @@ static int zigzag_feed(struct indicator *i, struct timeline_entry *e) {
     break;
   }
 
-  if(zigzag_entry_alloc(zz, z, z->dir, (value - ref_value), z->ref_count))
+  if(zigzag_entry_alloc(zz, i, z->dir, (value - ref_value), z->ref_count))
     candle_add_indicator_entry(candle, __indicator_entry__(zz));
   
   z->ref_count++;

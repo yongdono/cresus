@@ -226,7 +226,7 @@ int main(int argc, char **argv) {
   
   /* 01/01/2000 */
   time_info_t time = START_TIME;
-  cluster_init(&cluster, "my cluster", time, TIME_MAX);
+  cluster_init(&cluster, "my cluster", NULL, time, TIME_MAX);
   /* Init general roc indicator */
   roc_init(&roc, ROC, period, average);
   timeline_add_indicator(__timeline__(&cluster), __indicator__(&roc));
