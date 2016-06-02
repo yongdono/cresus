@@ -101,7 +101,7 @@ int sim_close_position(struct sim *s, struct timeline *t) {
 
   __list_for_each_safe__(&s->list_position_opened, p, safe){
     if(p->t == t){ /* FIXME : use timeline's name ? */
-      __list_del__(p); /* FIXME : use safe */
+      __list_del__(p);
       __list_add_tail__(&s->list_position_to_close, p);
       n++;
     }
@@ -117,6 +117,22 @@ int sim_close_all_positions(struct sim *s) {
 		     position_nop);
   
   return 0;
+}
+
+int sim_ignore_position(struct sim *s, struct timeline *t) {
+
+  int n = 0;
+  struct list *safe;
+  struct position *p;
+  
+  __list_for_each_safe__(&s->list_position_opened, p, safe){
+    if(p->t == t){ /* FIXME : use timeline's name ? */
+      __list_del__(p);
+      n++;
+    }
+  }
+  
+  return n;
 }
 
 static int sim_find_position(struct sim *s,

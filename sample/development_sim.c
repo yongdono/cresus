@@ -144,7 +144,7 @@ static int sim_feed(struct sim *s, struct cluster *c) {
     /* This is mandatory */
     if(t->status == TIMELINE_STATUS_RESET){
       /* Timeline's been reset. We gotta leave our positions */
-      sim_close_position(s, t);
+      sim_ignore_position(s, t);
       continue;
     }
     
