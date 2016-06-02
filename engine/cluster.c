@@ -118,6 +118,7 @@ static int cluster_prepare_step_ref(struct cluster *c,
 	      time2str(e->time, e->granularity, buf));
       
       /* Reset indicators for this entry that has a problem */
+      /* TODO : How to signal we have to ignore taken positions ? */
       timeline_reset_indicators(t);
       continue;
     }
