@@ -38,6 +38,11 @@
 #define timeline_free(t)			\
   DEFINE_FREE(t, timeline_release)
 
+typedef enum {
+  TIMELINE_STATUS_RESET,
+  TIMELINE_STATUS_RUN
+} timeline_status_t;
+
 struct timeline {
   /* "Listable" & "Heritable" */
   __inherits_from_slist__;
@@ -50,6 +55,8 @@ struct timeline {
   struct timeline_entry *ref;
   /* Secondary graphs */
   slist_head_t(struct indicator) slist_indicator;
+  /* State machine */
+  timeline_status_t status;
 };
 
 int timeline_init(struct timeline *t, const char *name, struct input *in);

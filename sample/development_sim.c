@@ -142,6 +142,12 @@ static int sim_feed(struct sim *s, struct cluster *c) {
     /* TODO : this is facultative */
     //timeline_display_info(t);
     /* This is mandatory */
+    if(t->status == TIMELINE_STATUS_RESET){
+      /* Timeline's been reset. We gotta leave our positions */
+      sim_close_position(s, t);
+      continue;
+    }
+    
     if(timeline_entry_current(t, &entry) != -1){
       struct position *p;
       struct candle *candle = __timeline_entry_self__(entry);
@@ -250,7 +256,7 @@ int main(int argc, char **argv) {
   add_timeline_to_cluster(&cluster, "data/ENGI.yahoo",  "ENGI", time);
   add_timeline_to_cluster(&cluster, "data/FP.yahoo",    "FP", time);
   add_timeline_to_cluster(&cluster, "data/FR.yahoo",    "FR", time);
-  add_timeline_to_cluster(&cluster, "data/GLE.yahoo",   "GLE", time);
+  //add_timeline_to_cluster(&cluster, "data/GLE.yahoo",   "GLE", time);
   add_timeline_to_cluster(&cluster, "data/KER.yahoo",   "KER", time);
   add_timeline_to_cluster(&cluster, "data/LHN.yahoo",   "LHN", time);
   add_timeline_to_cluster(&cluster, "data/LI.yahoo",    "LI", time);

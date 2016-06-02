@@ -23,6 +23,7 @@ int timeline_init(struct timeline *t, const char *name, struct input *in) {
   /* Internals */
   list_head_init(&t->list_entry);
   slist_head_init(&t->slist_indicator);
+  t->status = TIMELINE_STATUS_RESET;
   
   return 0;
 }
@@ -46,6 +47,9 @@ void timeline_reset_indicators(struct timeline *t) {
     indicator_reset(indicator);
     PR_DBG("%s reset indicator %s\n", t->name, indicator->str);
   }
+
+  /* Set status to reset */
+  t->status = TIMELINE_STATUS_RESET;
 }
 
 int timeline_entry_current(struct timeline *t, struct timeline_entry **ret) {
@@ -139,7 +143,8 @@ struct timeline_entry *timeline_step(struct timeline *t) {
     indicator_feed(indicator, t->ref);
     PR_DBG("%s feed indicator %s\n", t->name, indicator->str);
   }
-  
+
+  t->status = TIMELINE_STATUS_RUN;
   return t->ref;
 }
 
