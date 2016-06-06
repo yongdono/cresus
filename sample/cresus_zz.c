@@ -11,11 +11,14 @@
 #define ZIGZAG 1
 #define START_TIME VAL_YEAR(2012)|VAL_MONTH(1)|VAL_DAY(1)
 
-#define ZIGZAG_THRES 0.02 /* 1/100th */
+#define ZIGZAG_THRES 0.03 /* 1/100th */
+#define ZIGZAG_WINDOW 10
+
+static double zz_thres = ZIGZAG_THRES;
+static int zz_window = ZIGZAG_WINDOW;
 
 static struct timeline *
-timeline_create(const char *filename, const char *name, time_info_t min,
-		double threshold) {
+timeline_create(const char *filename, const char *name, time_info_t min) {
 
   struct yahoo *yahoo;
   struct zigzag *zigzag;
@@ -25,7 +28,7 @@ timeline_create(const char *filename, const char *name, time_info_t min,
   yahoo_alloc(yahoo, filename, START_TIME, TIME_MAX); /* load everything */
   timeline_alloc(timeline, name, __input__(yahoo));
   /* Indicators alloc */
-  zigzag_alloc(zigzag, ZIGZAG, threshold, CANDLE_CLOSE);
+  zigzag_alloc(zigzag, ZIGZAG, zz_thres, CANDLE_CLOSE);
   /* And insert */
   timeline_add_indicator(timeline, __indicator__(zigzag));
   
@@ -35,11 +38,10 @@ timeline_create(const char *filename, const char *name, time_info_t min,
 /* more final functions */
 
 static void add_timeline_to_cluster(struct cluster *c, const char *path,
-				    const char *name, time_info_t time,
-				    double threshold) {
+				    const char *name, time_info_t time) {
   
   struct timeline *sub;
-  sub = timeline_create(path, name, time, threshold);
+  sub = timeline_create(path, name, time);
   cluster_add_timeline(c, sub);
 }
 
@@ -106,7 +108,8 @@ static int sim_feed(struct sim *s, struct cluster *c) {
 
 	/* LONG positions */
 	if(__trend__ == ZIGZAG_UP){
-	  if(zentry->value > zref->value){
+	  if(zentry->value > zref->value &&
+	     zref->n_since_last_ref <= zz_window){
 	    if(p == NULL){
 	      sim_open_position(s, t, POSITION_LONG, 1);
 	      PR_ERR("Taking LONG position on %s at %s\n",
@@ -123,7 +126,8 @@ static int sim_feed(struct sim *s, struct cluster *c) {
 
 	/* SHORT positions */
 	if(__trend__ == ZIGZAG_DOWN){
-	  if(zentry->value < zref->value){
+	  if(zentry->value < zref->value &&
+	     zref->n_since_last_ref <= zz_window){
 	    if(p == NULL){
 	      sim_open_position(s, t, POSITION_SHORT, 1);
 	      PR_ERR("Taking SHORT position on %s at %s\n",
@@ -148,18 +152,14 @@ int main(int argc, char **argv) {
   struct sim sim;
   struct zigzag zigzag;
   struct cluster cluster;
-  double threshold = ZIGZAG_THRES;
   
   /* VERBOSE_LEVEL(WARN); */
   
-  while((c = getopt(argc, argv, "vp:")) != -1){
+  while((c = getopt(argc, argv, "vp:w:")) != -1){
     switch(c){
-    case 'p' :
-      sscanf(optarg, "%lf", &threshold);
-      printf("Thresshold is %.1lf%%\n", threshold * 100.0);
-      break;
-      
+    case 'p' : sscanf(optarg, "%lf", &zz_thres); break;
     case 'v' : VERBOSE_LEVEL(DBG); break;
+    case 'w' : sscanf(optarg, "%d", &zz_window); break;
     }
   }
   
@@ -170,50 +170,50 @@ int main(int argc, char **argv) {
   yahoo_alloc(yahoo, "data/%5EFCHI.yahoo", time, TIME_MAX);
   cluster_init(&cluster, "my cluster", __input__(yahoo), time, TIME_MAX);
   /* Init general roc indicator */
-  zigzag_init(&zigzag, ZIGZAG, threshold, CANDLE_CLOSE);
+  zigzag_init(&zigzag, ZIGZAG, zz_thres, CANDLE_CLOSE);
   timeline_add_indicator(__timeline__(&cluster), __indicator__(&zigzag));
   
   /* Sub-timelines */
-  add_timeline_to_cluster(&cluster, "data/AC.yahoo",    "AC", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/ACA.yahoo",   "ACA", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/AI.yahoo",    "AI", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/AIR.yahoo",   "AIR", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/BN.yahoo",    "BN", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/BNP.yahoo",   "BNP", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/CA.yahoo",    "CA", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/CAP.yahoo",   "CAP", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/CS.yahoo",    "CS", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/DG.yahoo",    "DG", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/EI.yahoo",    "EI", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/EN.yahoo",    "EN", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/ENGI.yahoo",  "ENGI", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/FP.yahoo",    "FP", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/FR.yahoo",    "FR", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/GLE.yahoo",   "GLE", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/KER.yahoo",   "KER", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/LHN.yahoo",   "LHN", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/LI.yahoo",    "LI", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/LR.yahoo",    "LR", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/MC.yahoo",    "MC", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/ML.yahoo",    "ML", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/MT.yahoo",    "MT", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/NOKIA.yahoo", "NOKIA", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/OR.yahoo",    "OR", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/ORA.yahoo",   "ORA", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/PUB.yahoo",   "PUB", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/RI.yahoo",    "RI", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/RNO.yahoo",   "RNO", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/SAF.yahoo",   "SAF", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/SAN.yahoo",   "SAN", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/SGO.yahoo",   "SGO", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/SOLB.yahoo",  "SOLB", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/SU.yahoo",    "SU", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/SW.yahoo",    "SW", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/TEC.yahoo",   "TEC", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/UG.yahoo",    "UG", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/UL.yahoo",    "UL", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/VIE.yahoo",   "VIE", time, threshold);
-  add_timeline_to_cluster(&cluster, "data/VIV.yahoo",   "VIV", time, threshold);
+  add_timeline_to_cluster(&cluster, "data/AC.yahoo",    "AC", time);
+  add_timeline_to_cluster(&cluster, "data/ACA.yahoo",   "ACA", time);
+  add_timeline_to_cluster(&cluster, "data/AI.yahoo",    "AI", time);
+  add_timeline_to_cluster(&cluster, "data/AIR.yahoo",   "AIR", time);
+  add_timeline_to_cluster(&cluster, "data/BN.yahoo",    "BN", time);
+  add_timeline_to_cluster(&cluster, "data/BNP.yahoo",   "BNP", time);
+  add_timeline_to_cluster(&cluster, "data/CA.yahoo",    "CA", time);
+  add_timeline_to_cluster(&cluster, "data/CAP.yahoo",   "CAP", time);
+  add_timeline_to_cluster(&cluster, "data/CS.yahoo",    "CS", time);
+  add_timeline_to_cluster(&cluster, "data/DG.yahoo",    "DG", time);
+  add_timeline_to_cluster(&cluster, "data/EI.yahoo",    "EI", time);
+  add_timeline_to_cluster(&cluster, "data/EN.yahoo",    "EN", time);
+  add_timeline_to_cluster(&cluster, "data/ENGI.yahoo",  "ENGI", time);
+  add_timeline_to_cluster(&cluster, "data/FP.yahoo",    "FP", time);
+  add_timeline_to_cluster(&cluster, "data/FR.yahoo",    "FR", time);
+  add_timeline_to_cluster(&cluster, "data/GLE.yahoo",   "GLE", time);
+  add_timeline_to_cluster(&cluster, "data/KER.yahoo",   "KER", time);
+  add_timeline_to_cluster(&cluster, "data/LHN.yahoo",   "LHN", time);
+  add_timeline_to_cluster(&cluster, "data/LI.yahoo",    "LI", time);
+  add_timeline_to_cluster(&cluster, "data/LR.yahoo",    "LR", time);
+  add_timeline_to_cluster(&cluster, "data/MC.yahoo",    "MC", time);
+  add_timeline_to_cluster(&cluster, "data/ML.yahoo",    "ML", time);
+  add_timeline_to_cluster(&cluster, "data/MT.yahoo",    "MT", time);
+  add_timeline_to_cluster(&cluster, "data/NOKIA.yahoo", "NOKIA", time);
+  add_timeline_to_cluster(&cluster, "data/OR.yahoo",    "OR", time);
+  add_timeline_to_cluster(&cluster, "data/ORA.yahoo",   "ORA", time);
+  add_timeline_to_cluster(&cluster, "data/PUB.yahoo",   "PUB", time);
+  add_timeline_to_cluster(&cluster, "data/RI.yahoo",    "RI", time);
+  add_timeline_to_cluster(&cluster, "data/RNO.yahoo",   "RNO", time);
+  add_timeline_to_cluster(&cluster, "data/SAF.yahoo",   "SAF", time);
+  add_timeline_to_cluster(&cluster, "data/SAN.yahoo",   "SAN", time);
+  add_timeline_to_cluster(&cluster, "data/SGO.yahoo",   "SGO", time);
+  add_timeline_to_cluster(&cluster, "data/SOLB.yahoo",  "SOLB", time);
+  add_timeline_to_cluster(&cluster, "data/SU.yahoo",    "SU", time);
+  add_timeline_to_cluster(&cluster, "data/SW.yahoo",    "SW", time);
+  add_timeline_to_cluster(&cluster, "data/TEC.yahoo",   "TEC", time);
+  add_timeline_to_cluster(&cluster, "data/UG.yahoo",    "UG", time);
+  add_timeline_to_cluster(&cluster, "data/UL.yahoo",    "UL", time);
+  add_timeline_to_cluster(&cluster, "data/VIE.yahoo",   "VIE", time);
+  add_timeline_to_cluster(&cluster, "data/VIV.yahoo",   "VIV", time);
   
   /* Now create sim */
   sim_init(&sim, &cluster);
