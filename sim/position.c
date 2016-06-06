@@ -7,6 +7,7 @@
  */
 
 #include "position.h"
+#include "framework/verbose.h"
 
 int position_init(struct position *p, struct timeline *t,
 		  position_t type, int n) {
@@ -35,10 +36,19 @@ void position_release(struct position *p) {
 
 static int position_exec(struct position *p, struct candle **c) {
 
+  int ret;
   struct timeline_entry *entry;
-  int ret = timeline_entry_current(p->t, &entry);
+  if((ret = timeline_entry_current(p->t, &entry)) < 0){
+    PR_WARN("%s position for %s can't be executed\n",
+	    p->type == POSITION_LONG ? "LONG" : "SHORT", p->t->name);
+    
+    goto out;
+  }
+
+  /* Set return value */
   *c = __timeline_entry_self__(entry);
   
+ out:
   return ret;
 }
 

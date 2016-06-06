@@ -36,6 +36,7 @@ static int zigzag_feed(struct indicator *i, struct timeline_entry *e) {
   }
   
   /* Compute limits (every time ? */
+  double base_ref_value = candle_get_value(z->base_ref, z->cvalue);
   double ref_value = candle_get_value(z->ref, z->cvalue);
   double hi_limit = (1.0 + z->threshold) * ref_value;
   double lo_limit = (1.0 - z->threshold) * ref_value;
@@ -57,7 +58,7 @@ static int zigzag_feed(struct indicator *i, struct timeline_entry *e) {
     break;
   }
 
-  if(zigzag_entry_alloc(zz, i, z->dir, (value / ref_value), z->ref_count))
+  if(zigzag_entry_alloc(zz, i, z->dir, (value / base_ref_value), z->ref_count))
     candle_add_indicator_entry(candle, __indicator_entry__(zz));
   
   z->ref_count++;
@@ -80,7 +81,7 @@ int zigzag_init(struct zigzag *z, indicator_id_t id,
   
   /* Super */
   __indicator_super__(z, id, zigzag_feed, zigzag_reset);
-  __indicator_set_string__(z, "zigzag[%.2f%%]", threshold * 100.0);
+  __indicator_set_string__(z, "zigzag[%.1f%%]", threshold * 100.0);
 
   z->dir = ZIGZAG_NONE;
   z->cvalue = cvalue;

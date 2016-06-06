@@ -154,7 +154,11 @@ int main(int argc, char **argv) {
   
   while((c = getopt(argc, argv, "vp:")) != -1){
     switch(c){
-    case 'p' : sscanf(optarg, "%.lf", &threshold); break;
+    case 'p' :
+      sscanf(optarg, "%lf", &threshold);
+      printf("Thresshold is %.1lf%%\n", threshold * 100.0);
+      break;
+      
     case 'v' : VERBOSE_LEVEL(DBG); break;
     }
   }
