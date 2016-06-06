@@ -28,12 +28,6 @@
 #define PERIOD  60
 #define AVERAGE 8
 
-typedef enum {
-  TREND_NONE,
-  TREND_UP,
-  TREND_DOWN,
-} trend_t;
-
 /* Global */
 static trend_t __trend__;
 
@@ -256,7 +250,7 @@ int main(int argc, char **argv) {
   add_timeline_to_cluster(&cluster, "data/ENGI.yahoo",  "ENGI", time);
   add_timeline_to_cluster(&cluster, "data/FP.yahoo",    "FP", time);
   add_timeline_to_cluster(&cluster, "data/FR.yahoo",    "FR", time);
-  //add_timeline_to_cluster(&cluster, "data/GLE.yahoo",   "GLE", time);
+  add_timeline_to_cluster(&cluster, "data/GLE.yahoo",   "GLE", time);
   add_timeline_to_cluster(&cluster, "data/KER.yahoo",   "KER", time);
   add_timeline_to_cluster(&cluster, "data/LHN.yahoo",   "LHN", time);
   add_timeline_to_cluster(&cluster, "data/LI.yahoo",    "LI", time);
