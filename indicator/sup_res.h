@@ -39,7 +39,7 @@ struct sup_res {
   candle_value_t cvalue;
 };
 
-int sup_res_init(strcut sup_res *s, indicator_id_t id,
+int sup_res_init(struct sup_res *s, indicator_id_t id,
 		 int step, candle_value_t cvalue);
 void sup_res_release(struct sup_res *s);
 
