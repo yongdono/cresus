@@ -18,15 +18,17 @@
 #define EMA    1
 #define ZIGZAG 2
 
-#define START_TIME VAL_YEAR(2015) | VAL_MONTH(1) | VAL_DAY(1)
+#define START_TIME VAL_YEAR(2012) | VAL_MONTH(1) | VAL_DAY(1)
 
 /* Main info */
 #define ZIGZAG_THRES 0.05
-#define SNOWBALL_MAX 110
+#define SNOWBALL_MAX 50 // INT_MAX
 
-static int coeff = 0;
+static int coeff = 1;
+static int count = 0;
 static double invest = 0.0;
 static double capital = 0.0;
+static double pending = 0.0;
 static zigzag_dir_t __trend__;
 static double zz_thres = ZIGZAG_THRES;
 
@@ -34,7 +36,7 @@ static double zz_thres = ZIGZAG_THRES;
 
 static int trend_set(zigzag_dir_t trend) {
   
-  trend_t old = __trend__;
+  zigzag_dir_t old = __trend__;
   __trend__ = trend;
   /* Choose what's best here */
   return (__trend__ != old);
@@ -43,34 +45,42 @@ static int trend_set(zigzag_dir_t trend) {
 static int snowball_feed(struct timeline *t,
 			 struct timeline_entry *e) {
   
-  struct indicator_entry *i;  
+  struct position *p;
+  struct indicator_entry *i;
+  
   /* TODO : better management of this ? */
   struct candle *c = __timeline_entry_self__(e);
   if((i = candle_find_indicator_entry(c, ZIGZAG))){
     struct zigzag_entry *z = __indicator_entry_self__(i);
-    PR_WARN("ZIGZAG is %.2f\n", z->value);
+    /* PR_WARN("ZIGZAG is %.2f\n", z->value); */
     /* Reset counter when trend reverses */
     if(trend_set(z->dir))
       coeff = 1;
     
     /* Do what you have to do here */
-    if(z->value > 1.0){
-      /* Sell */
-      if(coeff <= SNOWBALL_MAX)
-	capital += c->close;// * coeff;
+    if(z->dir == ZIGZAG_UP){
+      if(count > -SNOWBALL_MAX){
+	/* Sell */
+	if(count > 0) capital += c->close;// * coeff;
+	if(count <= 0) invest += c->close;// * coeff;
+	count--;
+      }
       
     }else{
-      /* Buy */
-      if(coeff <= SNOWBALL_MAX)
-	invest += c->close;// * coeff;
+      if(count < SNOWBALL_MAX){
+	/* Buy */
+	if(count >= 0) invest += c->close;// * coeff;
+	if(count < 0) capital += c->close;// * coeff;
+	count++;
+      }
     }
     
     /* Increment */
-    if(coeff < SNOWBALL_MAX)
-      coeff++;
+    coeff++;
   }
   
-  PR_INFO("Coeff = %d\n", coeff);
+  PR_INFO("Coeff = %d, count = %d\n", coeff, count);
+  pending = abs(count) * c->close;
   return 0;
 }
 
@@ -119,8 +129,10 @@ int main(int argc, char **argv) {
   }
 
   /* Display stats */
-  PR_INFO("Invest = %.2lf Capital = %.2lf (%.2lf : 1)\n",
-	  invest, capital, capital / invest);
+  PR_INFO("Invest = %.2lf Capital = %.2lf (%.2lf : 1)\n" \
+	  "Pending = %.2lf (%.2lf : 1) Count = %d\n",
+	  invest, capital, capital / invest,
+	  pending, (capital + pending) / invest, count);
   
   return 0;
 }
