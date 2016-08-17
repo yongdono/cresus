@@ -18,7 +18,7 @@
 #define EMA    1
 #define ZIGZAG 2
 
-#define START_TIME VAL_YEAR(2012) | VAL_MONTH(1) | VAL_DAY(1)
+#define START_TIME VAL_YEAR(2015) | VAL_MONTH(1) | VAL_DAY(1)
 
 /* Main info */
 #define ZIGZAG_THRES 0.05
@@ -51,19 +51,23 @@ static int snowball_feed(struct timeline *t,
     PR_WARN("ZIGZAG is %.2f\n", z->value);
     /* Reset counter when trend reverses */
     if(trend_set(z->dir))
-      coeff = 0;
+      coeff = 1;
     
     /* Do what you have to do here */
     if(z->value > 1.0){
       /* Sell */
-      if(coeff < SNOWBALL_MAX)
-	capital += (++coeff * c->close);
+      if(coeff <= SNOWBALL_MAX)
+	capital += c->close;// * coeff;
       
     }else{
       /* Buy */
-      if(coeff < SNOWBALL_MAX)
-	invest += (++coeff * c->close);
+      if(coeff <= SNOWBALL_MAX)
+	invest += c->close;// * coeff;
     }
+    
+    /* Increment */
+    if(coeff < SNOWBALL_MAX)
+      coeff++;
   }
   
   PR_INFO("Coeff = %d\n", coeff);
@@ -115,7 +119,7 @@ int main(int argc, char **argv) {
   }
 
   /* Display stats */
-  PR_INFO("Invest = %.2lf Capital = %.2lf (%.2lf)\n",
+  PR_INFO("Invest = %.2lf Capital = %.2lf (%.2lf : 1)\n",
 	  invest, capital, capital / invest);
   
   return 0;
