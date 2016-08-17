@@ -22,10 +22,13 @@
 
 /* Main info */
 #define ZIGZAG_THRES 0.03
+#define SNOWBALL_MAX 5
+
+static int coeff = 0;
 static double zz_thres = ZIGZAG_THRES;
 
-#define SNOWBALL_MAX 20
-int info = 0;
+static double invest = 0.0;
+static double capital = 0.0;
 
 /* sim interface */
 
@@ -41,17 +44,21 @@ static int snowball_feed(struct timeline *t,
     /* Do what you have to do here */
     if(z->value > 1.0){
       /* Sell */
-      if(info < SNOWBALL_MAX)
-	info++;
+      if(coeff < SNOWBALL_MAX){
+	coeff++;
+	invest += (coeff * c->close);
+      }
       
     }else{
       /* Buy */
-      if(info > -SNOWBALL_MAX)
-	info--;
+      if(coeff > -SNOWBALL_MAX){
+	coeff--;
+	capital += (abs(coeff) * c->close);
+      }
     }
   }
   
-  PR_INFO("N = %d\n", info);
+  PR_INFO("Coeff = %d\n", coeff);
   return 0;
 }
 
@@ -100,6 +107,6 @@ int main(int argc, char **argv) {
   }
 
   /* Display stats */
-  
+  PR_INFO("Invest = %.2lf Capital = %.2lf\n", invest, capital);
   return 0;
 }
