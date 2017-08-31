@@ -2,10 +2,9 @@ cmake_minimum_required(VERSION 2.8)
 project(cresus)
 
 # Src for cresus indicators
-set(SRC
+add_library(indicator OBJECT
   atr.c
   bollinger.c
-  esi.c
   heikin_ashi.c
   jtrend.c
   macd.c
@@ -18,9 +17,8 @@ set(SRC
   srsi.c
   stochastic.c
   stoploss.c
-  sup_res.c
   swing.c
   updown.c
-  xtr.c
   zigzag.c
   )
+

@@ -1,21 +1,27 @@
 cmake_minimum_required(VERSION 2.8)
 project(cresus)
 
-# src for cresus project
+# flags
+set(CMAKE_C_FLAGS "-fPIC -std=gnu99")
 
-# subdirs
-add_subdirectory(
-  framework
-  engine
-  indicator
-  input
-  math
-  module
-  program
-  sample
-  sim
-  trading
-  utest)
+# includes 
+include_directories(.)
 
-# includes
-include_directory(${PROJECT_SOURCE_DIR}/framework)
+# subdirs for cresus project
+add_subdirectory(framework)
+add_subdirectory(engine)
+add_subdirectory(math)
+add_subdirectory(indicator)
+add_subdirectory(input)
+add_subdirectory(sim)
+
+add_library(cresus SHARED
+  $<TARGET_OBJECTS:framework>
+  $<TARGET_OBJECTS:engine>
+  $<TARGET_OBJECTS:math>
+  $<TARGET_OBJECTS:indicator>
+  $<TARGET_OBJECTS:input>
+  $<TARGET_OBJECTS:sim>
+  )
+
+add_subdirectory(sample)
