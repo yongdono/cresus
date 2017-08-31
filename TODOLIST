@@ -1,0 +1,8 @@
+TODO
+----
+
+Some files need to be ported to the new architecture :
+ - indicator/esi.c
+ - indicator/sup_res.c
+ - indicator/xtr.c
+ - input/google.c
