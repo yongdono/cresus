@@ -24,7 +24,7 @@ struct engine {
 };
 
 /* Extrenal pointer to plugin */
-typedef int (*engine_feed_ptr)(struct timeline*, struct timeline_entry*);
+typedef int (*engine_feed_ptr)(struct engine*, struct timeline*, struct timeline_entry*);
 
 int engine_init(struct engine *e, struct timeline *t);
 void engine_release(struct engine *e);

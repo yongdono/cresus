@@ -21,19 +21,43 @@
 #define SNOWBALL_EMA 30
 #define SNOWBALL_MAX 30
 
+/* Private data */
+static int n;
+static double capital = 30000.0;
+static int average = SNOWBALL_EMA;
+
+static int sigma(int n)
+{
+  int ret = 0;
+  for(int i = 0; i <= n; i++)
+    ret += i;
+
+  return ret;
+}
+
 /* sim interface */
 
-static int snowball_feed(struct timeline *t,
-			 struct timeline_entry *e) {
+static int snowball_feed(struct engine *e,
+			 struct timeline *t,
+			 struct timeline_entry *entry) {
   
   struct position *p;
   struct indicator_entry *i;
+
+  int s = sigma(average);
+  PR_ERR("Sigma %d = %d, capital shares are %.2f\n", average, s, capital / s);
   
   /* TODO : better management of this ? */
-  struct candle *c = __timeline_entry_self__(e);
+  struct candle *c = __timeline_entry_self__(entry);
   if((i = candle_find_indicator_entry(c, EMA))){
     struct mobile_entry *m = __indicator_entry_self__(i);
     PR_WARN("EMA is %.2f going %.2f\n", m->value, m->direction);
+    if(m->direction <= 0){
+      engine_open_position(e, t, POSITION_LONG, n);
+      PR_INFO("Took %d positions at %.2lf\n", n, c->close);
+      n = n + 1;
+    }else
+      n = 1;
   }
   
   return 0;
@@ -50,7 +74,7 @@ timeline_create(const char *filename, const char *name, time_info_t min) {
   yahoo_alloc(yahoo, filename, min, TIME_MAX); /* load everything */
   timeline_alloc(timeline, name, __input__(yahoo));
   /* Indicators alloc */
-  mobile_alloc(mobile, EMA, MOBILE_EMA, SNOWBALL_EMA, CANDLE_CLOSE);
+  mobile_alloc(mobile, EMA, MOBILE_EMA, average, CANDLE_CLOSE);
   /* And insert */
   timeline_add_indicator(timeline, __indicator__(mobile));
   
@@ -66,22 +90,24 @@ int main(int argc, char **argv) {
 
   /* VERBOSE_LEVEL(WARN); */
   
-  while((c = getopt(argc, argv, "vp:a:")) != -1){
+  while((c = getopt(argc, argv, "va:")) != -1){
     switch(c){
     case 'v' : VERBOSE_LEVEL(DBG); break;
-      /* case 'p' : period = atoi(optarg); break;
-	 case 'a' : average = atoi(optarg); break; */
+    case 'a' : average = atoi(optarg); break;
     }
   }
   
   /* 01/01/2012 */
-  t = timeline_create("data/%5EFCHI.yahoo", "CAC", START_TIME);
+  t = timeline_create(argv[optind], "CAC", START_TIME);
   engine_init(&engine, t);
   
   /* Run straight */
   engine_run(&engine, snowball_feed);
   
   /* Display info */
+  engine_close_all_positions(&engine);
   
+  //timeline_destroy(t);
+  engine_release(&engine);
   return 0;
 }
