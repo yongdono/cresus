@@ -26,6 +26,7 @@ static int n;
 static int last_month = -1;
 static int average = SNOWBALL_EMA;
 static double share = 0;
+static double amount = 0;
 
 #define SIGMA(n) (int)(n * (double)((n + 1)/2.0))
 
@@ -44,6 +45,7 @@ static int snowball_feed(struct engine *e,
   if(TIME_GET_MONTH(entry->time) != last_month){
     last_month = TIME_GET_MONTH(entry->time);
     e->amount += 500.0; /* Add 500€ to capital every month */
+    amount += 500.0;
     share = e->amount / SIGMA(average);
     PR_INFO("Capital now divided in %d shares of value %.2lf\n",
 	    average, SIGMA(average), share);
@@ -51,7 +53,7 @@ static int snowball_feed(struct engine *e,
   /* What do the indicators say ? */
   if((i = candle_find_indicator_entry(c, EMA))){
     struct mobile_entry *m = __indicator_entry_self__(i);
-    PR_WARN("EMA is %.2f going %.2f\n", m->value, m->direction);
+    //PR_WARN("EMA is %.2f going %.2f\n", m->value, m->direction);
     if(m->direction <= 0){
       engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, share);
       PR_INFO("Took for %.3lf of positions at %.2lf\n", share, c->close);
@@ -59,6 +61,11 @@ static int snowball_feed(struct engine *e,
     }else
       n = 1;
   }
+
+  PR_INFO("Total portfolio value is %.3lf (%.3lf capital, %.3lf commodities, " \
+	  "%.3f money invested)\n",
+	  e->amount + (e->npos * c->close), e->amount, (e->npos * c->close),
+	  amount);
   
   return 0;
 }

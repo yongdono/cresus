@@ -73,11 +73,12 @@ static void engine_run_order(struct engine *ctx, struct order *o,
 
 void engine_run(struct engine *ctx, engine_feed_ptr feed) {
 
+  struct list *safe;
+  struct order *order;
   struct timeline_entry *entry;
+  
   while((entry = timeline_step(ctx->timeline)) != NULL){
     /* First : check if there are opening positions */
-    struct list *safe;
-    struct order *order;
     __list_for_each_safe__(&ctx->list_order, order, safe){
       engine_run_order(ctx, order, entry);
       __list_del__(order);
