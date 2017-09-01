@@ -9,24 +9,31 @@
 #ifndef __Cresus_EVO__engine__
 #define __Cresus_EVO__engine__
 
-#include "framework/input.h"
-#include "framework/module.h"
-
-#define ENGINE_MAX_MODULE 4
+#include "engine/position.h"
+#include "engine/timeline.h"
 
 struct engine {
-  
-  struct input *input;
-  
-  /* Indicators array */
-  struct module *module[ENGINE_MAX_MODULE];
-  size_t modules;
+  struct timeline *timeline;
+  list_head_t(struct position) list_position_to_open;
+  list_head_t(struct position) list_position_opened;
+  list_head_t(struct position) list_position_to_close;
+  list_head_t(struct position) list_position_closed;
+  /* Stats */
+  double factor;
+  int nwin, nloss;
 };
 
-int engine_init(struct engine *e, struct input *in);
+/* Extrenal pointer to plugin */
+typedef int (*engine_feed_ptr)(struct timeline*, struct timeline_entry*);
+
+int engine_init(struct engine *e, struct timeline *t);
 void engine_release(struct engine *e);
 
-int engine_add_module(struct engine *e, struct module *m);
-void engine_run(struct engine *e, int n);
+void engine_run(struct engine *e, engine_feed_ptr feed);
+
+int engine_open_position(struct engine *e, struct timeline *t, 
+			 position_t type, double n);
+int engine_close_position(struct engine *e, struct timeline *t);
+int engine_close_all_positions(struct engine *e);
 
 #endif /* defined(__Cresus_EVO__engine__) */

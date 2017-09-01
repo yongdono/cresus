@@ -7,7 +7,7 @@
  */
 
 #include "input/yahoo.h"
-#include "engine/timeline.h"
+#include "engine/engine.h"
 #include "indicator/mobile.h"
 #include "framework/verbose.h"
 
@@ -34,34 +34,8 @@ static int snowball_feed(struct timeline *t,
   if((i = candle_find_indicator_entry(c, EMA))){
     struct mobile_entry *m = __indicator_entry_self__(i);
     PR_WARN("EMA is %.2f going %.2f\n", m->value, m->direction);
-    /* Reset counter when trend reverses */
-    if(trend_set(z->dir))
-      coeff = 1;
-    
-    /* Do what you have to do here */
-    if(z->dir == ZIGZAG_UP){
-      if(count > -SNOWBALL_MAX){
-	/* Sell */
-	if(count > 0) capital += c->close;// * coeff;
-	if(count <= 0) invest += c->close;// * coeff;
-	count--;
-      }
-      
-    }else{
-      if(count < SNOWBALL_MAX){
-	/* Buy */
-	if(count >= 0) invest += c->close;// * coeff;
-	if(count < 0) capital += c->close;// * coeff;
-	count++;
-      }
-    }
-    
-    /* Increment */
-    coeff++;
   }
   
-  PR_INFO("Coeff = %d, count = %d\n", coeff, count);
-  pending = abs(count) * c->close;
   return 0;
 }
 
@@ -87,6 +61,7 @@ int main(int argc, char **argv) {
 
   int c;
   struct timeline *t;
+  struct engine engine;
   struct timeline_entry *e;
 
   /* VERBOSE_LEVEL(WARN); */
@@ -101,19 +76,12 @@ int main(int argc, char **argv) {
   
   /* 01/01/2012 */
   t = timeline_create("data/%5EFCHI.yahoo", "CAC", START_TIME);
-
-  while(timeline_entry_next(t, &e) != -1){
-    /* Step */
-    timeline_step(t);
-    /* Algo */
-    snowball_feed(t, e);
-  }
-
-  /* Display stats */
-  PR_INFO("Invest = %.2lf Capital = %.2lf (%.2lf : 1)\n" \
-	  "Pending = %.2lf (%.2lf : 1) Count = %d\n",
-	  invest, capital, capital / invest,
-	  pending, (capital + pending) / invest, count);
+  engine_init(&engine, t);
+  
+  /* Run straight */
+  engine_run(&engine, snowball_feed);
+  
+  /* Display info */
   
   return 0;
 }

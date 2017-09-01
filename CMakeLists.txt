@@ -21,7 +21,6 @@ add_library(cresus SHARED
   $<TARGET_OBJECTS:math>
   $<TARGET_OBJECTS:indicator>
   $<TARGET_OBJECTS:input>
-  $<TARGET_OBJECTS:sim>
   )
 
 add_subdirectory(sample)

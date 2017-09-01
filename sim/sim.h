@@ -67,7 +67,7 @@ void sim_release(struct sim *s);
 
 int sim_run(struct sim *s, sim_feed_ptr feed);
 int sim_open_position(struct sim *s, struct timeline *t,
-		      position_t type, int n);
+		      position_t type, double n);
 int sim_close_position(struct sim *s, struct timeline *t);
 int sim_close_all_positions(struct sim *s);
 int sim_ignore_position(struct sim *s, struct timeline *t);

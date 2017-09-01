@@ -3,7 +3,5 @@ project(cresus)
 
 # Src for cresus framework
 add_library(sim OBJECT
-  position.c
-  sim.c
   statistics.c
   )

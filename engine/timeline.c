@@ -136,31 +136,18 @@ void timeline_trim_entry(struct timeline *t,
 struct timeline_entry *timeline_step(struct timeline *t) {
 
   struct indicator *indicator;
-  /* t->ref = &t->list_entry.prev; */
-  
-  /* Execute indicators */
-  __slist_for_each__(&t->slist_indicator, indicator){
-    indicator_feed(indicator, t->ref);
-    PR_DBG("%s feed indicator %s\n", t->name, indicator->str);
-  }
-
-  t->status = TIMELINE_STATUS_RUN;
-  return t->ref;
-}
-
-int timeline_execute(struct timeline *t) {
-  
-  int n;
   struct timeline_entry *entry;
-  
-  for(n = 0;; n++){
-    if(timeline_entry_next(t, &entry) != -1)
-      timeline_step(t);
-    
-    else
-      break;
-  }
-  
-  return n;
-}
 
+  if(timeline_entry_next(t, &entry) != -1){
+    /* Execute indicators */
+    __slist_for_each__(&t->slist_indicator, indicator){
+      indicator_feed(indicator, t->ref);
+      PR_DBG("%s feed indicator %s\n", t->name, indicator->str);
+    }
+    
+    t->status = TIMELINE_STATUS_RUN;
+    return entry;
+  }
+
+  return NULL;
+}

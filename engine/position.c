@@ -10,7 +10,7 @@
 #include "framework/verbose.h"
 
 int position_init(struct position *p, struct timeline *t,
-		  position_t type, int n) {
+		  position_t type, double n) {
 
   /* super() */
   __list_super__(p);

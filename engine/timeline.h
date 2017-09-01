@@ -73,6 +73,5 @@ void timeline_append_entry(struct timeline *t, struct timeline_entry *entry);
 void timeline_trim_entry(struct timeline *t, struct timeline_entry *entry);
 
 struct timeline_entry *timeline_step(struct timeline *t);
-int timeline_execute(struct timeline *t);
 
 #endif
