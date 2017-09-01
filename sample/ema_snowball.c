@@ -23,17 +23,11 @@
 
 /* Private data */
 static int n;
-static double capital = 30000.0;
+static int last_month = -1;
 static int average = SNOWBALL_EMA;
+static double share = 0;
 
-static int sigma(int n)
-{
-  int ret = 0;
-  for(int i = 0; i <= n; i++)
-    ret += i;
-
-  return ret;
-}
+#define SIGMA(n) (int)(n * (double)((n + 1)/2.0))
 
 /* sim interface */
 
@@ -43,18 +37,24 @@ static int snowball_feed(struct engine *e,
   
   struct position *p;
   struct indicator_entry *i;
-
-  int s = sigma(average);
-  PR_ERR("Sigma %d = %d, capital shares are %.2f\n", average, s, capital / s);
   
   /* TODO : better management of this ? */
   struct candle *c = __timeline_entry_self__(entry);
+  /* Every month we recompute the shares */
+  if(TIME_GET_MONTH(entry->time) != last_month){
+    last_month = TIME_GET_MONTH(entry->time);
+    e->amount += 500.0; /* Add 500€ to capital every month */
+    share = e->amount / SIGMA(average);
+    PR_INFO("Capital now divided in %d shares of value %.2lf\n",
+	    average, SIGMA(average), share);
+  }
+  /* What do the indicators say ? */
   if((i = candle_find_indicator_entry(c, EMA))){
     struct mobile_entry *m = __indicator_entry_self__(i);
     PR_WARN("EMA is %.2f going %.2f\n", m->value, m->direction);
     if(m->direction <= 0){
-      engine_open_position(e, t, POSITION_LONG, n);
-      PR_INFO("Took %d positions at %.2lf\n", n, c->close);
+      engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, share);
+      PR_INFO("Took for %.3lf of positions at %.2lf\n", share, c->close);
       n = n + 1;
     }else
       n = 1;
@@ -100,12 +100,17 @@ int main(int argc, char **argv) {
   /* 01/01/2012 */
   t = timeline_create(argv[optind], "CAC", START_TIME);
   engine_init(&engine, t);
+
+  /* TODO : move this */
+  engine.amount = 10000.0;
+  engine.npos = 0;
   
   /* Run straight */
   engine_run(&engine, snowball_feed);
   
   /* Display info */
-  engine_close_all_positions(&engine);
+  PR_ERR("Amount available : %.3lf\n", engine.amount);
+  PR_ERR("Invested value is now : %.3lf\n", engine.npos);
   
   //timeline_destroy(t);
   engine_release(&engine);

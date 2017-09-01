@@ -12,22 +12,19 @@
 int engine_init(struct engine *ctx, struct timeline *t) {
 
   ctx->timeline = t;
-  /* Init slists */
+  /* Init lists */
+  list_head_init(&ctx->list_order);
   list_head_init(&ctx->list_position_to_open);
   list_head_init(&ctx->list_position_opened);
   list_head_init(&ctx->list_position_to_close);
   list_head_init(&ctx->list_position_closed);
-  
-  /* Stat */
-  ctx->factor = 1.0;
-  ctx->nwin = 0;
-  ctx->nloss = 0;
   
   return 0;
 }
 
 void engine_release(struct engine *ctx) {
   /* Nothing to do */
+  list_head_release(&ctx->list_order);
   list_head_release(&ctx->list_position_to_open);
   list_head_release(&ctx->list_position_opened);
   list_head_release(&ctx->list_position_to_close);
@@ -51,57 +48,54 @@ static void engine_xfer_positions(struct engine *ctx,
   }
 }
 
+static void engine_run_order(struct engine *ctx, struct order *o,
+			     struct timeline_entry *e)
+{
+  struct candle *c = __timeline_entry_self__(e);
+  
+  switch(o->type){
+  case ORDER_BUY:
+    if(o->by == ORDER_BY_NB){
+      /* Buy n positions */
+      ctx->npos += o->value;
+      ctx->amount -= (o->value * c->open);
+    }else{
+      /* Buy for x$ of positions */
+      ctx->amount -= o->value;
+      ctx->npos += (o->value / c->open);
+    }
+    break;
+    
+  default:
+    break;
+  }
+}
+
 void engine_run(struct engine *ctx, engine_feed_ptr feed) {
 
   struct timeline_entry *entry;
   while((entry = timeline_step(ctx->timeline)) != NULL){
     /* First : check if there are opening positions */
-    engine_xfer_positions(ctx, &ctx->list_position_opened,
-			  &ctx->list_position_to_open,
-			  position_in);
-    /* Second : check if there are closing positions */
-    engine_xfer_positions(ctx, &ctx->list_position_closed,
-			  &ctx->list_position_to_close,
-			  position_out);
-    /* Third  : feed the engine */
+    struct list *safe;
+    struct order *order;
+    __list_for_each_safe__(&ctx->list_order, order, safe){
+      engine_run_order(ctx, order, entry);
+      __list_del__(order);
+    }
+    
+    /* Then : feed the engine */
     feed(ctx, ctx->timeline, entry);
   }
 }
 
-int engine_open_position(struct engine *ctx, struct timeline *t, 
-			 position_t type, double n) {
-  
-  struct position *p;
-  if(position_alloc(p, t, type, n)){
-    __list_add_tail__(&ctx->list_position_to_open, p);
+int engine_place_order(struct engine *ctx, order_t type, order_by_t by,
+		       double value)
+{
+  struct order *order;
+  if(order_alloc(order, type, by, value)){
+    __list_add_tail__(&ctx->list_order, order);
     return 0;
   }
 
   return -1;
-}
-
-int engine_close_position(struct engine *ctx, struct timeline *t) {
-  
-  int n = 0;
-  struct list *safe;
-  struct position *p;
-  
-  __list_for_each_safe__(&ctx->list_position_opened, p, safe){
-    if(p->t == t){ /* FIXME : use timeline's name ? */
-      __list_del__(p);
-      __list_add_tail__(&ctx->list_position_to_close, p);
-      n++;
-    }
-  }
-  
-  return n;
-}
-
-int engine_close_all_positions(struct engine *ctx) {
-  
-  engine_xfer_positions(ctx, &ctx->list_position_to_close,
-			&ctx->list_position_opened,
-			position_nop);
-  
-  return 0;
 }

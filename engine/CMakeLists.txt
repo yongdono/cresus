@@ -6,6 +6,7 @@ add_library(engine OBJECT
   calendar.c
   candle.c
   engine.c
+  order.c
   position.c
   timeline.c
   )
