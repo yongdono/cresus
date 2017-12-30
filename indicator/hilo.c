@@ -5,10 +5,6 @@
  * Copyright (c) 2016 Joachim Naulet. All rights reserved.
  *
  */
-
-#include <math.h>
-#include <stdlib.h>
-
 #include "hilo.h"
 
 static void _hilo_reset_(struct indicator *i)
@@ -40,8 +36,8 @@ static int hilo_feed(struct indicator *i, struct timeline_entry *e)
     
     __list_for_each_prev__(__list__(e), prev){
       struct candle *p = __timeline_entry_self__(prev);
-      /* Out if we're short on data */
-      if(!n--)
+      /* Out after ctx->period iterations */
+      if(!--n)
 	break;
       
       entry->high = HIGH(entry->high, p->high);

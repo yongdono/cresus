@@ -4,4 +4,5 @@ project(cresus)
 # src for cresus input
 add_library(input OBJECT
   yahoo.c
+  b4b.c
   )

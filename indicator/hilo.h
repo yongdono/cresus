@@ -20,11 +20,11 @@
 #include "framework/indicator.h"
 
 struct hilo_entry {
-/* As always... */
-__inherits_from_indicator_entry__;
-/* Data */
-double high;
-double low;
+  /* As always... */
+  __inherits_from_indicator_entry__;
+  /* Data */
+  double high;
+  double low;
 };
 
 #define hilo_entry_alloc(entry, parent)					\
