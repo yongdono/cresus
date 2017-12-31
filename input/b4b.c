@@ -1,7 +1,7 @@
 /*
  * Cresus EVO - b4b.c 
  * 
- * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 12/30/2016
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 12/30/2017
  * Copyright (c) 2016 Joachim Naulet. All rights reserved.
  *
  */
@@ -13,22 +13,28 @@
 #include "engine/candle.h"
 #include "framework/verbose.h"
 
-static size_t b4b_prepare_str(struct b4b *ctx, char *buf)
+static ssize_t b4b_prepare_str(struct b4b *ctx, char *buf)
 {
   int i;
   char *str = buf;
   
   for(i = 0; buf[i]; i++){
-    /* Ignore parenthesis */
-    if(buf[i] == '\"')
+    /* Ignore parenthesis & spaces */
+    if(buf[i] == '\"' || buf[i] == ' ')
       continue;
     
     /* Change commas to points */
     if(buf[i] == ',') *str++ = '.';
-    *str++ = buf[i];
+    else *str++ = buf[i];
   }
 
-  return i;
+  /* Filter empty lines */
+  if(*buf != '\r' && *buf != '\n'){
+    PR_DBG("%s", buf);
+    return i;
+  }
+
+  return -1;
 }
 
 static struct candle *b4b_parse_entry(struct b4b *ctx, char *str)
@@ -78,11 +84,13 @@ static struct timeline_entry *b4b_read(struct input *in)
   struct candle *c;
 
   while(fgets(buf, sizeof buf, ctx->fp)){
-    /* Prepare string */
-    b4b_prepare_str(ctx, buf);
+    /* Prepare string & pre-filter */
+    if(b4b_prepare_str(ctx, buf) < 0)
+      continue;
     /* Parse entry */
     if((c = b4b_parse_entry(ctx, buf))){
       time_info_t time = __timeline_entry__(c)->time;
+      /* TODO: this check SHOULD be in input.c */
       if(TIMECMP(time, __input__(ctx)->from, GRANULARITY_DAY) >= 0 &&
 	 TIMECMP(time, __input__(ctx)->to, GRANULARITY_DAY) <= 0){
 	/* We got a new candle */

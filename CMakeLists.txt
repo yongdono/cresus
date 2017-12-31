@@ -3,6 +3,7 @@ project(cresus)
 
 # flags
 set(CMAKE_C_FLAGS "-fPIC -std=gnu99")
+set(CMAKE_BUILD_TYPE Debug)
 
 # includes 
 include_directories(.)
