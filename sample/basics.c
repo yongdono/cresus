@@ -78,11 +78,7 @@ static struct timeline *timeline_create(const char *filename, const char *type)
    */
   struct inwrap *inwrap;
   struct timeline *timeline;
-  inwrap_type_t t = INWRAP_TYPE_YAHOO;
-
-  /* Parse type. FIXME: can do better */
-  if(*type == 'b') t = INWRAP_TYPE_B4B;
-  if(*type == 'g') t = INWRAP_TYPE_GOOGLE;
+  inwrap_t t = inwrap_t_from_str(type);
   
   if(inwrap_alloc(inwrap, filename, t, TIME_MIN, TIME_MAX)){
     if(timeline_alloc(timeline, "basics", __input__(inwrap))){

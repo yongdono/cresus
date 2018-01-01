@@ -24,23 +24,32 @@
   DEFINE_FREE(ctx, inwrap_release)
 
 typedef enum {
-  INWRAP_TYPE_YAHOO,
-  INWRAP_TYPE_B4B,
-  INWRAP_TYPE_GOOGLE
-} inwrap_type_t;
+  INWRAP_YAHOO,
+  INWRAP_B4B,
+  INWRAP_GOOGLE
+} inwrap_t;
 
 struct inwrap {
   /* Inherits from input */
   __inherits_from_input__;
   /* Suported types */  
-  inwrap_type_t type;
+  inwrap_t type;
   struct yahoo yahoo;
   struct b4b b4b;
   // struct google google;
 };
 
 int inwrap_init(struct inwrap *ctx, const char *filename,
-	       inwrap_type_t type, time_info_t from, time_info_t to);
+	       inwrap_t type, time_info_t from, time_info_t to);
 void inwrap_release(struct inwrap *ctx);
+
+#include <string.h>
+
+static inline inwrap_t inwrap_t_from_str(const char *str)
+{
+  if(!strcmp("b4b", str)) return INWRAP_B4B;
+  if(!strcmp("google", str)) return INWRAP_GOOGLE;
+  return INWRAP_YAHOO;
+}
 
 #endif

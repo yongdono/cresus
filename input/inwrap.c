@@ -17,16 +17,16 @@ static struct timeline_entry *inwrap_read(struct input *in)
 {
   struct inwrap *ctx = __input_self__(in);
   switch(ctx->type){
-  case INWRAP_TYPE_YAHOO: return __input_read__(&ctx->yahoo);
-  case INWRAP_TYPE_B4B: return __input_read__(&ctx->b4b);
-  case INWRAP_TYPE_GOOGLE: break;
+  case INWRAP_YAHOO: return __input_read__(&ctx->yahoo);
+  case INWRAP_B4B: return __input_read__(&ctx->b4b);
+  case INWRAP_GOOGLE: break;
   }
 
   return NULL;
 }
 
 int inwrap_init(struct inwrap *ctx, const char *filename,
-	       inwrap_type_t type, time_info_t from, time_info_t to)
+	       inwrap_t type, time_info_t from, time_info_t to)
 {
   int ret = -1;
 
@@ -35,16 +35,16 @@ int inwrap_init(struct inwrap *ctx, const char *filename,
   ctx->type = type;
 
   switch(type){
-  case INWRAP_TYPE_YAHOO:
+  case INWRAP_YAHOO:
     ret = yahoo_init(&ctx->yahoo, filename, from, to);
     break;
     
-  case INWRAP_TYPE_B4B:
+  case INWRAP_B4B:
     ret = b4b_init(&ctx->b4b, filename, from, to);
     break;
     
-  case INWRAP_TYPE_GOOGLE:
-    PR_WARN("INWRAP_TYPE_GOOGLE not implemented\n");
+  case INWRAP_GOOGLE:
+    PR_WARN("INWRAP_GOOGLE not implemented\n");
     break;
   }
   
@@ -55,3 +55,4 @@ void inwrap_release(struct inwrap *ctx)
 {
   __input_release__(ctx);
 }
+
