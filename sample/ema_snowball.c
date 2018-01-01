@@ -29,7 +29,7 @@ static int max = SNOWBALL_MAX;
 static double share = 0;
 static double amount = 0;
 
-#define SIGMA(n) (int)(n * (double)((n + 1)/2.0))
+#define SIGMA(n) (n * (double)((n + 1)/2.0))
 
 /* sim interface */
 
@@ -48,8 +48,8 @@ static int snowball_feed(struct engine *e,
     e->amount += 500.0; /* Add 500€ to capital every month */
     amount += 500.0;
     share = e->amount / max; //e->amount / SIGMA(max);
-    PR_INFO("Capital now divided in %d shares of value %.2lf\n",
-	    average, SIGMA(average), share);
+    PR_INFO("Capital now divided in %.2lf shares of value %.2lf\n",
+	    share, SIGMA(average));
   }
   /* What do the indicators say ? */
   if((i = candle_find_indicator_entry(c, EMA))){

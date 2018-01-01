@@ -14,7 +14,7 @@ add_subdirectory(engine)
 add_subdirectory(math)
 add_subdirectory(indicator)
 add_subdirectory(input)
-add_subdirectory(sim)
+# add_subdirectory(sim)
 
 add_library(cresus SHARED
   $<TARGET_OBJECTS:framework>
