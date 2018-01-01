@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <getopt.h>
 
-#include "input/yahoo.h"
+#include "input/inwrap.h"
 #include "engine/engine.h"
 #include "indicator/macd.h"
 #include "indicator/mobile.h"
@@ -71,16 +71,21 @@ static int feed(struct engine *e,
   return 0;
 }
 
-static struct timeline *timeline_create(const char *filename)
+static struct timeline *timeline_create(const char *filename, const char *type)
 {
   /*
    * Data
    */
-  struct yahoo *yahoo;
+  struct inwrap *inwrap;
   struct timeline *timeline;
+  inwrap_type_t t = INWRAP_TYPE_YAHOO;
 
-  if(yahoo_alloc(yahoo, filename, TIME_MIN, TIME_MAX)){
-    if(timeline_alloc(timeline, "basics", __input__(yahoo))){
+  /* Parse type. FIXME: can do better */
+  if(*type == 'b') t = INWRAP_TYPE_B4B;
+  if(*type == 'g') t = INWRAP_TYPE_GOOGLE;
+  
+  if(inwrap_alloc(inwrap, filename, t, TIME_MIN, TIME_MAX)){
+    if(timeline_alloc(timeline, "basics", __input__(inwrap))){
       struct mobile *m;
       /* Add a series of EMAs */
       mobile_alloc(m, EMA40, MOBILE_EMA, 40, CANDLE_CLOSE);
@@ -116,15 +121,30 @@ int main(int argc, char **argv)
   /*
    * Data
    */
+  int c;
+  char *filename, *type;
+  
   struct timeline *t;
   struct engine engine;
 
-  if(argc != 2){
-    fprintf(stdout, "Usage: %s filename.yahoo\n", argv[0]);
+  if(argc < 2){
+    fprintf(stdout, "Usage: %s -o type filename\n", argv[0]);
     return -1;
   }
+
+  while((c = getopt(argc, argv, "o:")) != -1){
+    switch(c){
+    case 'o': type = optarg; break;
+    default:
+      PR_ERR("Unknown option %c\n", c);
+      return -1;
+    }
+  }
+
+  /* Filename is only real param */
+  filename = argv[optind];
   
-  if((t = timeline_create(argv[1]))){
+  if((t = timeline_create(filename, type))){
     engine_init(&engine, t);
     engine_run(&engine, feed);
     /* TODO : Don't forget to release everything */
