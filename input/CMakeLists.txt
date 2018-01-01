@@ -5,4 +5,5 @@ project(cresus)
 add_library(input OBJECT
   yahoo.c
   b4b.c
+  inwrap.c
   )
