@@ -40,7 +40,7 @@ static int feed(struct engine *e,
   struct candle *c = __timeline_entry_self__(entry);
   
   /* Execute */
-  printf("%s - ", candle_str(c));
+  PR_INFO("%s - ", candle_str(c));
   /* Then check results */
   __slist_for_each__(&c->slist_indicator, ientry){
     /* Beware, some parsing will be required here to determine who's who */
@@ -111,7 +111,7 @@ static struct timeline *timeline_create(const char *filename)
 
 int main(int argc, char **argv)
 {
-  VERBOSE_LEVEL(DBG);
+  VERBOSE_LEVEL(INFO);
   
   /*
    * Data
