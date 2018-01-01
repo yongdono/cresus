@@ -4,6 +4,7 @@ project(cresus)
 # src for cresus sample(s)
 add_executable(basics basics.c)
 target_link_libraries(basics cresus m)
-
 add_executable(ema_snowball ema_snowball.c)
 target_link_libraries(ema_snowball cresus m)
+add_executable(roc roc.c)
+target_link_libraries(roc cresus m)
