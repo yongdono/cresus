@@ -94,8 +94,9 @@ int main(int argc, char **argv) {
   if((t = timeline_create(argv[1]))){
     engine_init(&engine, t);
     engine_run(&engine, feed);
+    /* Release */
+    engine_release(&engine);
   }
 
-  engine_release(&engine);
   return 0;
 }

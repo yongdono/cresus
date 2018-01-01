@@ -35,7 +35,7 @@ static int feed(struct engine *e,
 		struct timeline_entry *entry)
 {
   /* Step by step loop */
-  int n = 0;
+  static int n = 0;
   struct indicator_entry *ientry;
   struct candle *c = __timeline_entry_self__(entry);
   
@@ -127,9 +127,9 @@ int main(int argc, char **argv)
   if((t = timeline_create(argv[1]))){
     engine_init(&engine, t);
     engine_run(&engine, feed);
+    /* TODO : Don't forget to release everything */
+    engine_release(&engine);
   }
   
-  /* TODO : Don't forget to release everything */
-  engine_release(&engine);
   return 0;
 }
