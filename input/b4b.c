@@ -69,10 +69,12 @@ static struct candle *b4b_parse_entry(struct b4b *ctx, char *str)
   TIME_SET_MONTH(time, month);
   TIME_SET_YEAR(time, year);
 
-  if(candle_alloc(c, time, GRANULARITY_DAY,
-		  open, close, high, low, volume))
-    return c;
-
+  if(input_in_boundaries(__input__(ctx), time, GRANULARITY_DAY))
+    /* Filtered by time */
+    if(candle_alloc(c, time, GRANULARITY_DAY,
+		    open, close, high, low, volume))
+      return c;
+  
   return NULL;
 }
 
@@ -89,21 +91,12 @@ static struct timeline_entry *b4b_read(struct input *in)
       continue;
     /* Parse entry */
     if((c = b4b_parse_entry(ctx, buf))){
-      time_info_t time = __timeline_entry__(c)->time;
-      /* TODO: this check SHOULD be in input.c */
-      if(TIMECMP(time, __input__(ctx)->from, GRANULARITY_DAY) >= 0 &&
-	 TIMECMP(time, __input__(ctx)->to, GRANULARITY_DAY) <= 0){
-	/* We got a new candle */
-	PR_DBG("%s %.2d/%.2d/%.4d loaded\n", ctx->filename,
-	       TIME_GET_MONTH(time), TIME_GET_DAY(time), TIME_GET_YEAR(time));
-	return __timeline_entry__(c);
-	
-      }else
-	/* Out of bounds, ignore candle */
-	candle_free(c);
+      /* We got a new candle */
+      PR_DBG("%s %s loaded\n", ctx->filename, __timeline_entry_str__(c));
+      return __timeline_entry__(c);
     }
   }
-
+  
   /* End of File */
   return NULL;
 }

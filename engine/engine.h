@@ -17,7 +17,7 @@ struct engine {
   struct timeline *timeline;
   /* Order fifo */
   list_head_t(struct order) list_order;
-  /* Position management */
+  /* Position management. OBSOLETE */
   list_head_t(struct position) list_position_to_open;
   list_head_t(struct position) list_position_opened;
   list_head_t(struct position) list_position_to_close;
