@@ -13,30 +13,6 @@
 #include "engine/candle.h"
 #include "framework/verbose.h"
 
-static ssize_t yahoo_v7_prepare_str(struct yahoo_v7 *ctx, char *buf)
-{
-  int i;
-  char *str = buf;
-  
-  for(i = 0; buf[i]; i++){
-    /* Ignore parenthesis & spaces */
-    if(buf[i] == '\"' || buf[i] == ' ')
-      continue;
-    
-    /* Change commas to points */
-    if(buf[i] == ',') *str++ = '.';
-    else *str++ = buf[i];
-  }
-
-  /* Filter empty lines */
-  if(*buf != '\r' && *buf != '\n'){
-    PR_DBG("%s", buf);
-    return i;
-  }
-
-  return -1;
-}
-
 static struct candle *yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
 {
   struct candle *c; 
@@ -69,7 +45,8 @@ static struct candle *yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
   TIME_SET_MONTH(time, month);
   TIME_SET_YEAR(time, year);
 
-  if(input_in_boundaries(__input__(ctx), time, GRANULARITY_DAY))
+  if(open != 0.0 && close != 0.0 && high != 0.0 && low != 0.0 &&
+     input_in_boundaries(__input__(ctx), time, GRANULARITY_DAY))
     /* Filtered by time */
     if(candle_alloc(c, time, GRANULARITY_DAY,
 		    open, close, high, low, volume))
@@ -86,9 +63,6 @@ static struct timeline_entry *yahoo_v7_read(struct input *in)
   struct candle *c;
 
   while(fgets(buf, sizeof buf, ctx->fp)){
-    /* Prepare string & pre-filter */
-    if(yahoo_v7_prepare_str(ctx, buf) < 0)
-      continue;
     /* Parse entry */
     if((c = yahoo_v7_parse_entry(ctx, buf))){
       /* We got a new candle */

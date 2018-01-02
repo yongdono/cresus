@@ -12,8 +12,9 @@
 #include "framework/alloc.h"
 #include "framework/input.h"
 
-#include "yahoo.h"
 #include "b4b.h"
+#include "yahoo.h"
+#include "yahoo_v7.h"
 
 /* Object is allocatable */
 
@@ -25,6 +26,7 @@
 
 typedef enum {
   INWRAP_YAHOO,
+  INWRAP_YAHOO_V7,
   INWRAP_B4B,
   INWRAP_GOOGLE
 } inwrap_t;
@@ -35,6 +37,7 @@ struct inwrap {
   /* Suported types */  
   inwrap_t type;
   struct yahoo yahoo;
+  struct yahoo_v7 yahoo_v7;
   struct b4b b4b;
   // struct google google;
 };
@@ -47,9 +50,12 @@ void inwrap_release(struct inwrap *ctx);
 
 static inline inwrap_t inwrap_t_from_str(const char *str)
 {
-  if(!strcmp("b4b", str)) return INWRAP_B4B;
-  if(!strcmp("google", str)) return INWRAP_GOOGLE;
-  return INWRAP_YAHOO;
+  if(str){
+    if(!strcmp("yahoo", str)) return INWRAP_YAHOO;
+    if(!strcmp("b4b", str)) return INWRAP_B4B;
+    if(!strcmp("google", str)) return INWRAP_GOOGLE;
+  }
+  return INWRAP_YAHOO_V7;
 }
 
 #endif
