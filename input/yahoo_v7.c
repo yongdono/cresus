@@ -26,6 +26,7 @@ static struct candle *yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
   char *shi = strsep(&str, ",");
   char *slo = strsep(&str, ",");
   char *sclose = strsep(&str, ",");
+  char *adjclose = strsep(&str, ",");
   char *svol = strsep(&str, ","); /* End */
   
   /* Set values */
