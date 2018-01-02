@@ -44,21 +44,26 @@ static int hilo_feed(struct indicator *i, struct timeline_entry *e)
       entry->low = LOW(entry->low, p->low);
     }
 
+    if(ctx->filter && n)
+      goto out;
+    
     /* Attach new entry */
     candle_add_indicator_entry(c, __indicator_entry__(entry));
     return 1;
   }
-  
+
+ out:
   return 0;
 }
 
-int hilo_init(struct hilo *ctx, indicator_id_t id, int period)
+int hilo_init(struct hilo *ctx, indicator_id_t id, int period, int filter)
 {
   /* Super() */
   __indicator_super__(ctx, id, hilo_feed, _hilo_reset_);
   __indicator_set_string__(ctx, "hilo[%d]", period);
   
   ctx->period = period;
+  ctx->filter = filter; /* bool to filter incomplete data */
   return 0;
 }
 

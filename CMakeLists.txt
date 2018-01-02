@@ -25,3 +25,5 @@ add_library(cresus SHARED
   )
 
 add_subdirectory(sample)
+add_subdirectory(system)
+
