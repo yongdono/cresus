@@ -48,6 +48,11 @@ static int yahoo_load_entry(struct yahoo *ctx,
   char *slo = strsep(&str, ",");
   char *sclose = strsep(&str, ",");
   char *svol = strsep(&str, ","); /* End */
+
+  /* Check we got the right format */
+  if(!stime || !sopen || !shi || !slo ||
+     !sclose || !svol)
+    return 0;
   
   /* Set values */
   sscanf(stime, "%d-%d-%d", &year, &month, &day);

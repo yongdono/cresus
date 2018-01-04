@@ -28,6 +28,11 @@ static struct candle *yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
   char *sclose = strsep(&str, ",");
   char *adjclose = strsep(&str, ",");
   char *svol = strsep(&str, ","); /* End */
+
+  /* Check we got the right format */
+  if(!stime || !sopen || !shi || !slo ||
+     !sclose || !adjclose || !svol)
+    goto err;
   
   /* Set values */
   sscanf(stime, "%d-%d-%d", &year, &month, &day);
@@ -52,7 +57,8 @@ static struct candle *yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
     if(candle_alloc(c, time, GRANULARITY_DAY,
 		    open, close, high, low, volume))
       return c;
-  
+
+ err:
   return NULL;
 }
 

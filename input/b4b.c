@@ -51,6 +51,11 @@ static struct candle *b4b_parse_entry(struct b4b *ctx, char *str)
   char *shi = strsep(&str, ";");
   char *slo = strsep(&str, ";");
   char *svol = strsep(&str, ";"); /* End */
+
+  /* Check we got the right format */
+  if(!stime || !sopen || !shi || !slo ||
+     !sclose || !svol)
+    goto err;
   
   /* Set values */
   sscanf(stime, "%d/%d/%d", &day, &month, &year);
@@ -74,7 +79,8 @@ static struct candle *b4b_parse_entry(struct b4b *ctx, char *str)
     if(candle_alloc(c, time, GRANULARITY_DAY,
 		    open, close, high, low, volume))
       return c;
-  
+
+ err:
   return NULL;
 }
 
