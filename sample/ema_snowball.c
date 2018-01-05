@@ -54,7 +54,7 @@ static int snowball_feed(struct engine *e,
   if((i = candle_find_indicator_entry(c, EMA))){
     struct mobile_entry *m = __indicator_entry_self__(i);
     //PR_WARN("EMA is %.2f going %.2f\n", m->value, m->direction);
-    if(m->direction <= 0){
+    if(m->direction <= 0 && e->amount > share){
       engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, share);
       PR_INFO("Took for %.3lf of positions at %.2lf\n", share, c->close);
       n = n + 1;
