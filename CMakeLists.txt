@@ -25,5 +25,6 @@ add_library(cresus SHARED
   )
 
 add_subdirectory(sample)
-add_subdirectory(system)
-
+if(EXISTS(system))
+  add_subdirectory(system)
+endif(EXISTS(system))
