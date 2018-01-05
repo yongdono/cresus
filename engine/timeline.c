@@ -63,8 +63,6 @@ int timeline_entry_next(struct timeline *t, struct timeline_entry **ret) {
   /* Is that function necessary ? */
   struct timeline_entry *entry;
   if((entry = input_read(t->in))){
-    /* Cache data */
-    t->ref = entry; /* Speed up things */
     /* Go out */
     *ret = entry;
     return 0;
@@ -119,7 +117,7 @@ void timeline_append_entry(struct timeline *t,
   
   /* Simply add candle to list */
   list_add_tail(&t->list_entry, __list__(entry));
-  t->ref = entry; /* FIXME */
+  t->ref = entry; /* Cache data */
 }
 
 void timeline_trim_entry(struct timeline *t,
@@ -139,6 +137,8 @@ struct timeline_entry *timeline_step(struct timeline *t) {
   struct timeline_entry *entry;
 
   if(timeline_entry_next(t, &entry) != -1){
+    /* Append to timeline */
+    timeline_append_entry(t, entry);
     /* Execute indicators */
     __slist_for_each__(&t->slist_indicator, indicator){
       indicator_feed(indicator, t->ref);

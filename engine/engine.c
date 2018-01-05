@@ -31,6 +31,7 @@ void engine_release(struct engine *ctx) {
   list_head_release(&ctx->list_position_closed);
 }
 
+/* OBSOLETE */
 static void engine_xfer_positions(struct engine *ctx,
 				  list_head_t(struct position) *dst,
 				  list_head_t(struct position) *src,

@@ -3,6 +3,7 @@ project(cresus)
 
 # flags
 set(CMAKE_C_FLAGS "-fPIC -std=gnu99")
+set(CMAKE_BUILD_TYPE Debug)
 
 # includes 
 include_directories(.)
@@ -13,7 +14,7 @@ add_subdirectory(engine)
 add_subdirectory(math)
 add_subdirectory(indicator)
 add_subdirectory(input)
-add_subdirectory(sim)
+# add_subdirectory(sim)
 
 add_library(cresus SHARED
   $<TARGET_OBJECTS:framework>
@@ -24,3 +25,5 @@ add_library(cresus SHARED
   )
 
 add_subdirectory(sample)
+add_subdirectory(system)
+

@@ -69,6 +69,7 @@ void candle_add_indicator_entry(struct candle *c, struct indicator_entry *e);
 struct indicator_entry *candle_find_indicator_entry(struct candle *c, indicator_id_t id);
 
 /* Debug */
-const char *candle_str(struct candle *c, char *buf);
+const char *candle_str(struct candle *c);
+const char *candle_str_r(struct candle *c, char *buf);
 
 #endif
