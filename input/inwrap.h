@@ -15,6 +15,7 @@
 #include "b4b.h"
 #include "yahoo.h"
 #include "yahoo_v7.h"
+#include "mdgms.h"
 
 /* Object is allocatable */
 
@@ -28,6 +29,7 @@ typedef enum {
   INWRAP_YAHOO,
   INWRAP_YAHOO_V7,
   INWRAP_B4B,
+  INWRAP_MDGMS,
   INWRAP_GOOGLE
 } inwrap_t;
 
@@ -39,6 +41,7 @@ struct inwrap {
   struct yahoo yahoo;
   struct yahoo_v7 yahoo_v7;
   struct b4b b4b;
+  struct mdgms mdgms;
   // struct google google;
 };
 
@@ -54,6 +57,7 @@ static inline inwrap_t inwrap_t_from_str(const char *str)
     if(!strcmp("yahoo", str)) return INWRAP_YAHOO;
     if(!strcmp("b4b", str)) return INWRAP_B4B;
     if(!strcmp("google", str)) return INWRAP_GOOGLE;
+    if(!strcmp("mdgms", str)) return INWRAP_MDGMS;
   }
   return INWRAP_YAHOO_V7;
 }
