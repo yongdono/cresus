@@ -74,9 +74,8 @@ int timeline_entry_next(struct timeline *t, struct timeline_entry **ret) {
 int timeline_entry_by_time(struct timeline *t, time_info_t time,
 			   struct timeline_entry **ret) {
 
-  char buf[64];
   PR_DBG("requested time is %s (%llx)\n",
-	 time2str(time, GRANULARITY_DAY, buf), time);
+	 time_info2str(time, GRANULARITY_DAY), time);
   
   do {
     /* Try to find a matching entry */
@@ -90,7 +89,7 @@ int timeline_entry_by_time(struct timeline *t, time_info_t time,
     if(!res){
       /* Cache data. Is that the right place ? */
       PR_DBG("found entry->time = %s (%llx) - %lld\n",
-	     time2str(entry->time, GRANULARITY_DAY, buf), entry->time,
+	     time_info2str(entry->time, GRANULARITY_DAY), entry->time,
 	     TIMECMP(entry->time, time, GRANULARITY_DAY));
       
       *ret = entry;
@@ -126,9 +125,8 @@ void timeline_trim_entry(struct timeline *t,
   t->ref = __list_self__(__list__(entry)->prev); /* FIXME */
   __list_del__(entry);
 
-  char buf[256]; /* debug */
   PR_DBG("%s %s trimmed off\n", t->name,
-	 time2str(entry->time, entry->granularity, buf));
+	 time_info2str(entry->time, entry->granularity));
 }
 
 struct timeline_entry *timeline_step(struct timeline *t) {

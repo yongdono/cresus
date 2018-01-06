@@ -92,5 +92,5 @@ const char *timeline_entry_str_r(struct timeline_entry *e,
 				 char *buf, size_t len)
 {
   /* FIXME : use len */
-  return time2str(e->time, e->granularity, buf);
+  return time_info2str_r(e->time, e->granularity, buf);
 }

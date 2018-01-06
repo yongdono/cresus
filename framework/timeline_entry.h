@@ -11,6 +11,7 @@
 
 #include "list.h"
 #include "types.h"
+#include "time_info.h"
 
 /* This is a superclass */
 
