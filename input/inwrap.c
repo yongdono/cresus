@@ -20,7 +20,7 @@ static struct timeline_entry *inwrap_read(struct input *in)
   case INWRAP_YAHOO: return __input_read__(&ctx->yahoo);
   case INWRAP_YAHOO_V7: return __input_read__(&ctx->yahoo_v7);
   case INWRAP_B4B: return __input_read__(&ctx->b4b);
-  case INWRAP_MDGMS: return __input_read__(&ctx->mdgms);
+  case INWRAP_JSON: return __input_read__(&ctx->json);
   case INWRAP_GOOGLE: break;
   }
 
@@ -49,8 +49,8 @@ int inwrap_init(struct inwrap *ctx, const char *filename,
     ret = b4b_init(&ctx->b4b, filename, from, to);
     break;
 
-  case INWRAP_MDGMS:
-    ret = mdgms_init(&ctx->mdgms, filename, from, to);
+  case INWRAP_JSON:
+    ret = json_init(&ctx->json, filename, from, to);
     break;
     
   case INWRAP_GOOGLE:
