@@ -38,7 +38,11 @@ struct order {
   double value;
 };
 
-int order_init(struct order *ctx, order_t type, order_by_t by, double value);
+int order_init(struct order *ctx, order_t type,
+	       order_by_t by, double value);
 void order_release(struct order *ctx);
+
+const char *order_str(struct order *ctx);
+const char *order_str_r(struct order *ctx, char *buf);
 
 #endif
