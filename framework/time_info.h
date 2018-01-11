@@ -9,6 +9,7 @@
 #ifndef TIME_INFO_H
 #define TIME_INFO_H
 
+#include <time.h>
 #include "types.h"
 
 /* MSEC   0-999   (1111100111) - 10 bits - << 0 */
@@ -109,6 +110,7 @@ typedef long long granularity_t;
 
 /* Current time */
 time_info_t time_info(void);
+time_info_t time_info_epoch(time_t time);
 /* Display */
 const char *time_info2str(time_info_t t, granularity_t g);
 const char *time_info2str_r(time_info_t t, granularity_t g, char *buf);

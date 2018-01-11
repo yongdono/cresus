@@ -9,6 +9,8 @@
 #define JSON_H
 
 #include <stdio.h>
+#include <json-parser/json.h>
+
 #include "framework/alloc.h"
 #include "framework/input.h"
 
@@ -20,8 +22,10 @@
 struct json {
   /* Inherits from input */
   __inherits_from_input__;
-  /* file loader */
-  FILE *fp;
+  /* internals */
+  int i;
+  json_char *json;
+  json_value *value;
 };
 
 int json_init(struct json *ctx, const char *filename,

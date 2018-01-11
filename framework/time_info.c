@@ -6,21 +6,24 @@
  *
  */
 
-#include <time.h>
 #include <stdio.h>
 #include "time_info.h"
 
 time_info_t time_info(void)
 {
+  return time_info_epoch(time(NULL));
+}
+
+time_info_t time_info_epoch(time_t time)
+{
   struct tm tm;
-  time_info_t ti = 0;
-  time_t t = time(NULL);
+  time_info_t t = 0;
   
-  if(gmtime_r(&t, &tm))
-    ti = TIME_INIT(tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
-		   tm.tm_hour, tm.tm_min, tm.tm_sec, 0);
+  if(gmtime_r(&time, &tm))
+    t = TIME_INIT(tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+		  tm.tm_hour, tm.tm_min, tm.tm_sec, 0);
   
-  return ti;
+  return t;
 }
 
 const char *time_info2str_r(time_info_t t, granularity_t g, char *buf)
