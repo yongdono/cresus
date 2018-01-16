@@ -39,7 +39,10 @@ typedef enum {
 /* Beware, indicator id must be != 0 */
 #define candle_indicator_for_each(candle, ientry)	\
   __slist_for_each__(&(candle)->slist_indicator, ientry)
-  
+
+#define candle_is_green(c) ((c)->close >= (c)->open)
+#define candle_is_red(c) ((c)->close < (c)->open)
+
 struct candle {
   /* Inherits from timeline,
    * so we don't need time management */
