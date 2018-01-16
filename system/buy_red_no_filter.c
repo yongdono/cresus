@@ -98,12 +98,11 @@ int main(int argc, char **argv)
     engine_init(&engine, t);
     engine_run(&engine, feed);
     /* print some info */
-    int npos = engine.npos;
     double amount = fabs(engine.amount);
-    double total = npos * last_close;
+    double total = engine.npos * last_close;
     double pcent = ((total / amount) - 1.0) * 100.0;
-    PR_ERR("Have %d positions paid %.2lf worth %.2lf (%.2lf%%)\n",
-	   npos, amount, total, pcent);
+    PR_ERR("Have %.2lf positions paid %.2lf worth %.2lf (%.2lf%%)\n",
+	   engine.npos, amount, total, pcent);
     
     /* TODO : Don't forget to release everything */
     engine_release(&engine);
