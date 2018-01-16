@@ -19,15 +19,16 @@
 #include "engine/engine.h"
 #include "framework/verbose.h"
 
-double last_close;
-int year_min = 1900;
+static double last_close;
+static int year_min = 1900;
+static int level_min = 1;
 
 static int feed(struct engine *e,
 		struct timeline *t,
 		struct timeline_entry *entry)
 {
   /* Step by step loop */
-  static int n = 0;
+  static int n = 0, level = 0;
   time_info_t time = VAL_YEAR(year_min);
   struct candle *c = __timeline_entry_self__(entry);
   
@@ -35,11 +36,14 @@ static int feed(struct engine *e,
     goto out;
   
   /* Execute */
-  if(candle_is_red(c)){
+  if(candle_is_red(c)) level++;
+  else level = 0;
+  
+  if(level >= level_min){
     PR_INFO("%s - BUY 500.0 CASH (%d)\n", candle_str(c), ++n);
     engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, 500);
   }
-
+  
  out:
   last_close = c->close; /* ! */
   return 0;
@@ -82,10 +86,11 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  while((c = getopt(argc, argv, "o:n:")) != -1){
+  while((c = getopt(argc, argv, "o:n:l:")) != -1){
     switch(c){
     case 'o': type = optarg; break;
     case 'n': year_min = atoi(optarg); break;
+    case 'l': level_min = atoi(optarg); break;
     default:
       PR_ERR("Unknown option %c\n", c);
       return -1;
