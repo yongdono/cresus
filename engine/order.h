@@ -15,6 +15,7 @@
 typedef enum {
   ORDER_BUY,
   ORDER_SELL,
+  ORDER_SELL_ALL,
   ORDER_SELLSHORT,
   ORDER_EXITSHORT
 } order_t;

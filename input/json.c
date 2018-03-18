@@ -73,6 +73,9 @@ int json_init(struct json *ctx, const char *filename,
 
   /* super */
   __input_super__(ctx, json_read, from, to);
+  
+  /* internals */
+  ctx->i = 0;
 
   if((fd = open(filename, O_RDONLY)) < 0)
     return -1;

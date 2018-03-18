@@ -18,7 +18,9 @@ static struct candle *yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
   struct candle *c; 
   time_info_t time = 0;
   int year, month, day;
-  double open, close, high, low, volume; 
+  double open = 0.0, close = 0.0;
+  double high = 0.0, low = 0.0;
+  double volume = 0.0; 
   
   /* Cut string */
   char *stime = strsep(&str, ",");

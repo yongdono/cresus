@@ -44,10 +44,10 @@ static inline void hilo_entry_release(struct hilo_entry *entry) {
 
 /* Main object */
 
-#define hilo_alloc(hilo, id, period, filter)				\
-  DEFINE_ALLOC(struct hilo, hilo, hilo_init, id, period, filter)
-#define hilo_free(hilo)				\
-  DEFINE_FREE(hilo, hilo_release)
+#define hilo_alloc(hl, id, period, filter)			\
+  DEFINE_ALLOC(struct hilo, hl, hilo_init, id, period, filter)
+#define hilo_free(hl)				\
+  DEFINE_FREE(hl, hilo_release)
 
 struct hilo {
   /* Inherits from indicator */

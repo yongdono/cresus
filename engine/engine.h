@@ -24,7 +24,10 @@ struct engine {
   list_head_t(struct position) list_position_closed;
   /* Money management */
   double npos;
-  double amount;
+  double amount; /* FIXME: find another name */
+  double earnings; /* Find another name */
+  /* Last close value (FIXME) */
+  double close;
 };
 
 /* Extrenal pointer to plugin */
