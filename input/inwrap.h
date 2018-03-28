@@ -57,7 +57,8 @@ static inline inwrap_t inwrap_t_from_str(const char *str)
     if(!strcmp("yahoo", str)) return INWRAP_YAHOO;
     if(!strcmp("b4b", str)) return INWRAP_B4B;
     if(!strcmp("google", str)) return INWRAP_GOOGLE;
-    if(!strcmp("json", str)) return INWRAP_JSON;
+    if(!strcmp("json", str) ||
+       !strcmp("mdgms", str)) return INWRAP_JSON;
   }
   return INWRAP_YAHOO_V7;
 }
