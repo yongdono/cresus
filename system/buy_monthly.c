@@ -35,17 +35,17 @@ static int feed(struct engine *e,
   time_info_t time = VAL_YEAR(year_min);
   struct candle *c = __timeline_entry_self__(entry);
   
-  if(TIMECMP(entry->time, time, GRANULARITY_YEAR) < 0)
-    goto out;
-  
   /* Execute */
   int month = TIME_GET_MONTH(entry->time);
   if(month != current_month && !(month % occurrence)){
+
+    if(engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, amount) < 0)
+      goto out;
+
     if(!quiet)
       PR_INFO("%s - BUY #%d %d.0 CASH (%d)\n",
 	      candle_str(c), nbuy, amount, month);
     
-    engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, amount);
     /* Move on */
     nbuy++;
   }
@@ -111,8 +111,11 @@ int main(int argc, char **argv)
   
   if((t = timeline_create(filename, type))){
     engine_init(&engine, t);
+    engine_set_filter(&engine, year_min);
+    /* Run */
     engine_run(&engine, feed);
-    /* print some info */
+    
+    /* Print some info */
     double amount = engine.amount;
     double earnings = engine.earnings;
     double value = engine.npos * engine.close + earnings;
