@@ -46,5 +46,8 @@ extern int __verbose_color__;
 #define PR_BUY(level, value, format, ...)		\
   fprintf(stdout, "Buy %.2lf %d " format "\n", value,	\
 	  level, ##__VA_ARGS__)
+#define PR_SELL(level, value, format, ...)		\
+  fprintf(stdout, "Sell %.2lf %d " format "\n", value,	\
+	  level, ##__VA_ARGS__)
 
 #endif

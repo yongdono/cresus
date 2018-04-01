@@ -54,34 +54,31 @@ static void engine_xfer_positions(struct engine *ctx,
   }
 }
 
+/* FIXME : put elsewhere */
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+
 static void engine_run_order(struct engine *ctx, struct order *o,
 			     struct timeline_entry *e)
 {
+  double npos;
   struct candle *c = __timeline_entry_self__(e);
   
   switch(o->type){
   case ORDER_BUY:
-    if(o->by == ORDER_BY_NB){
-      /* Buy n positions */
-      ctx->npos += o->value;
-      ctx->amount += (o->value * c->open);
-    }else{
-      /* Buy for x$ of positions */
-      ctx->amount += o->value;
-      ctx->npos += (o->value / c->open);
-    }
+    if(o->by == ORDER_BY_NB) npos = o->value;
+    else npos = (o->value / c->open);
+    /* Buy n positions */
+    ctx->npos += npos;
+    ctx->amount += (npos * c->open);
     break;
 
   case ORDER_SELL:
-    if(o->by == ORDER_BY_NB){
-      /* Sell n positions */
-      ctx->npos -= o->value;
-      ctx->earnings += (o->value * c->open);
-    }else{
-      /* Sell for x$ of positions */
-      ctx->earnings += o->value;
-      ctx->npos -= (o->value / c->open);
-    }
+    /* Warning : no negative positions ! */
+    if(o->by == ORDER_BY_NB) npos = MIN(ctx->npos, o->value);
+    else npos = MIN(ctx->npos, (o->value / c->open));
+    /* Sell n positions */
+    ctx->npos -= npos;
+    ctx->earnings += (npos * c->open);
     break;
 
   case ORDER_SELL_ALL:
