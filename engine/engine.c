@@ -72,6 +72,18 @@ static void engine_run_order(struct engine *ctx, struct order *o,
     }
     break;
 
+  case ORDER_SELL:
+    if(o->by == ORDER_BY_NB){
+      /* Sell n positions */
+      ctx->npos -= o->value;
+      ctx->earnings += (o->value * c->open);
+    }else{
+      /* Sell for x$ of positions */
+      ctx->earnings += o->value;
+      ctx->npos -= (o->value / c->open);
+    }
+    break;
+
   case ORDER_SELL_ALL:
     ctx->earnings += (ctx->npos * c->open);
     ctx->npos = 0;
