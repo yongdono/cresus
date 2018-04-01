@@ -30,10 +30,14 @@ struct engine {
   double close;
   /* Positions filter */
   time_info_t filter;
+  /* Display info */
+  int quiet;
 };
 
 #define engine_set_filter(ctx, time_info)	\
   (ctx)->filter = time_info;
+#define engine_set_quiet(ctx, quiet)		\
+  (ctx)->quiet = quiet;
 
 /* External pointer to plugin */
 typedef int (*engine_feed_ptr)(struct engine*, struct timeline*, struct timeline_entry*);

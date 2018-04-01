@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include "engine.h"
+#include "framework/verbose.h"
 
 int engine_init(struct engine *ctx, struct timeline *t)
 {
@@ -24,6 +25,7 @@ int engine_init(struct engine *ctx, struct timeline *t)
   ctx->earnings = 0;
   ctx->npos = 0;
   ctx->filter = TIME_INIT(1900, 1, 1, 0, 0, 0, 0);
+  ctx->quiet = 0;
   
   return 0;
 }
@@ -56,6 +58,44 @@ static void engine_xfer_positions(struct engine *ctx,
   }
 }
 
+static void engine_display_order_info(struct engine *ctx,
+				      struct order *o,
+				      struct timeline_entry *e)
+{
+  struct candle *c = __timeline_entry_self__(e);
+  const char *str = candle_str(c);
+  
+  if(ctx->quiet)
+    return;
+
+  switch(o->type){
+  case ORDER_BUY:
+    if(o->by == ORDER_BY_NB)
+      PR_INFO("%s - Buy %.0lf securities at %.2lf VALUE\n",
+	      str, o->value, c->open);
+    
+    if(o->by == ORDER_BY_AMOUNT)
+      PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
+	      str, o->value / c->open, o->value);
+    break;
+
+  case ORDER_SELL:
+    if(o->by == ORDER_BY_NB)
+      PR_WARN("%s - Sell %.0lf securities at %.2lf VALUE\n",
+	      str, o->value, c->open);
+    
+    if(o->by == ORDER_BY_AMOUNT)
+      PR_WARN("%s - Sell %.4lf securities for %.2lf CASH\n",
+	      str, o->value / c->open, o->value);
+    break;
+
+  case ORDER_SELL_ALL:
+    PR_ERR("%s - Sell %.2lf securities for %.2lf TOTAL VALUE\n",
+	   str, ctx->npos, ctx->npos * c->open);
+    break;
+  }
+}
+
 /* FIXME : put elsewhere */
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 
@@ -64,6 +104,9 @@ static void engine_run_order(struct engine *ctx, struct order *o,
 {
   double npos;
   struct candle *c = __timeline_entry_self__(e);
+
+  /* display some info */
+  engine_display_order_info(ctx, o, e);
   
   switch(o->type){
   case ORDER_BUY:

@@ -19,10 +19,11 @@
 #include "engine/engine.h"
 #include "framework/verbose.h"
 
-static int year_min = 1900;
 static int amount = 250;
 static int occurrence = 1;
 static int current_month = -1;
+time_info_t year_min = TIME_INIT(1900, 1, 1, 0, 0, 0, 0);
+
 /* Stats */
 static int nbuy = 0;
 static int quiet = 0;
@@ -41,10 +42,6 @@ static int feed(struct engine *e,
 
     if(engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, amount) < 0)
       goto out;
-
-    if(!quiet)
-      PR_INFO("%s - BUY #%d %d.0 CASH (%d)\n",
-	      candle_str(c), nbuy, amount, month);
     
     /* Move on */
     nbuy++;
@@ -97,7 +94,7 @@ int main(int argc, char **argv)
     switch(c){
     case 'o': type = optarg; break;
     case 'm': occurrence = atoi(optarg); break;
-    case 'n': year_min = atoi(optarg); break;
+    case 'n': year_min = VAL_YEAR(atoi(optarg)); break;
     case 'F': amount = atoi(optarg); break;
     case 'q': quiet = 1; break;
     default:
@@ -111,6 +108,7 @@ int main(int argc, char **argv)
   
   if((t = timeline_create(filename, type))){
     engine_init(&engine, t);
+    engine_set_quiet(&engine, quiet);
     engine_set_filter(&engine, year_min);
     /* Run */
     engine_run(&engine, feed);
