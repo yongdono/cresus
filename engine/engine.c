@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include "engine.h"
 
-int engine_init(struct engine *ctx, struct timeline *t) {
-
+int engine_init(struct engine *ctx, struct timeline *t)
+{
   ctx->timeline = t;
   /* Init lists */
   list_head_init(&ctx->list_order);
@@ -23,11 +23,13 @@ int engine_init(struct engine *ctx, struct timeline *t) {
   ctx->amount = 0;
   ctx->earnings = 0;
   ctx->npos = 0;
+  ctx->filter = TIME_INIT(1900, 1, 1, 0, 0, 0, 0);
   
   return 0;
 }
 
-void engine_release(struct engine *ctx) {
+void engine_release(struct engine *ctx)
+{
   /* Nothing to do */
   list_head_release(&ctx->list_order);
   list_head_release(&ctx->list_position_to_open);
@@ -40,8 +42,8 @@ void engine_release(struct engine *ctx) {
 static void engine_xfer_positions(struct engine *ctx,
 				  list_head_t(struct position) *dst,
 				  list_head_t(struct position) *src,
-				  position_action_t position_action) {
-  
+				  position_action_t position_action)
+{  
   struct list *safe;
   struct position *p;
   
@@ -91,17 +93,17 @@ static void engine_run_order(struct engine *ctx, struct order *o,
   }
 }
 
-void engine_run(struct engine *ctx, engine_feed_ptr feed) {
-
+void engine_run(struct engine *ctx, engine_feed_ptr feed)
+{
   struct list *safe;
   struct order *order;
   struct timeline_entry *entry;
   
   while((entry = timeline_step(ctx->timeline)) != NULL){
-    /* FIXME */
-    struct candle *c = __timeline_entry_self__(entry);
+    struct candle *c = __timeline_entry_self__(entry); /* FIXME ? */
     /* First : check if there are opening positions */
     __list_for_each_safe__(&ctx->list_order, order, safe){
+      /* Run */
       engine_run_order(ctx, order, entry);
       __list_del__(order);
     }
@@ -112,14 +114,23 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed) {
   }
 }
 
-int engine_place_order(struct engine *ctx, order_t type, order_by_t by,
-		       double value)
+int engine_place_order(struct engine *ctx, order_t type,
+		       order_by_t by, double value)
 {
   struct order *order;
-  if(order_alloc(order, type, by, value)){
-    __list_add_tail__(&ctx->list_order, order);
-    return 0;
+  struct timeline_entry *entry;
+
+  if(timeline_entry_current(ctx->timeline, &entry) != -1){
+    /* Filter orders if needed */
+    if(TIMECMP(entry->time, ctx->filter, GRANULARITY_DAY) < 0)
+      goto err;
+  
+    if(order_alloc(order, type, by, value)){
+      __list_add_tail__(&ctx->list_order, order);
+      return 0;
+    }
   }
 
+ err:
   return -1;
 }

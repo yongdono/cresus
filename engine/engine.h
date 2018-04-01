@@ -28,9 +28,14 @@ struct engine {
   double earnings; /* Find another name */
   /* Last close value (FIXME) */
   double close;
+  /* Positions filter */
+  time_info_t filter;
 };
 
-/* Extrenal pointer to plugin */
+#define engine_set_filter(ctx, time_info)	\
+  (ctx)->filter = time_info;
+
+/* External pointer to plugin */
 typedef int (*engine_feed_ptr)(struct engine*, struct timeline*, struct timeline_entry*);
 
 int engine_init(struct engine *e, struct timeline *t);
