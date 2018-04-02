@@ -26,6 +26,12 @@ struct engine {
   double npos;
   double amount; /* FIXME: find another name */
   double earnings; /* Find another name */
+  double fees; /* Total fees */
+  double balance; /* Buy/sell balance*/
+  /* Statistics */
+  int nbuy, nsell;
+  double max_drawdown; /* Max money invested at the same time */
+  double transaction_fee; /* Cost per transaction */
   /* Last close value (FIXME) */
   double close;
   /* Positions filter */
@@ -34,10 +40,12 @@ struct engine {
   int quiet;
 };
 
+#define engine_set_transaction_fee(ctx, fee)	\
+  (ctx)->transaction_fee = fee
 #define engine_set_filter(ctx, time_info)	\
-  (ctx)->filter = time_info;
+  (ctx)->filter = time_info
 #define engine_set_quiet(ctx, quiet)		\
-  (ctx)->quiet = quiet;
+  (ctx)->quiet = quiet
 
 /* External pointer to plugin */
 typedef int (*engine_feed_ptr)(struct engine*, struct timeline*, struct timeline_entry*);
@@ -49,5 +57,7 @@ void engine_run(struct engine *e, engine_feed_ptr feed);
 
 int engine_place_order(struct engine *ctx, order_t type, order_by_t by,
 		       double value);
+
+void engine_display_stats(struct engine *ctx);
 
 #endif /* defined(__Cresus_EVO__engine__) */

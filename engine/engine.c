@@ -6,6 +6,7 @@
  *
  */
 
+#include <math.h>
 #include <stdio.h>
 #include "engine.h"
 #include "framework/verbose.h"
@@ -20,10 +21,18 @@ int engine_init(struct engine *ctx, struct timeline *t)
   list_head_init(&ctx->list_position_to_close);
   list_head_init(&ctx->list_position_closed);
 
-  /* Internals */
+  /* Money */
+  ctx->npos = 0;
   ctx->amount = 0;
   ctx->earnings = 0;
-  ctx->npos = 0;
+  ctx->fees = 0;
+  ctx->balance = 0;
+  /* Stats */
+  ctx->nbuy = 0;
+  ctx->nsell = 0;
+  ctx->max_drawdown = 0;
+  ctx->transaction_fee = 0;
+  /* Misc */
   ctx->filter = TIME_INIT(1900, 1, 1, 0, 0, 0, 0);
   ctx->quiet = 0;
   
@@ -38,24 +47,6 @@ void engine_release(struct engine *ctx)
   list_head_release(&ctx->list_position_opened);
   list_head_release(&ctx->list_position_to_close);
   list_head_release(&ctx->list_position_closed);
-}
-
-/* OBSOLETE */
-static void engine_xfer_positions(struct engine *ctx,
-				  list_head_t(struct position) *dst,
-				  list_head_t(struct position) *src,
-				  position_action_t position_action)
-{  
-  struct list *safe;
-  struct position *p;
-  
-  __list_for_each_safe__(src, p, safe){
-    __list_del__(p);
-    /* Insert in dst */
-    __list_add_tail__(dst, p);
-    /* Act on position */
-    position_action(p);
-  }
 }
 
 static void engine_display_order_info(struct engine *ctx,
@@ -79,7 +70,7 @@ static void engine_display_order_info(struct engine *ctx,
 	      str, o->value / c->open, o->value);
     break;
 
-  case ORDER_SELL:
+  case ORDER_SELL: /* FIXME : what if oversell ? */
     if(o->by == ORDER_BY_NB)
       PR_WARN("%s - Sell %.0lf securities at %.2lf VALUE\n",
 	      str, o->value, c->open);
@@ -98,6 +89,7 @@ static void engine_display_order_info(struct engine *ctx,
 
 /* FIXME : put elsewhere */
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
 
 static void engine_run_order(struct engine *ctx, struct order *o,
 			     struct timeline_entry *e)
@@ -115,7 +107,9 @@ static void engine_run_order(struct engine *ctx, struct order *o,
     /* Buy n positions */
     ctx->npos += npos;
     ctx->amount += (npos * c->open);
-    break;
+    ctx->balance -= (npos * c->open);
+    ctx->nbuy++;
+    goto next;
 
   case ORDER_SELL:
     /* Warning : no negative positions ! */
@@ -124,16 +118,26 @@ static void engine_run_order(struct engine *ctx, struct order *o,
     /* Sell n positions */
     ctx->npos -= npos;
     ctx->earnings += (npos * c->open);
-    break;
+    ctx->balance += (npos * c->open);
+    ctx->nsell++;
+    goto next;
 
   case ORDER_SELL_ALL:
     ctx->earnings += (ctx->npos * c->open);
+    ctx->balance += (ctx->npos * c->open);
     ctx->npos = 0;
-    break;
+    ctx->nsell++;
+    goto next;
     
   default:
     break;
   }
+
+  return;
+
+ next:
+  ctx->fees += ctx->transaction_fee;
+  ctx->max_drawdown = MIN(ctx->balance, ctx->max_drawdown);
 }
 
 void engine_run(struct engine *ctx, engine_feed_ptr feed)
@@ -176,4 +180,25 @@ int engine_place_order(struct engine *ctx, order_t type,
 
  err:
   return -1;
+}
+
+void engine_display_stats(struct engine *ctx)
+{
+  /* What we got left */
+  double assets_value = ctx->npos * ctx->close;
+  double total_value = assets_value + ctx->earnings - ctx->fees;
+  /* Return on investment */
+  double roi = ((total_value / ctx->amount) - 1.0) * 100.0;
+
+  /* Basic informations */
+  PR_STAT("amount: %.2lf, earnings: %.2lf, npos: %.2lf, fees: %.2lf\n",
+	  ctx->amount, ctx->earnings, ctx->npos, ctx->fees);
+  /* More stats */
+  //PR_ERR("nbuy: %d, nsell: %d ", ctx->nbuy, ctx->nsell);
+  /* Values */
+  PR_STAT("assets_value: %.2lf, total_value: %.2lf, roi: %.2lf%%\n",
+	  assets_value, total_value, roi);
+  /* Interesting stuff */
+  PR_STAT("balance: %.2lf, max_drawdown: %.2lf\n",
+	  ctx->balance, ctx->max_drawdown);
 }

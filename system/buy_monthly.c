@@ -25,7 +25,6 @@ static int current_month = -1;
 time_info_t year_min = TIME_INIT(1900, 1, 1, 0, 0, 0, 0);
 
 /* Stats */
-static int nbuy = 0;
 static int quiet = 0;
 
 static int feed(struct engine *e,
@@ -38,16 +37,9 @@ static int feed(struct engine *e,
   
   /* Execute */
   int month = TIME_GET_MONTH(entry->time);
-  if(month != current_month && !(month % occurrence)){
-
-    if(engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, amount) < 0)
-      goto out;
-    
-    /* Move on */
-    nbuy++;
-  }
+  if(month != current_month && !(month % occurrence))
+    engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, amount);
   
- out:
   current_month = month;
   return 0;
 }
@@ -108,20 +100,16 @@ int main(int argc, char **argv)
   
   if((t = timeline_create(filename, type))){
     engine_init(&engine, t);
+    /* Options */
+    engine_set_transaction_fee(&engine, 2.50);
     engine_set_quiet(&engine, quiet);
     engine_set_filter(&engine, year_min);
+
     /* Run */
     engine_run(&engine, feed);
     
     /* Print some info */
-    double amount = engine.amount;
-    double earnings = engine.earnings;
-    double value = engine.npos * engine.close + earnings;
-    
-    PR_ERR("Amount: %lf, NumPos: %lf NumBuy: %d - "	\
-	   "Earnings : %lf Value : %lf (%.2lf%%)\n",
-	   engine.amount, engine.npos, nbuy, earnings, value,
-	   ((value / engine.amount) - 1.0) * 100.0);
+    engine_display_stats(&engine);
     
     /* TODO : Don't forget to release everything */
     engine_release(&engine);

@@ -17,6 +17,7 @@ extern int __verbose_color__;
 #define INFO 1
 #define WARN 2
 #define ERR  3
+#define STAT 4
 #define NONE 255
 
 /* Fonts */
@@ -24,6 +25,7 @@ extern int __verbose_color__;
 #define INFO_FONT "\x1b[1;32m"
 #define WARN_FONT "\x1b[1;33m"
 #define ERR_FONT  "\x1b[1;31m"
+#define STAT_FONT "\x1b[1;35m"
 #define NO_FONT   "\x1b[1;0m"
 
 #define PR(level, format, font, ...)					\
@@ -40,6 +42,7 @@ extern int __verbose_color__;
 #define PR_INFO(format, ...) PR(INFO, format, INFO_FONT, ##__VA_ARGS__)
 #define PR_WARN(format, ...) PR(WARN, format, WARN_FONT, ##__VA_ARGS__)
 #define PR_ERR(format, ...)  PR(ERR, format, ERR_FONT, ##__VA_ARGS__)
+#define PR_STAT(format, ...) PR(STAT, format, STAT_FONT, ##__VA_ARGS__)
 
 #define PR_BUY(level, value, format, ...)		\
   fprintf(stdout, "Buy %.2lf %d " format "\n", value,	\
