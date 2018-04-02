@@ -109,7 +109,7 @@ static void engine_run_order(struct engine *ctx, struct order *o,
     ctx->amount += (npos * c->open);
     ctx->balance -= (npos * c->open);
     ctx->nbuy++;
-    goto next;
+    break;
 
   case ORDER_SELL:
     /* Warning : no negative positions ! */
@@ -120,22 +120,19 @@ static void engine_run_order(struct engine *ctx, struct order *o,
     ctx->earnings += (npos * c->open);
     ctx->balance += (npos * c->open);
     ctx->nsell++;
-    goto next;
+    break;
 
   case ORDER_SELL_ALL:
     ctx->earnings += (ctx->npos * c->open);
     ctx->balance += (ctx->npos * c->open);
     ctx->npos = 0;
     ctx->nsell++;
-    goto next;
+    break;
     
   default:
-    break;
+    return;
   }
 
-  return;
-
- next:
   ctx->fees += ctx->transaction_fee;
   ctx->max_drawdown = MIN(ctx->balance, ctx->max_drawdown);
 }
