@@ -13,6 +13,10 @@
 #include "engine/position.h"
 #include "engine/timeline.h"
 
+/* TODO : put somewhere else */
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+
 struct engine {
   struct timeline *timeline;
   /* Order fifo */
@@ -23,13 +27,13 @@ struct engine {
   list_head_t(struct position) list_position_to_close;
   list_head_t(struct position) list_position_closed;
   /* Money management */
-  double npos;
+  double npos_buy, npos_sell;
   double amount; /* FIXME: find another name */
   double earnings; /* Find another name */
   double fees; /* Total fees */
-  double balance; /* Buy/sell balance*/
+  double balance; /* Buy/sell balance */
   /* Statistics */
-  int nbuy, nsell;
+  int nbuy, nsell; /* As indicated */
   double max_drawdown; /* Max money invested at the same time */
   double transaction_fee; /* Cost per transaction */
   /* Last close value (FIXME) */
@@ -46,6 +50,8 @@ struct engine {
   (ctx)->filter = time_info
 #define engine_set_quiet(ctx, quiet)		\
   (ctx)->quiet = quiet
+#define engine_npos(ctx)			\
+  ((ctx)->npos_buy - (ctx)->npos_sell)
 
 /* External pointer to plugin */
 typedef int (*engine_feed_ptr)(struct engine*, struct timeline*, struct timeline_entry*);

@@ -22,7 +22,8 @@ int engine_init(struct engine *ctx, struct timeline *t)
   list_head_init(&ctx->list_position_closed);
 
   /* Money */
-  ctx->npos = 0;
+  ctx->npos_buy = 0;
+  ctx->npos_sell = 0;
   ctx->amount = 0;
   ctx->earnings = 0;
   ctx->fees = 0;
@@ -49,90 +50,85 @@ void engine_release(struct engine *ctx)
   list_head_release(&ctx->list_position_closed);
 }
 
-static void engine_display_order_info(struct engine *ctx,
-				      struct order *o,
-				      struct timeline_entry *e)
+static void engine_run_order_buy(struct engine *ctx,
+				 struct order *o,
+				 struct candle *c)
 {
-  struct candle *c = __timeline_entry_self__(e);
-  const char *str = candle_str(c);
+  double npos;
   
-  if(ctx->quiet)
-    return;
+  if(o->by == ORDER_BY_NB){
+    npos = o->value;
+    PR_INFO("%s - Buy %.0lf securities at %.2lf VALUE\n",
+	    candle_str(c), o->value, c->open);
+  }else{
+    npos = (o->value / c->open);
+    PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
+	    candle_str(c), o->value / c->open, o->value);
+  }
+  
+  /* Buy n positions */
+  ctx->npos_buy += npos;
+  ctx->amount += (npos * c->open);
+  ctx->balance -= (npos * c->open);
+  /* Stats */
+  ctx->nbuy++;
+}
 
-  switch(o->type){
-  case ORDER_BUY:
-    if(o->by == ORDER_BY_NB)
-      PR_INFO("%s - Buy %.0lf securities at %.2lf VALUE\n",
-	      str, o->value, c->open);
-    
-    if(o->by == ORDER_BY_AMOUNT)
-      PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
-	      str, o->value / c->open, o->value);
-    break;
+static void engine_run_order_sell(struct engine *ctx,
+				  struct order *o,
+				  struct candle *c)
+{
+  double npos = engine_npos(ctx);
+  
+  /* Warning : no negative positions ! */
+  if(o->by == ORDER_BY_NB){
+    npos = MIN(npos, o->value);
+    PR_WARN("%s - Sell %.0lf securities at %.2lf VALUE\n",
+	    candle_str(c), o->value, c->open);
+  }else{
+    npos = MIN(npos, (o->value / c->open));
+    PR_WARN("%s - Sell %.4lf securities for %.2lf CASH\n",
+	    candle_str(c), npos, npos * c->open);
+  }
 
-  case ORDER_SELL: /* FIXME : what if oversell ? */
-    if(o->by == ORDER_BY_NB)
-      PR_WARN("%s - Sell %.0lf securities at %.2lf VALUE\n",
-	      str, o->value, c->open);
-    
-    if(o->by == ORDER_BY_AMOUNT)
-      PR_WARN("%s - Sell %.4lf securities for %.2lf CASH\n",
-	      str, o->value / c->open, o->value);
-    break;
-
-  case ORDER_SELL_ALL:
-    PR_ERR("%s - Sell %.2lf securities for %.2lf TOTAL VALUE\n",
-	   str, ctx->npos, ctx->npos * c->open);
-    break;
+  if(npos > 0){
+    /* Sell n positions */
+    ctx->npos_sell += npos;
+    ctx->earnings += (npos * c->open);
+    ctx->balance += (npos * c->open);
+    /* Stats */
+    ctx->nsell++;
   }
 }
 
-/* FIXME : put elsewhere */
-#define MIN(x, y) ((x) < (y) ? (x) : (y))
-#define MAX(x, y) ((x) > (y) ? (x) : (y))
+static void engine_run_order_sell_all(struct engine *ctx,
+				      struct order *o,
+				      struct candle *c)
+{
+  double npos = engine_npos(ctx);
+  
+  PR_ERR("%s - Sell %.2lf securities for %.2lf TOTAL VALUE\n",
+	 candle_str(c), npos, npos * c->open);
+  
+  ctx->earnings += (npos * c->open);
+  ctx->balance += (npos * c->open);
+  ctx->npos_sell += npos;
+  /* Stats */
+  ctx->nsell++;
+}
 
 static void engine_run_order(struct engine *ctx, struct order *o,
 			     struct timeline_entry *e)
 {
-  double npos;
   struct candle *c = __timeline_entry_self__(e);
 
-  /* display some info */
-  engine_display_order_info(ctx, o, e);
-  
   switch(o->type){
-  case ORDER_BUY:
-    if(o->by == ORDER_BY_NB) npos = o->value;
-    else npos = (o->value / c->open);
-    /* Buy n positions */
-    ctx->npos += npos;
-    ctx->amount += (npos * c->open);
-    ctx->balance -= (npos * c->open);
-    ctx->nbuy++;
-    break;
-
-  case ORDER_SELL:
-    /* Warning : no negative positions ! */
-    if(o->by == ORDER_BY_NB) npos = MIN(ctx->npos, o->value);
-    else npos = MIN(ctx->npos, (o->value / c->open));
-    /* Sell n positions */
-    ctx->npos -= npos;
-    ctx->earnings += (npos * c->open);
-    ctx->balance += (npos * c->open);
-    ctx->nsell++;
-    break;
-
-  case ORDER_SELL_ALL:
-    ctx->earnings += (ctx->npos * c->open);
-    ctx->balance += (ctx->npos * c->open);
-    ctx->npos = 0;
-    ctx->nsell++;
-    break;
-    
-  default:
-    return;
+  case ORDER_BUY: engine_run_order_buy(ctx, o, c); break;
+  case ORDER_SELL: engine_run_order_sell(ctx, o, c); break;
+  case ORDER_SELL_ALL: engine_run_order_sell_all(ctx, o, c); break;
+  default: return;
   }
-
+  
   ctx->fees += ctx->transaction_fee;
   ctx->max_drawdown = MIN(ctx->balance, ctx->max_drawdown);
 }
@@ -182,14 +178,15 @@ int engine_place_order(struct engine *ctx, order_t type,
 void engine_display_stats(struct engine *ctx)
 {
   /* What we got left */
-  double assets_value = ctx->npos * ctx->close;
+  double npos = engine_npos(ctx);
+  double assets_value = npos * ctx->close;
   double total_value = assets_value + ctx->earnings - ctx->fees;
   /* Return on investment */
   double roi = ((total_value / ctx->amount) - 1.0) * 100.0;
 
   /* Basic informations */
   PR_STAT("amount: %.2lf, earnings: %.2lf, npos: %.2lf, fees: %.2lf\n",
-	  ctx->amount, ctx->earnings, ctx->npos, ctx->fees);
+	  ctx->amount, ctx->earnings, npos, ctx->fees);
   /* More stats */
   //PR_ERR("nbuy: %d, nsell: %d ", ctx->nbuy, ctx->nsell);
   /* Values */

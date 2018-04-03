@@ -103,12 +103,9 @@ int main(int argc, char **argv)
   if((t = timeline_create(filename, type))){
     engine_init(&engine, t);
     engine_run(&engine, feed);
+    
     /* print some info */
-    double amount = fabs(engine.amount);
-    double total = engine.npos * last_close;
-    double pcent = ((total / amount) - 1.0) * 100.0;
-    PR_ERR("Have %.2lf positions paid %.2lf worth %.2lf (%.2lf%%)\n",
-	   engine.npos, amount, total, pcent);
+    engine_display_stats(&engine);
     
     /* TODO : Don't forget to release everything */
     engine_release(&engine);
