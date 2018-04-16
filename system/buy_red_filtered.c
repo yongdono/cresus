@@ -19,8 +19,8 @@
 #include "engine/engine.h"
 #include "framework/verbose.h"
 
-static int year_min = 1900;
 static int level_min = 1;
+static time_info_t year_min = VAL_YEAR(1900);
 
 static int feed(struct engine *e,
 		struct timeline *t,
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
   while((c = getopt(argc, argv, "o:n:l:")) != -1){
     switch(c){
     case 'o': type = optarg; break;
-    case 'n': year_min = atoi(optarg); break;
+    case 'n': year_min = VAL_YEAR(atoi(optarg)); break;
     case 'l': level_min = atoi(optarg); break;
     default:
       PR_ERR("Unknown option %c\n", c);
@@ -95,6 +95,7 @@ int main(int argc, char **argv)
     engine_init(&engine, t);
     /* Opt */
     engine_set_filter(&engine, year_min);
+    engine_set_transaction_fee(&engine, 2.50);
     /* Run */
     engine_run(&engine, feed);
     /* Print some info */
