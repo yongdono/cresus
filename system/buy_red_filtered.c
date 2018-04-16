@@ -19,7 +19,6 @@
 #include "engine/engine.h"
 #include "framework/verbose.h"
 
-static double last_close;
 static int year_min = 1900;
 static int level_min = 1;
 
@@ -51,7 +50,7 @@ static struct timeline *timeline_create(const char *filename, const char *type)
   inwrap_t t = inwrap_t_from_str(type);
   
   if(inwrap_alloc(inwrap, filename, t, TIME_MIN, TIME_MAX)){
-    if(timeline_alloc(timeline, "buy_red_no_filter", __input__(inwrap))){
+    if(timeline_alloc(timeline, "buy_red_filtered", __input__(inwrap))){
       /* Ok */
       return timeline;
     }
@@ -96,9 +95,9 @@ int main(int argc, char **argv)
     engine_init(&engine, t);
     /* Opt */
     engine_set_filter(&engine, year_min);
-    /* un */
+    /* Run */
     engine_run(&engine, feed);
-    /* Pint some info */
+    /* Print some info */
     engine_display_stats(&engine);
     
     /* TODO : Don't forget to release everything */
