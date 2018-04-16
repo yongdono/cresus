@@ -29,23 +29,15 @@ static int feed(struct engine *e,
 {
   /* Step by step loop */
   static int n = 0, level = 0;
-  time_info_t time = VAL_YEAR(year_min);
   struct candle *c = __timeline_entry_self__(entry);
-  
-  if(TIMECMP(entry->time, time, GRANULARITY_YEAR) < 0)
-    goto out;
   
   /* Execute */
   if(candle_is_red(c)) level++;
   else level = 0;
   
-  if(level >= level_min){
-    PR_INFO("%s - BUY 500.0 CASH (%d)\n", candle_str(c), ++n);
+  if(level >= level_min)
     engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, 500);
-  }
   
- out:
-  last_close = c->close; /* ! */
   return 0;
 }
 
@@ -102,13 +94,12 @@ int main(int argc, char **argv)
   
   if((t = timeline_create(filename, type))){
     engine_init(&engine, t);
+    /* Opt */
+    engine_set_filter(&engine, year_min);
+    /* un */
     engine_run(&engine, feed);
-    /* print some info */
-    double amount = fabs(engine.amount);
-    double total = engine.npos * last_close;
-    double pcent = ((total / amount) - 1.0) * 100.0;
-    PR_ERR("Have %.2lf positions paid %.2lf worth %.2lf (%.2lf%%)\n",
-	   engine.npos, amount, total, pcent);
+    /* Pint some info */
+    engine_display_stats(&engine);
     
     /* TODO : Don't forget to release everything */
     engine_release(&engine);
