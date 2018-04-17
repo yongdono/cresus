@@ -19,9 +19,8 @@
 #include "engine/engine.h"
 #include "framework/verbose.h"
 
-static double last_close;
-static int year_min = 1900;
 static int level_min = 1;
+static time_info_t year_min = VAL_YEAR(1900);
 
 static int feed(struct engine *e,
 		struct timeline *t,
@@ -29,23 +28,15 @@ static int feed(struct engine *e,
 {
   /* Step by step loop */
   static int n = 0, level = 0;
-  time_info_t time = VAL_YEAR(year_min);
   struct candle *c = __timeline_entry_self__(entry);
-  
-  if(TIMECMP(entry->time, time, GRANULARITY_YEAR) < 0)
-    goto out;
   
   /* Execute */
   if(candle_is_red(c)) level++;
   else level = 0;
   
-  if(level >= level_min){
-    PR_INFO("%s - BUY 500.0 CASH (%d)\n", candle_str(c), ++n);
+  if(level >= level_min)
     engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, 500);
-  }
   
- out:
-  last_close = c->close; /* ! */
   return 0;
 }
 
@@ -59,7 +50,7 @@ static struct timeline *timeline_create(const char *filename, const char *type)
   inwrap_t t = inwrap_t_from_str(type);
   
   if(inwrap_alloc(inwrap, filename, t, TIME_MIN, TIME_MAX)){
-    if(timeline_alloc(timeline, "buy_red_no_filter", __input__(inwrap))){
+    if(timeline_alloc(timeline, "buy_red_filtered", __input__(inwrap))){
       /* Ok */
       return timeline;
     }
@@ -89,7 +80,7 @@ int main(int argc, char **argv)
   while((c = getopt(argc, argv, "o:n:l:")) != -1){
     switch(c){
     case 'o': type = optarg; break;
-    case 'n': year_min = atoi(optarg); break;
+    case 'n': year_min = VAL_YEAR(atoi(optarg)); break;
     case 'l': level_min = atoi(optarg); break;
     default:
       PR_ERR("Unknown option %c\n", c);
@@ -102,9 +93,13 @@ int main(int argc, char **argv)
   
   if((t = timeline_create(filename, type))){
     engine_init(&engine, t);
+    /* Opt */
+    engine_set_filter(&engine, year_min);
+    engine_set_transaction_fee(&engine, 2.50);
+    /* Run */
     engine_run(&engine, feed);
-    
-    /* print some info */
+
+    /* Print some info */
     engine_display_stats(&engine);
     
     /* TODO : Don't forget to release everything */
