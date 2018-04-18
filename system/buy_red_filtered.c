@@ -112,6 +112,11 @@ int main(int argc, char **argv)
 
     /* Print some info */
     engine_display_stats(&engine);
+
+    /* Are there pending orders ? (FIXME : dedicated function in engine ?) */
+    struct order *order;
+    __list_for_each__(&engine.list_order, order)
+      PR_ERR("Buy now ! Quick ! Schnell !");
     
     /* TODO : Don't forget to release everything */
     engine_release(&engine);

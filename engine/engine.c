@@ -14,13 +14,8 @@
 int engine_init(struct engine *ctx, struct timeline *t)
 {
   ctx->timeline = t;
-  /* Init lists */
+  /* Init orders fifo */
   list_head_init(&ctx->list_order);
-  list_head_init(&ctx->list_position_to_open);
-  list_head_init(&ctx->list_position_opened);
-  list_head_init(&ctx->list_position_to_close);
-  list_head_init(&ctx->list_position_closed);
-
   /* Money */
   ctx->npos_buy = 0;
   ctx->npos_sell = 0;
@@ -44,10 +39,6 @@ void engine_release(struct engine *ctx)
 {
   /* Nothing to do */
   list_head_release(&ctx->list_order);
-  list_head_release(&ctx->list_position_to_open);
-  list_head_release(&ctx->list_position_opened);
-  list_head_release(&ctx->list_position_to_close);
-  list_head_release(&ctx->list_position_closed);
 }
 
 static void engine_run_order_buy(struct engine *ctx,

@@ -21,11 +21,6 @@ struct engine {
   struct timeline *timeline;
   /* Order fifo */
   list_head_t(struct order) list_order;
-  /* Position management. OBSOLETE */
-  list_head_t(struct position) list_position_to_open;
-  list_head_t(struct position) list_position_opened;
-  list_head_t(struct position) list_position_to_close;
-  list_head_t(struct position) list_position_closed;
   /* Money management */
   double npos_buy, npos_sell;
   double amount; /* FIXME: find another name */
@@ -36,7 +31,7 @@ struct engine {
   int nbuy, nsell; /* As indicated */
   double max_drawdown; /* Max money invested at the same time */
   double transaction_fee; /* Cost per transaction */
-  /* Last close value (FIXME) */
+  /* Last close value */
   double close;
   /* Positions filter */
   time_info_t filter;
