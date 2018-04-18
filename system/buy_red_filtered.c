@@ -19,8 +19,14 @@
 #include "engine/engine.h"
 #include "framework/verbose.h"
 
+typedef enum {
+  STATE_NORMAL,
+  STATE_PRIME
+} state_t;
+
 static int level_min = 1;
 static time_info_t year_min = VAL_YEAR(1900);
+static state_t state = STATE_NORMAL;
 
 static int feed(struct engine *e,
 		struct timeline *t,
@@ -35,7 +41,12 @@ static int feed(struct engine *e,
   else level = 0;
   
   if(level >= level_min)
+    state = STATE_PRIME;
+  
+  if(state == STATE_PRIME && !level){
     engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, 500);
+    state = STATE_NORMAL;
+  }
   
   return 0;
 }
