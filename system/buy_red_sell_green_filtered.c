@@ -1,7 +1,7 @@
 /*
- * Cresus EVO - buy_red_filtered.c
+ * Cresus EVO - buy_red_sell_green.c
  *
- * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 07/04/2016
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 18/04/2018
  * Copyright (c) 2016 Joachim Naulet. All rights reserved.
  *
  *
@@ -21,10 +21,12 @@
 
 typedef enum {
   STATE_NORMAL,
-  STATE_PRIME
+  STATE_PRIME_BUY,
+  STATE_PRIME_SELL
 } state_t;
 
-static int level_min = 1;
+static int level_buy_min = 1;
+static int level_sell_min = 1;
 static time_info_t year_min = VAL_YEAR(1900);
 static state_t state = STATE_NORMAL;
 
@@ -33,19 +35,31 @@ static int feed(struct engine *e,
 		struct timeline_entry *entry)
 {
   /* Step by step loop */
-  static int level = 0;
+  static int level_buy = 0, level_sell = 0;
   struct candle *c = __timeline_entry_self__(entry);
   
   /* Execute */
-  if(candle_is_red(c)) level++;
-  else level = 0;
+  if(candle_is_red(c)){
+    level_buy++;
+    level_sell = 0;
+  }else{
+    level_sell++;
+    level_buy = 0;
+  }
+
+  /* State machine */
+  if(level_buy >= level_buy_min) state = STATE_PRIME_BUY;
+  if(level_sell >= level_sell_min) state = STATE_PRIME_SELL;
   
-  if(level >= level_min)
-    state = STATE_PRIME;
-  
-  if(state == STATE_PRIME && !level){
-    /* Trigger buy order */
+  /* Trigger buy order */
+  if(state == STATE_PRIME_BUY && !level_buy){
     engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, 500);
+    state = STATE_NORMAL;
+  }
+  
+  /* Trigger sell order */
+  if(state == STATE_PRIME_SELL && !level_sell){
+    engine_place_order(e, ORDER_SELL, ORDER_BY_AMOUNT, 500);
     state = STATE_NORMAL;
   }
   
@@ -62,7 +76,8 @@ static struct timeline *timeline_create(const char *filename, const char *type)
   inwrap_t t = inwrap_t_from_str(type);
   
   if(inwrap_alloc(inwrap, filename, t, TIME_MIN, TIME_MAX)){
-    if(timeline_alloc(timeline, "buy_red_filtered", __input__(inwrap))){
+    if(timeline_alloc(timeline, "buy_red_sell_green_filtered",
+                      __input__(inwrap))){
       /* Ok */
       return timeline;
     }
@@ -89,11 +104,12 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  while((c = getopt(argc, argv, "o:n:l:")) != -1){
+  while((c = getopt(argc, argv, "o:n:b:s:")) != -1){
     switch(c){
     case 'o': type = optarg; break;
     case 'n': year_min = VAL_YEAR(atoi(optarg)); break;
-    case 'l': level_min = atoi(optarg); break;
+    case 'b': level_buy_min = atoi(optarg); break;
+    case 's': level_sell_min = atoi(optarg); break;
     default:
       PR_ERR("Unknown option %c\n", c);
       return -1;
@@ -116,8 +132,13 @@ int main(int argc, char **argv)
 
     /* Are there pending orders ? (FIXME : dedicated function in engine ?) */
     struct order *order;
-    __list_for_each__(&engine.list_order, order)
-      PR_ERR("Buy now ! Quick ! Schnell !");
+    __list_for_each__(&engine.list_order, order){
+      switch(order->type){
+      case ORDER_BUY: PR_ERR("Buy now ! Quick ! Schnell !\n");
+      case ORDER_SELL: PR_ERR("Sell now ! Quick ! Schnell !\n");
+      default: PR_ERR("C'mon do something\n");
+      }
+    }
     
     /* TODO : Don't forget to release everything */
     engine_release(&engine);
