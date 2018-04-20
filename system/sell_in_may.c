@@ -20,7 +20,6 @@
 #include "framework/verbose.h"
 
 static int amount = 250;
-static int occurrence = 1;
 static int current_month = -1;
 time_info_t year_min = TIME_INIT(1900, 1, 1, 0, 0, 0, 0);
 
@@ -35,7 +34,7 @@ static int feed(struct engine *e,
   time_info_t time = VAL_YEAR(year_min);
   struct candle *c = __timeline_entry_self__(entry);
 
-#define MONTH 6
+#define MONTH 6 /* June seems to work better */
   
   /* Execute */
   int month = TIME_GET_MONTH(entry->time);
@@ -86,10 +85,9 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  while((c = getopt(argc, argv, "o:m:n:F:q")) != -1){
+  while((c = getopt(argc, argv, "o:n:F:q")) != -1){
     switch(c){
     case 'o': type = optarg; break;
-    case 'm': occurrence = atoi(optarg); break;
     case 'n': year_min = VAL_YEAR(atoi(optarg)); break;
     case 'F': amount = atoi(optarg); break;
     case 'q': quiet = 1; break;
