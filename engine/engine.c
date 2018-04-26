@@ -75,7 +75,7 @@ static void engine_run_order_sell(struct engine *ctx,
   if(o->by == ORDER_BY_NB){
     npos = MIN(npos, o->value);
     PR_WARN("%s - Sell %.0lf securities at %.2lf VALUE\n",
-	    candle_str(c), o->value, c->open);
+	    candle_str(c), npos, c->open);
   }else{
     npos = MIN(npos, (o->value / c->open));
     PR_WARN("%s - Sell %.4lf securities for %.2lf CASH\n",
