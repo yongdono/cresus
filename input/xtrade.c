@@ -1,7 +1,7 @@
 /*
- * Cresus EVO - mdgms.c 
+ * Cresus EVO - xtrade.c 
  * 
- * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 11/01/2018
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 02/05/2018
  * Copyright (c) 2016 Joachim Naulet. All rights reserved.
  *
  */
@@ -13,50 +13,47 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "mdgms.h"
+#include "xtrade.h"
 #include "engine/candle.h"
 #include "framework/verbose.h"
+#include "framework/time_info.h"
 
-static struct timeline_entry *mdgms_read(struct input *in)
+static time_info_t xtrade_time(struct xtrade *ctx,
+			       const char *str)
+{
+  int y, m, d;
+  sscanf(str, "%d-%d-%d", &y, &m, &d);
+  return TIME_INIT(y, m, d, 0, 0, 0, 0);
+}
+
+static struct timeline_entry *xtrade_read(struct input *in)
 {
   struct candle *c;
-  struct mdgms *ctx = __input_self__(in);
-  
-  /* TODO: check !!! */
-  json_value *ts = ctx->value->u.object.values[0].value;
-  json_value *op = ctx->value->u.object.values[1].value;
-  json_value *hi = ctx->value->u.object.values[2].value;
-  json_value *lo = ctx->value->u.object.values[3].value;
-  json_value *cl = ctx->value->u.object.values[4].value;
-  json_value *vl = ctx->value->u.object.values[5].value;
-  
-  /* Check for EOF */
-  if(ctx->i >= ts->u.array.length)
+  struct xtrade *ctx = __input_self__(in);
+ 
+  /* Check for EOF at least */
+  if(ctx->i <= 0)
     goto err;
   
-  /* ! */
-  time_t t = ts->u.array.values[ctx->i]->u.integer;
-  double open = op->u.array.values[ctx->i]->u.dbl;
-  double high = hi->u.array.values[ctx->i]->u.dbl;
-  double low = lo->u.array.values[ctx->i]->u.dbl;
-  double close = cl->u.array.values[ctx->i]->u.dbl;
-  double vol = vl->u.array.values[ctx->i]->u.integer;
-
-  /* Increment */
-  ctx->i++;
+  json_value *o = ctx->data->u.array.values[ctx->i--];
+  char *str = o->u.object.values[0].value->u.string.ptr;
+  double open = o->u.object.values[1].value->u.dbl;
+  double close = o->u.object.values[2].value->u.dbl;
+  double low = o->u.object.values[3].value->u.dbl;
+  double high = o->u.object.values[4].value->u.dbl;
   
-  time_info_t time = time_info_epoch(t);
+  time_info_t time = xtrade_time(ctx, str);
   if(input_in_boundaries(in, time, GRANULARITY_DAY))
     /* Filter by time (FIXME ?) */
     if(candle_alloc(c, time, GRANULARITY_DAY,
-		    open, close, high, low, vol))
+		    open, close, high, low, 0.0))
       return __timeline_entry__(c);
 
  err:
   return NULL;
 }
 
-int mdgms_init(struct mdgms *ctx, const char *filename,
+int xtrade_init(struct xtrade *ctx, const char *filename,
 	      time_info_t from, time_info_t to)
 {
   int fd;
@@ -64,7 +61,7 @@ int mdgms_init(struct mdgms *ctx, const char *filename,
   struct stat stat;
 
   /* super */
-  __input_super__(ctx, mdgms_read, from, to);
+  __input_super__(ctx, xtrade_read, from, to);
   
   /* internals */
   ctx->i = 0;
@@ -87,6 +84,9 @@ int mdgms_init(struct mdgms *ctx, const char *filename,
     goto err;
   
   /* Ok */
+  ctx->data = ctx->value->u.object.values[2].value;
+  ctx->i = ctx->data->u.array.length - 1;
+  
   close(fd);
   return 0;
   
@@ -96,7 +96,7 @@ int mdgms_init(struct mdgms *ctx, const char *filename,
   return -1;
 }
 
-void mdgms_release(struct mdgms *ctx)
+void xtrade_release(struct xtrade *ctx)
 {  
   __input_release__(ctx);
   json_value_free(ctx->value);

@@ -14,7 +14,7 @@
 #include "framework/alloc.h"
 #include "framework/input.h"
 
-#define mdgms_alloc(ctx, filename, from, to)			\
+#define mdgms_alloc(ctx, filename, from, to)				\
   DEFINE_ALLOC(struct mdgms, ctx, mdgms_init, filename, from, to)
 #define mdgms_free(ctx)				\
   DEFINE_FREE(ctx, mdgms_release)
@@ -29,7 +29,7 @@ struct mdgms {
 };
 
 int mdgms_init(struct mdgms *ctx, const char *filename,
-	      time_info_t from, time_info_t to);
+	       time_info_t from, time_info_t to);
 void mdgms_release(struct mdgms *ctx);
 
 #endif
