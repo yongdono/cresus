@@ -2,6 +2,12 @@
 
 Cresus (or libcresus) is an API written in C designed to provide stock market functions for backtest applications. Some sample code is provided in the "system" directory.
 
+=== Requirements ===
+
+This software requires the json-parser library to be installed on your system : https://github.com/udp/json-parser
+
+=== Build & install ===
+
 To build this software, type in :
 
 $ mkdir build
