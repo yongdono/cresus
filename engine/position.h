@@ -9,8 +9,7 @@
 #ifndef POSITION_H
 #define POSITION_H
 
-#include "engine/candle.h"
-#include "engine/timeline.h"
+#include "engine/cert.h"
 #include "framework/list.h"
 #include "framework/alloc.h"
 
@@ -19,34 +18,28 @@ typedef enum {
   POSITION_SHORT
 } position_t;
 
-#define position_alloc(p, timeline, type, n)			\
-  DEFINE_ALLOC(struct position, p, position_init, t, type, n)
+#define position_alloc(p, timeline, value, type, n, cert)		\
+  DEFINE_ALLOC(struct position, p, position_init,			\
+	       value, type, n, (cert))
 #define position_free(p)			\
   DEFINE_FREE(p, position_release)
 
 struct position {
   /* slistable */
   __inherits_from_list__;
-  /* Some data */
-  struct timeline *t;
-  
-  struct candle *in;
-  struct candle *out;
-  
-  double n;
-  position_t type;
+  /* Internal data */
+  double n; /* How much ? */
+  position_t type; /* Why ? */
+  double value; /* Unit cost */
+  /* Certificates/Turbos */
+  struct cert cert;
 };
 
-int position_init(struct position *p, struct timeline *t,
-		  position_t type, double n);
-void position_release(struct position *p);
+int position_init(struct position *ctx, double value,
+		  position_t type, double n, struct cert *cert);
+void position_release(struct position *ctx);
 
-typedef int (*position_action_t)(struct position *p);
-int position_in(struct position *p); /* position_action_t */
-int position_out(struct position *p); /* position_action_t */
-int position_nop(struct position *p); /* position_action_t */
-
-double position_value(struct position *p);
-double position_factor(struct position *p);
+double position_cost(struct position *ctx);
+double position_value(struct position *ctx, double current);
 
 #endif

@@ -10,6 +10,7 @@
 #define __Cresus_EVO__engine__
 
 #include "engine/order.h"
+#include "engine/candle.h"
 #include "engine/position.h"
 #include "engine/timeline.h"
 
@@ -52,8 +53,10 @@ void engine_release(struct engine *e);
 
 void engine_run(struct engine *e, engine_feed_ptr feed);
 
-int engine_place_order(struct engine *ctx, order_t type, order_by_t by,
-		       double value);
+int engine_set_order(struct engine *e, order_t type, order_by_t by,
+		     double value, struct cert *cert);
+int engine_place_order(struct engine *ctx, order_t type,
+		       order_by_t by, double value) __attribute__((deprecated));
 
 void engine_display_stats(struct engine *ctx);
 

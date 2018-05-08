@@ -136,7 +136,9 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed)
     __list_for_each_safe__(&ctx->list_order, order, safe){
       /* Run */
       engine_run_order(ctx, order, entry);
+      /* Delete */
       __list_del__(order);
+      order_free(order);
     }
     
     /* Then : feed the engine */
@@ -145,25 +147,34 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed)
   }
 }
 
+int engine_set_order(struct engine *ctx, order_t type,
+		     order_by_t by, double value,
+		     struct cert *cert)
+{
+  struct order *order;
+  struct timeline_entry *entry;
+  
+  if(timeline_entry_current(ctx->timeline, &entry) != -1){
+    /* Filter orders if needed */
+    if(TIMECMP(entry->time, ctx->filter, GRANULARITY_DAY) < 0)
+      goto err;
+    
+    if(order_alloc(order, type, by, value, cert)){
+      __list_add_tail__(&ctx->list_order, order);
+      return 0;
+    }
+  }
+  
+ err:
+  return -1;
+}
+
 int engine_place_order(struct engine *ctx, order_t type,
 		       order_by_t by, double value)
 {
   struct order *order;
   struct timeline_entry *entry;
-
-  if(timeline_entry_current(ctx->timeline, &entry) != -1){
-    /* Filter orders if needed */
-    if(TIMECMP(entry->time, ctx->filter, GRANULARITY_DAY) < 0)
-      goto err;
-  
-    if(order_alloc(order, type, by, value)){
-      __list_add_tail__(&ctx->list_order, order);
-      return 0;
-    }
-  }
-
- err:
-  return -1;
+  return engine_set_order(ctx, type, by, value, NULL);
 }
 
 void engine_display_stats(struct engine *ctx)
