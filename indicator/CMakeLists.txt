@@ -9,6 +9,7 @@ add_library(indicator OBJECT
   hilo.c
   jtrend.c
   linear_reg.c
+  lowest.c
   macd.c
   mobile.c
   roc.c
@@ -23,4 +24,3 @@ add_library(indicator OBJECT
   updown.c
   zigzag.c
   )
-

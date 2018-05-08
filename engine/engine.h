@@ -13,10 +13,6 @@
 #include "engine/position.h"
 #include "engine/timeline.h"
 
-/* TODO : put somewhere else */
-#define MIN(x, y) ((x) < (y) ? (x) : (y))
-#define MAX(x, y) ((x) > (y) ? (x) : (y))
-
 struct engine {
   struct timeline *timeline;
   /* Order fifo */
