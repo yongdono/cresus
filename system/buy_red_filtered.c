@@ -45,7 +45,7 @@ static int feed(struct engine *e,
   
   if(state == STATE_PRIME && !level){
     /* Trigger buy order */
-    engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, 500);
+    engine_set_order(e, BUY, 500, CASH, NULL);
     state = STATE_NORMAL;
   }
   
@@ -115,9 +115,10 @@ int main(int argc, char **argv)
     engine_display_stats(&engine);
 
     /* Are there pending orders ? (FIXME : dedicated function in engine ?) */
-    struct order *order;
-    __list_for_each__(&engine.list_order, order)
-      PR_ERR("Buy now ! Quick ! Schnell !");
+    struct position *p;
+    __list_for_each__(&engine.list_position, p)
+      if(p->status == POSITION_STATUS_REQUESTED)
+	PR_ERR("Buy now ! Quick ! Schnell !");
     
     /* TODO : Don't forget to release everything */
     engine_release(&engine);

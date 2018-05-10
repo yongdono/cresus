@@ -38,7 +38,7 @@ static int feed(struct engine *e,
   /* Execute */
   int month = TIME_GET_MONTH(entry->time);
   if(month != current_month && !(month % occurrence))
-    engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, amount);
+    engine_set_order(e, BUY, amount, CASH, NULL);
   
   current_month = month;
   return 0;

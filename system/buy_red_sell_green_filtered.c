@@ -53,13 +53,13 @@ static int feed(struct engine *e,
   
   /* Trigger buy order */
   if(state == STATE_PRIME_BUY && !level_buy){
-    engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, 500);
+    engine_set_order(e, BUY, 500, CASH, NULL);
     state = STATE_NORMAL;
   }
   
   /* Trigger sell order */
   if(state == STATE_PRIME_SELL && !level_sell){
-    engine_place_order(e, ORDER_SELL, ORDER_BY_AMOUNT, 500);
+    engine_set_order(e, SELL, 500, CASH, NULL);
     state = STATE_NORMAL;
   }
   
@@ -131,12 +131,14 @@ int main(int argc, char **argv)
     engine_display_stats(&engine);
 
     /* Are there pending orders ? (FIXME : dedicated function in engine ?) */
-    struct order *order;
-    __list_for_each__(&engine.list_order, order){
-      switch(order->type){
-      case ORDER_BUY: PR_ERR("Buy now ! Quick ! Schnell !\n");
-      case ORDER_SELL: PR_ERR("Sell now ! Quick ! Schnell !\n");
-      default: PR_ERR("C'mon do something\n");
+    struct position *p;
+    __list_for_each__(&engine.list_position, p){
+      if(p->status == POSITION_STATUS_REQUESTED){
+	switch(p->type){
+	case BUY: PR_ERR("Buy now ! Quick ! Schnell !\n");
+	case SELL: PR_ERR("Sell now ! Quick ! Schnell !\n");
+	default: PR_ERR("C'mon do something\n");
+	}
       }
     }
     

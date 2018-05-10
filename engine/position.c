@@ -6,21 +6,26 @@
  *
  */
 
+#include <string.h>
 #include "position.h"
 #include "framework/verbose.h"
 
-int position_init(struct position *ctx, double value,
-		  position_t type, double n,
-		  struct cert *cert)
+int position_init(struct position *ctx, position_t type,
+		  position_req_t req, double n, struct cert *cert)
 {
   /* super() */
   __list_super__(ctx);
-  
-  ctx->n = n;
-  ctx->type = type;
-  ctx->value = value;
 
-  if(!cert) memset(&ctx->cert, 0, sizeof(ctx->cert));
+  ctx->req = req;
+  ctx->type = type;
+  ctx->status = POSITION_STATUS_REQUESTED;
+  /* Content */
+  if(req == POSITION_REQ_SHARES) ctx->request.shares = n;
+  else ctx->request.cash = n;
+  /* Value */
+  ctx->value = 0;
+  /* Certificates */
+  if(!cert) cert_zero(&ctx->cert);
   else memcpy(&ctx->cert, cert, sizeof(ctx->cert));
   
   return 0;
@@ -31,28 +36,29 @@ void position_release(struct position *ctx)
   __list_release__(ctx);
 }
 
-double position_cost(struct position *ctx)
+double position_unit_value(struct position *ctx)
 {
-  double ret = 0.0;
-  if(ctx->type == POSITION_LONG)
-    ret = (ctx->value - ctx->cert.funding) * ctx->n;
-  else
-    ret = (ctx->cert.funding - ctx->value) * ctx->n;
+  if(ctx->type == POSITION_BUY ||
+     ctx->type == POSITION_SELL)
+    return cert_long_value(&ctx->cert, ctx->value);
+  
+  if(ctx->type == POSITION_SELLSHORT ||
+     ctx->type == POSITION_EXITSHORT)
+    return cert_short_value(&ctx->cert, ctx->value);
+  
+  return 0.0;
 }
 
-double position_value(struct position *ctx, double current)
+double position_current_value(struct position *ctx, double cur)
 {
-  double ret = 0.0;
   
-  if(ctx->type == POSITION_LONG){
-    double spread = current - ctx->cert.funding;
-    double cost = ctx->value - ctx->cert.funding;
-    ret = (spread - cost) * ctx->n;
-  }else{
-    double spread = ctx->cert.funding - current;
-    double cost = ctx->cert.funding - ctx->value;
-    ret = (spread - cost) * ctx->n;
-  }
+  if(ctx->type == POSITION_BUY ||
+     ctx->type == POSITION_SELL)
+    return ctx->n * ((cur - ctx->cert.funding) / ctx->cert.ratio);
   
-  return ret;
+  if(ctx->type == POSITION_SELLSHORT ||
+     ctx->type == POSITION_EXITSHORT)
+    return ctx->n * ((ctx->cert.funding - cur) / ctx->cert.ratio);
+  
+  return 0.0;
 }

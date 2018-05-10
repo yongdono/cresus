@@ -39,8 +39,8 @@ static int feed(struct engine *e,
   /* Execute */
   int month = TIME_GET_MONTH(entry->time);
   if(month != current_month){
-    if(month != MONTH) engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, amount);
-    else engine_place_order(e, ORDER_SELL_ALL, 0, 0);
+    if(month != MONTH) engine_set_order(e, BUY, amount, CASH, NULL);
+    else engine_set_order(e, SELL, CASH, 100000, NULL); /* FIXME */
   }
   
   current_month = month;

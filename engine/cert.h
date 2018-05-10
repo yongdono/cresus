@@ -9,13 +9,23 @@
 #ifndef CERT_H
 #define CERT_H
 
-#include <string.h>
-
 /* Certificate/Turbo */
 struct cert {
   double funding;
   double stoploss;
-  //double ratio;
+  double ratio;
 };
+
+static inline void cert_zero(struct cert *cert)
+{
+  cert->funding = 0.0;
+  cert->stoploss = 0.0;
+  cert->ratio = 1.0;
+}
+
+#define cert_long_value(cert, value)			\
+  (((value) - ((cert)->funding)) / (cert)->ratio)
+#define cert_short_value(cert, value)			\
+  ((((cert)->funding) - (value)) / (cert)->ratio)
 
 #endif

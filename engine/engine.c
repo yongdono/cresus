@@ -14,8 +14,8 @@
 int engine_init(struct engine *ctx, struct timeline *t)
 {
   ctx->timeline = t;
-  /* Init orders fifo */
-  list_head_init(&ctx->list_order);
+  /* Init portfolio */
+  list_head_init(&ctx->list_position);
   /* Money */
   ctx->npos_buy = 0;
   ctx->npos_sell = 0;
@@ -38,86 +38,110 @@ int engine_init(struct engine *ctx, struct timeline *t)
 void engine_release(struct engine *ctx)
 {
   /* Nothing to do */
-  list_head_release(&ctx->list_order);
+  list_head_release(&ctx->list_position);
 }
 
-static void engine_run_order_buy(struct engine *ctx,
-				 struct order *o,
-				 struct candle *c)
+static double engine_npos(struct engine *ctx)
 {
-  double npos;
+  double ret = 0.0;
+  struct position *p;
   
-  if(o->by == ORDER_BY_NB){
-    npos = o->value;
-    PR_INFO("%s - Buy %.0lf securities at %.2lf VALUE\n",
-	    candle_str(c), o->value, c->open);
+  __list_for_each__(&ctx->list_position, p)
+    ret = ((p->type == BUY) ? (ret + p->n) : (ret - p->n));
+
+  return ret;
+}
+
+static void engine_run_position_buy(struct engine *ctx,
+				    struct position *p,
+				    struct candle *c)
+{
+  /* Record open value */
+  position_set_value(p, c->open);
+  
+  if(p->req == SHARES){
+    double unit = position_unit_value(p);
+    position_set_n(p, p->request.shares);
+    PR_INFO("%s - Buy %.0lf securities at %.2lf (%.2lf) VALUE\n",
+	    candle_str(c), p->n * 1.0, unit, p->n * unit);
+    
+    /* Some stats */
+    ctx->amount += p->n * unit;
+    ctx->balance -= p->n * unit;
+    
   }else{
-    npos = (o->value / c->open);
+    position_set_n(p, p->request.cash / c->open);
     PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
-	    candle_str(c), o->value / c->open, o->value);
+	    candle_str(c), p->n * 1.0, p->request.cash);
+
+    /* Some stats */
+    ctx->amount += p->request.cash;
+    ctx->balance -= p->request.cash;
   }
   
-  /* Buy n positions */
-  ctx->npos_buy += npos;
-  ctx->amount += (npos * c->open);
-  ctx->balance -= (npos * c->open);
-  /* Stats */
-  ctx->nbuy++;
+  /* Confirm position */
+  position_confirm(p);
 }
 
-static void engine_run_order_sell(struct engine *ctx,
-				  struct order *o,
-				  struct candle *c)
+static void engine_run_position_sell(struct engine *ctx,
+				     struct position *p,
+				     struct candle *c)
 {
-  double npos = engine_npos(ctx);
+  struct list *safe;
+  struct position *lp;
+
+  /* Stats */
+  double req = 0.0;
+  double cash = 0.0;
+  double nsold = 0.0;
   
-  /* Warning : no negative positions ! */
-  if(o->by == ORDER_BY_NB){
-    npos = MIN(npos, o->value);
-    PR_WARN("%s - Sell %.0lf securities at %.2lf VALUE\n",
-	    candle_str(c), npos, c->open);
+  if(req == SHARES) req = p->request.shares;
+  else req = c->open / p->request.cash;
+  
+  __list_for_each_prev_safe__(&ctx->list_position, lp, safe){
+    /* Parse positions backwards */
+    int n = MIN(req, lp->n);
+
+    /* No stopped or req positions */
+    if(lp->status != POSITION_STATUS_CONFIRMED)
+      continue;
+
+    /* Output condition */
+    if(req <= 0.0)
+      break;
+
+    /* Update counters */
+    req -= n;
+    lp->n -= n;
+    nsold += n;
+    cash += n * ((c->open - lp->cert.funding) / lp->cert.ratio);
+  }
+
+  /* Display info */
+  if(p->req == SHARES){
+    PR_WARN("%s - Sell %.0lf securities at %.2lf (%.2lf) VALUE\n",
+	    candle_str(c), nsold, cash / nsold, cash);
   }else{
-    npos = MIN(npos, (o->value / c->open));
     PR_WARN("%s - Sell %.4lf securities for %.2lf CASH\n",
-	    candle_str(c), npos, npos * c->open);
+	    candle_str(c), nsold, cash);
   }
-
-  if(npos > 0){
-    /* Sell n positions */
-    ctx->npos_sell += npos;
-    ctx->earnings += (npos * c->open);
-    ctx->balance += (npos * c->open);
-    /* Stats */
-    ctx->nsell++;
-  }
+  
+  /* The end */
+  ctx->earnings += cash;
+  ctx->balance += cash;
+  __list_del__(p);
 }
 
-static void engine_run_order_sell_all(struct engine *ctx,
-				      struct order *o,
-				      struct candle *c)
-{
-  double npos = engine_npos(ctx);
-  
-  PR_ERR("%s - Sell %.2lf securities for %.2lf TOTAL VALUE\n",
-	 candle_str(c), npos, npos * c->open);
-  
-  ctx->earnings += (npos * c->open);
-  ctx->balance += (npos * c->open);
-  ctx->npos_sell += npos;
-  /* Stats */
-  ctx->nsell++;
-}
-
-static void engine_run_order(struct engine *ctx, struct order *o,
-			     struct timeline_entry *e)
+static void engine_run_position(struct engine *ctx,
+				struct position *p,
+				struct timeline_entry *e)
 {
   struct candle *c = __timeline_entry_self__(e);
 
-  switch(o->type){
-  case ORDER_BUY: engine_run_order_buy(ctx, o, c); break;
-  case ORDER_SELL: engine_run_order_sell(ctx, o, c); break;
-  case ORDER_SELL_ALL: engine_run_order_sell_all(ctx, o, c); break;
-  default: return;
+  switch(p->type){
+  case BUY: engine_run_position_buy(ctx, p, c); break;
+  case SELL: engine_run_position_sell(ctx, p, c); break;
+  default: PR_WARN("Not implemented\n"); return;
   }
   
   ctx->fees += ctx->transaction_fee;
@@ -127,18 +151,23 @@ static void engine_run_order(struct engine *ctx, struct order *o,
 void engine_run(struct engine *ctx, engine_feed_ptr feed)
 {
   struct list *safe;
-  struct order *order;
+  struct position *p;
   struct timeline_entry *entry;
   
   while((entry = timeline_step(ctx->timeline)) != NULL){
     struct candle *c = __timeline_entry_self__(entry); /* FIXME ? */
-    /* First : check if there are opening positions */
-    __list_for_each_safe__(&ctx->list_order, order, safe){
-      /* Run */
-      engine_run_order(ctx, order, entry);
-      /* Delete */
-      __list_del__(order);
-      order_free(order);
+    __list_for_each_safe__(&ctx->list_position, p, safe){
+      /* First: check stoplosses */
+      if(c->low <= p->cert.stoploss)
+	p->status = POSITION_STATUS_STOPPED;
+
+      /* 2nd : check if there are opening positions */
+      if(p->status == POSITION_STATUS_REQUESTED)
+	engine_run_position(ctx, p, entry); /* Run */
+
+      /* 3rd: Remove useless positions */
+      if(p->n <= 0.0)
+	__list_del__(p);
     }
     
     /* Then : feed the engine */
@@ -147,20 +176,20 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed)
   }
 }
 
-int engine_set_order(struct engine *ctx, order_t type,
-		     order_by_t by, double value,
+int engine_set_order(struct engine *ctx, position_t type,
+		     double value, position_req_t req, 
 		     struct cert *cert)
 {
-  struct order *order;
+  struct position *p;
   struct timeline_entry *entry;
   
   if(timeline_entry_current(ctx->timeline, &entry) != -1){
     /* Filter orders if needed */
     if(TIMECMP(entry->time, ctx->filter, GRANULARITY_DAY) < 0)
       goto err;
-    
-    if(order_alloc(order, type, by, value, cert)){
-      __list_add_tail__(&ctx->list_order, order);
+
+    if(position_alloc(p, type, req, value, cert)){
+      __list_add_tail__(&ctx->list_position, p);
       return 0;
     }
   }
@@ -169,23 +198,30 @@ int engine_set_order(struct engine *ctx, order_t type,
   return -1;
 }
 
-int engine_place_order(struct engine *ctx, order_t type,
-		       order_by_t by, double value)
+int engine_place_order(struct engine *ctx, position_t type,
+		       position_req_t by, double value)
 {
-  struct order *order;
   struct timeline_entry *entry;
   return engine_set_order(ctx, type, by, value, NULL);
 }
 
 void engine_display_stats(struct engine *ctx)
 {
+  struct position *p;
+  
+  double npos = 0.0;
+  double assets_value = 0.0;
+  
+  __list_for_each__(&ctx->list_position, p){
+    npos += p->n;
+    assets_value += position_current_value(p, ctx->close);
+  }
+  
   /* What we got left */
-  double npos = engine_npos(ctx);
-  double assets_value = npos * ctx->close;
   double total_value = assets_value + ctx->earnings - ctx->fees;
   /* Return on investment */
   double roi = ((total_value / ctx->amount) - 1.0) * 100.0;
-
+  
   /* Basic informations */
   PR_STAT("amount: %.2lf, earnings: %.2lf, npos: %.2lf, fees: %.2lf\n",
 	  ctx->amount, ctx->earnings, npos, ctx->fees);

@@ -35,10 +35,8 @@ static int feed(struct engine *e,
     goto out;
   
   /* Execute */
-  if(candle_is_red(c)){
-    PR_INFO("%s - BUY 500.0 CASH (%d)\n", candle_str(c), ++n);
-    engine_place_order(e, ORDER_BUY, ORDER_BY_AMOUNT, 500);
-  }
+  if(candle_is_red(c))
+    engine_set_order(e, BUY, 500, CASH, NULL);
 
  out:
   last_close = c->close; /* ! */

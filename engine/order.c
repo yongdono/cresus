@@ -19,7 +19,7 @@ int order_init(struct order *ctx, order_t t, order_by_t by,
   ctx->by = by;
   ctx->value = value;
 
-  if(!cert) memset(&ctx->cert, 0, sizeof(ctx->cert));
+  if(!cert) cert_zero(&ctx->cert);
   else memcpy(&ctx->cert, cert, sizeof(ctx->cert));
   
   return 0;

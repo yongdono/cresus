@@ -33,8 +33,10 @@ typedef enum {
 #define SELLSHORT ORDER_SELLSHORT
 #define EXITSHORT ORDER_EXITSHORT
 
-#define BY_NB ORDER_BY_NB
+#define BY_NB  ORDER_BY_NB
+#define SHARES ORDER_BY_NB
 #define BY_AMOUNT ORDER_BY_AMOUNT
+#define CASH      ORDER_BY_AMOUNT
 
 #define order_alloc(ctx, type, by, value, cert)		\
   DEFINE_ALLOC(struct order, ctx, order_init,		\

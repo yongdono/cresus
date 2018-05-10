@@ -9,15 +9,14 @@
 #ifndef __Cresus_EVO__engine__
 #define __Cresus_EVO__engine__
 
-#include "engine/order.h"
 #include "engine/candle.h"
 #include "engine/position.h"
 #include "engine/timeline.h"
 
 struct engine {
   struct timeline *timeline;
-  /* Order fifo */
-  list_head_t(struct order) list_order;
+  /* Portfolio */
+  list_head_t(struct position) list_position;
   /* Money management */
   double npos_buy, npos_sell;
   double amount; /* FIXME: find another name */
@@ -42,8 +41,6 @@ struct engine {
   (ctx)->filter = time_info
 #define engine_set_quiet(ctx, quiet)		\
   (ctx)->quiet = quiet
-#define engine_npos(ctx)			\
-  ((ctx)->npos_buy - (ctx)->npos_sell)
 
 /* External pointer to plugin */
 typedef int (*engine_feed_ptr)(struct engine*, struct timeline*, struct timeline_entry*);
@@ -53,10 +50,13 @@ void engine_release(struct engine *e);
 
 void engine_run(struct engine *e, engine_feed_ptr feed);
 
-int engine_set_order(struct engine *e, order_t type, order_by_t by,
-		     double value, struct cert *cert);
-int engine_place_order(struct engine *ctx, order_t type,
-		       order_by_t by, double value) __attribute__((deprecated));
+int engine_set_order(struct engine *e, position_t type,
+		     double value, position_req_t req, 
+		     struct cert *cert);
+
+/* For backwards compatibility */
+int engine_place_order(struct engine *ctx, position_t type,
+		       position_req_t req, double value) __attribute__((deprecated));
 
 void engine_display_stats(struct engine *ctx);
 
