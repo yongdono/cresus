@@ -87,34 +87,32 @@ static void engine_run_position_sell(struct engine *ctx,
 				     struct position *p,
 				     struct candle *c)
 {
-  struct list *safe;
-  struct position *lp;
-
   /* Stats */
   double req = 0.0;
   double cash = 0.0;
   double nsold = 0.0;
+  struct position *lp;
   
-  if(req == SHARES) req = p->request.shares;
-  else req = c->open / p->request.cash;
+  if(p->req == SHARES) req = p->request.shares;
+  else req = p->request.cash / c->open;
   
-  __list_for_each_prev_safe__(&ctx->list_position, lp, safe){
-    /* Parse positions backwards */
-    int n = MIN(req, lp->n);
-
+  __list_for_each_prev__(&ctx->list_position, lp){
+    double count;
     /* No stopped or req positions */
     if(lp->status != POSITION_STATUS_CONFIRMED)
       continue;
-
+    
     /* Output condition */
     if(req <= 0.0)
       break;
 
+    /* How much at once ? */
+    count = MIN(req, lp->n);
     /* Update counters */
-    req -= n;
-    lp->n -= n;
-    nsold += n;
-    cash += n * ((c->open - lp->cert.funding) / lp->cert.ratio);
+    req -= count;
+    lp->n -= count;
+    nsold += count;
+    cash += count * ((c->open - lp->cert.funding) / lp->cert.ratio);
   }
 
   /* Display info */
