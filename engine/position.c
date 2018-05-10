@@ -18,7 +18,7 @@ int position_init(struct position *ctx, position_t type,
 
   ctx->req = req;
   ctx->type = type;
-  ctx->status = POSITION_STATUS_REQUESTED;
+  ctx->status = POSITION_REQUESTED;
   /* Content */
   if(req == POSITION_REQ_SHARES) ctx->request.shares = n;
   else ctx->request.cash = n;
@@ -51,6 +51,8 @@ double position_unit_value(struct position *ctx)
 
 double position_current_value(struct position *ctx, double cur)
 {
+  if(ctx->status != POSITION_CONFIRMED)
+    goto out;
   
   if(ctx->type == POSITION_BUY ||
      ctx->type == POSITION_SELL)
@@ -59,6 +61,7 @@ double position_current_value(struct position *ctx, double cur)
   if(ctx->type == POSITION_SELLSHORT ||
      ctx->type == POSITION_EXITSHORT)
     return ctx->n * ((ctx->cert.funding - cur) / ctx->cert.ratio);
-  
+
+ out:
   return 0.0;
 }

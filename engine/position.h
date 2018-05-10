@@ -36,9 +36,10 @@ typedef enum {
 #define CASH   POSITION_REQ_CASH
 
 typedef enum {
-  POSITION_STATUS_REQUESTED,
-  POSITION_STATUS_CONFIRMED,
-  POSITION_STATUS_STOPPED
+  POSITION_REQUESTED,
+  POSITION_CONFIRMED,
+  POSITION_STOPPED,
+  POSITION_DESTROY
 } position_status_t;
 
 #define position_alloc(p,  type, content, n, cert)			\
@@ -75,7 +76,9 @@ void position_release(struct position *ctx);
 #define position_set_value(ctx, param)		\
   (ctx)->value = param
 #define position_confirm(ctx)			\
-  (ctx)->status = POSITION_STATUS_CONFIRMED
+  (ctx)->status = POSITION_CONFIRMED
+#define position_destroy(ctx)			\
+  (ctx)->status = POSITION_DESTROY
 
 double position_unit_value(struct position *ctx); /* FIXME : better name */
 double position_current_value(struct position *ctx, double cur);

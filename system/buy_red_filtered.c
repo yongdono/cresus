@@ -117,7 +117,7 @@ int main(int argc, char **argv)
     /* Are there pending orders ? (FIXME : dedicated function in engine ?) */
     struct position *p;
     __list_for_each__(&engine.list_position, p)
-      if(p->status == POSITION_STATUS_REQUESTED)
+      if(p->status == POSITION_REQUESTED)
 	PR_ERR("Buy now ! Quick ! Schnell !");
     
     /* TODO : Don't forget to release everything */

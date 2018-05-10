@@ -133,7 +133,7 @@ int main(int argc, char **argv)
     /* Are there pending orders ? (FIXME : dedicated function in engine ?) */
     struct position *p;
     __list_for_each__(&engine.list_position, p){
-      if(p->status == POSITION_STATUS_REQUESTED){
+      if(p->status == POSITION_REQUESTED){
 	switch(p->type){
 	case BUY: PR_ERR("Buy now ! Quick ! Schnell !\n");
 	case SELL: PR_ERR("Sell now ! Quick ! Schnell !\n");

@@ -41,14 +41,16 @@ void engine_release(struct engine *ctx)
   list_head_release(&ctx->list_position);
 }
 
-static double engine_npos(struct engine *ctx)
+double engine_npos(struct engine *ctx)
 {
   double ret = 0.0;
   struct position *p;
   
-  __list_for_each__(&ctx->list_position, p)
-    ret = ((p->type == BUY) ? (ret + p->n) : (ret - p->n));
-
+  __list_for_each__(&ctx->list_position, p){
+    if(p->status == POSITION_CONFIRMED)
+      ret = ((p->type == BUY) ? (ret + p->n) : (ret - p->n));
+  }
+  
   return ret;
 }
 
@@ -99,7 +101,7 @@ static void engine_run_position_sell(struct engine *ctx,
   __list_for_each_prev__(&ctx->list_position, lp){
     double count;
     /* No stopped or req positions */
-    if(lp->status != POSITION_STATUS_CONFIRMED)
+    if(lp->status != POSITION_CONFIRMED)
       continue;
     
     /* Output condition */
@@ -116,18 +118,21 @@ static void engine_run_position_sell(struct engine *ctx,
   }
 
   /* Display info */
-  if(p->req == SHARES){
-    PR_WARN("%s - Sell %.0lf securities at %.2lf (%.2lf) VALUE\n",
-	    candle_str(c), nsold, cash / nsold, cash);
-  }else{
-    PR_WARN("%s - Sell %.4lf securities for %.2lf CASH\n",
-	    candle_str(c), nsold, cash);
+  if(nsold > 0.0){
+    if(p->req == SHARES){
+      PR_WARN("%s - Sell %.0lf securities at %.2lf (%.2lf) VALUE\n",
+	      candle_str(c), nsold, cash / nsold, cash);
+    }else{
+      PR_WARN("%s - Sell %.4lf securities for %.2lf CASH\n",
+	      candle_str(c), nsold, cash);
+    }
   }
   
   /* The end */
   ctx->earnings += cash;
   ctx->balance += cash;
-  __list_del__(p);
+  /* Donèt forget to mark position */
+  position_destroy(p);
 }
 
 static void engine_run_position(struct engine *ctx,
@@ -157,15 +162,17 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed)
     __list_for_each_safe__(&ctx->list_position, p, safe){
       /* First: check stoplosses */
       if(c->low <= p->cert.stoploss)
-	p->status = POSITION_STATUS_STOPPED;
+	p->status = POSITION_STOPPED;
 
       /* 2nd : check if there are opening positions */
-      if(p->status == POSITION_STATUS_REQUESTED)
+      if(p->status == POSITION_REQUESTED)
 	engine_run_position(ctx, p, entry); /* Run */
 
-      /* 3rd: Remove useless positions */
-      if(p->n <= 0.0)
+      /* 3rd: Remove useless positions (sales & lost buys) */
+      if(p->status == POSITION_DESTROY || p->n <= 0.0){
 	__list_del__(p);
+	position_free(p);
+      }
     }
     
     /* Then : feed the engine */
