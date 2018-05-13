@@ -58,7 +58,7 @@ int engine_set_order(struct engine *e, position_t type,
 int engine_place_order(struct engine *ctx, position_t type,
 		       position_req_t req, double value) __attribute__((deprecated));
 
-double engine_npos(struct engine *ctx);
+double engine_npos(struct engine *ctx, int *nrec);
 void engine_display_stats(struct engine *ctx);
 
 #endif /* defined(__Cresus_EVO__engine__) */

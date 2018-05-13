@@ -41,16 +41,20 @@ void engine_release(struct engine *ctx)
   list_head_release(&ctx->list_position);
 }
 
-double engine_npos(struct engine *ctx)
+double engine_npos(struct engine *ctx, int *nrec)
 {
+  int n = 0;
   double ret = 0.0;
   struct position *p;
   
   __list_for_each__(&ctx->list_position, p){
-    if(p->status == POSITION_CONFIRMED)
+    if(p->status == POSITION_CONFIRMED){
       ret = ((p->type == BUY) ? (ret + p->n) : (ret - p->n));
+      n++;
+    }
   }
-  
+
+  if(nrec) *nrec = n;
   return ret;
 }
 
@@ -114,7 +118,12 @@ static void engine_run_position_sell(struct engine *ctx,
     req -= count;
     lp->n -= count;
     nsold += count;
+    /* Beware of short positions. FIXME */
     cash += count * ((c->open - lp->cert.funding) / lp->cert.ratio);
+    
+    /* Mark position for destruction if 0 */
+    if(lp->n <= 0.0)
+      position_destroy(lp);
   }
 
   /* Display info */
@@ -169,7 +178,7 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed)
 	engine_run_position(ctx, p, entry); /* Run */
 
       /* 3rd: Remove useless positions (sales & lost buys) */
-      if(p->status == POSITION_DESTROY || p->n <= 0.0){
+      if(p->status == POSITION_DESTROY){
 	__list_del__(p);
 	position_free(p);
       }
@@ -192,7 +201,7 @@ int engine_set_order(struct engine *ctx, position_t type,
     /* Filter orders if needed */
     if(TIMECMP(entry->time, ctx->filter, GRANULARITY_DAY) < 0)
       goto err;
-
+    
     if(position_alloc(p, type, req, value, cert)){
       __list_add_tail__(&ctx->list_position, p);
       return 0;
@@ -236,6 +245,7 @@ void engine_display_stats(struct engine *ctx)
   PR_STAT("assets_value: %.2lf, total_value: %.2lf, roi: %.2lf%%\n",
 	  assets_value, total_value, roi);
   /* Interesting stuff */
-  PR_STAT("balance: %.2lf, max_drawdown: %.2lf\n",
-	  ctx->balance, ctx->max_drawdown);
+  PR_STAT("balance: %.2lf, max_drawdown: %.2lf, rrr: %.2lf%%\n",
+	  ctx->balance, ctx->max_drawdown,
+	  (total_value / fabs(ctx->max_drawdown) - 1.0) * 100.0);
 }
