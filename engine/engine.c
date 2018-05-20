@@ -169,13 +169,13 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed)
   while((entry = timeline_step(ctx->timeline)) != NULL){
     struct candle *c = __timeline_entry_self__(entry); /* FIXME ? */
     __list_for_each_safe__(&ctx->list_position, p, safe){
-      /* First: check stoplosses */
-      if(c->low <= p->cert.stoploss)
-	p->status = POSITION_STOPPED;
-
-      /* 2nd : check if there are opening positions */
+      /* 1st : check if there are opening positions */
       if(p->status == POSITION_REQUESTED)
 	engine_run_position(ctx, p, entry); /* Run */
+
+      /* 2nd: check stoplosses */
+      if(c->low <= p->cert.stoploss)
+	p->status = POSITION_STOPPED;
 
       /* 3rd: Remove useless positions (sales & lost buys) */
       if(p->status == POSITION_DESTROY){

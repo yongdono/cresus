@@ -32,7 +32,7 @@ static struct timeline_entry *xtrade_read(struct input *in)
   struct xtrade *ctx = __input_self__(in);
  
   /* Check for EOF at least */
-  if(ctx->i <= 0)
+  if(ctx->i < 0)
     goto err;
   
   json_value *o = ctx->data->u.array.values[ctx->i--];
