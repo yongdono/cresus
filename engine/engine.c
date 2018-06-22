@@ -140,7 +140,7 @@ static void engine_run_position_sell(struct engine *ctx,
   /* The end */
   ctx->earnings += cash;
   ctx->balance += cash;
-  /* Donèt forget to mark position */
+  /* Don't forget to mark position */
   position_destroy(p);
 }
 
@@ -247,5 +247,5 @@ void engine_display_stats(struct engine *ctx)
   /* Interesting stuff */
   PR_STAT("balance: %.2lf, max_drawdown: %.2lf, rrr: %.2lf%%\n",
 	  ctx->balance, ctx->max_drawdown,
-	  (total_value / fabs(ctx->max_drawdown) - 1.0) * 100.0);
+	  (ctx->balance / fabs(ctx->max_drawdown)) * 100.0);
 }
