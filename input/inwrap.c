@@ -17,7 +17,6 @@ static struct timeline_entry *inwrap_read(struct input *in)
 {
   struct inwrap *ctx = __input_self__(in);
   switch(ctx->type){
-  case INWRAP_YAHOO: return __input_read__(&ctx->yahoo);
   case INWRAP_YAHOO_V7: return __input_read__(&ctx->yahoo_v7);
   case INWRAP_B4B: return __input_read__(&ctx->b4b);
   case INWRAP_MDGMS: return __input_read__(&ctx->mdgms);
@@ -38,10 +37,6 @@ int inwrap_init(struct inwrap *ctx, const char *filename,
   ctx->type = type;
 
   switch(type){
-  case INWRAP_YAHOO:
-    ret = yahoo_init(&ctx->yahoo, filename, from, to);
-    break;
-
   case INWRAP_YAHOO_V7:
     ret = yahoo_v7_init(&ctx->yahoo_v7, filename, from, to);
     break;

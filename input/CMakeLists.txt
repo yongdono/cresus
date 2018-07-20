@@ -3,7 +3,6 @@ project(cresus)
 
 # src for cresus input
 add_library(input OBJECT
-  yahoo.c
   yahoo_v7.c
   b4b.c
   mdgms.c

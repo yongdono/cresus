@@ -58,6 +58,19 @@ double engine_npos(struct engine *ctx, int *nrec)
   return ret;
 }
 
+double engine_assets_value(struct engine *ctx, double close)
+{
+  double ret = 0.0;
+  struct position *p;
+  
+  __list_for_each__(&ctx->list_position, p){
+    if(p->status != POSITION_DESTROY)
+      ret += position_current_value(p, close);
+  }
+
+  return ret;
+}
+
 static void engine_run_position_buy(struct engine *ctx,
 				    struct position *p,
 				    struct candle *c)
@@ -224,12 +237,7 @@ void engine_display_stats(struct engine *ctx)
   struct position *p;
   
   double npos = 0.0;
-  double assets_value = 0.0;
-  
-  __list_for_each__(&ctx->list_position, p){
-    npos += p->n;
-    assets_value += position_current_value(p, ctx->close);
-  }
+  double assets_value = engine_assets_value(ctx, ctx->close);
   
   /* What we got left */
   double total_value = assets_value + ctx->earnings - ctx->fees;

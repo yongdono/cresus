@@ -27,7 +27,6 @@
   DEFINE_FREE(ctx, inwrap_release)
 
 typedef enum {
-  INWRAP_YAHOO,
   INWRAP_YAHOO_V7,
   INWRAP_B4B,
   INWRAP_MDGMS,
@@ -40,7 +39,6 @@ struct inwrap {
   __inherits_from_input__;
   /* Suported types */  
   inwrap_t type;
-  struct yahoo yahoo;
   struct yahoo_v7 yahoo_v7;
   struct b4b b4b;
   struct mdgms mdgms;
