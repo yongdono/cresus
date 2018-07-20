@@ -55,7 +55,7 @@ void inwrap_release(struct inwrap *ctx);
 static inline inwrap_t inwrap_t_from_str(const char *str)
 {
   if(str){
-    if(!strcmp("yahoo", str)) return INWRAP_YAHOO;
+    if(!strcmp("yahoo", str)) return INWRAP_YAHOO_V7;
     if(!strcmp("b4b", str)) return INWRAP_B4B;
     if(!strcmp("google", str)) return INWRAP_GOOGLE;
     if(!strcmp("mdgms", str)) return INWRAP_MDGMS;
