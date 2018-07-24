@@ -8,4 +8,5 @@ add_library(input OBJECT
   mdgms.c
   inwrap.c
   xtrade.c
+  euronext.c
   )
