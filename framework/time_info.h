@@ -111,6 +111,8 @@ typedef long long granularity_t;
 /* Current time */
 time_info_t time_info(void);
 time_info_t time_info_epoch(time_t time);
+/* Some algorithm */
+int time_info_dayofweek(time_info_t t);
 /* Display */
 const char *time_info2str(time_info_t t, granularity_t g);
 const char *time_info2str_r(time_info_t t, granularity_t g, char *buf);
