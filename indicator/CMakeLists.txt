@@ -16,6 +16,7 @@ add_library(indicator OBJECT
   rs_dorsey.c
   rsi.c
   rs_mansfield.c
+  rs_roc.c
   smi.c
   srsi.c
   stochastic.c
