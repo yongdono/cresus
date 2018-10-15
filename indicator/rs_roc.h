@@ -23,18 +23,22 @@ struct rs_roc_entry {
   __inherits_from_indicator_entry__;
   /* Data */
   double value;
+  double roc, roc_ref;
 };
 
-#define rs_roc_entry_alloc(entry, parent, value)			\
-  DEFINE_ALLOC(struct rs_roc_entry, entry, rs_roc_entry_init, parent, value)
+#define rs_roc_entry_alloc(entry, parent, value, roc, roc_ref)		\
+  DEFINE_ALLOC(struct rs_roc_entry, entry, rs_roc_entry_init, parent,	\
+	       value, roc, roc_ref)
 #define rs_roc_entry_free(entry)		\
   DEFINE_FREE(entry, rs_roc_entry_free)
 
 static inline int rs_roc_entry_init(struct rs_roc_entry *entry,
 				    struct indicator *parent,
-				    double value) {
+				    double value, double roc, double roc_ref) {
   __indicator_entry_super__(entry, parent);
   entry->value = value;
+  entry->roc =roc;
+  entry->roc_ref = roc_ref;
   return 0;
 }
 

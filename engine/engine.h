@@ -61,6 +61,20 @@ int engine_place_order(struct engine *ctx, position_t type,
 double engine_npos(struct engine *ctx, int *nrec);
 double engine_assets_value(struct engine *ctx, double close);
 
+struct engine_stats {
+  double amount;
+  double earnings;
+  double fees;
+  double assets_value;
+  double total_value;
+  double roi;
+  double balance;
+  double max_drawdown;
+  double rrr;
+};
+
+void engine_get_stats(struct engine *ctx, struct engine_stats *stats);
+void engine_display_stats_r(struct engine *ctx, struct engine_stats *stats);
 void engine_display_stats(struct engine *ctx);
 
 #endif /* defined(__Cresus_EVO__engine__) */

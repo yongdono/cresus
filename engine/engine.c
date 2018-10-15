@@ -232,28 +232,43 @@ int engine_place_order(struct engine *ctx, position_t type,
   return engine_set_order(ctx, type, by, value, NULL);
 }
 
-void engine_display_stats(struct engine *ctx)
+void engine_get_stats(struct engine *ctx, struct engine_stats *stats)
 {
-  struct position *p;
-  
-  double npos = 0.0;
-  double assets_value = engine_assets_value(ctx, ctx->close);
-  
+  /* Basics */
+  stats->amount = ctx->amount;
+  stats->earnings = ctx->earnings;
+  stats->fees = ctx->fees;
   /* What we got left */
-  double total_value = assets_value + ctx->earnings - ctx->fees;
+  stats->assets_value = engine_assets_value(ctx, ctx->close);
+  stats->total_value = stats->assets_value + ctx->earnings - ctx->fees;
   /* Return on investment */
-  double roi = ((total_value / ctx->amount) - 1.0) * 100.0;
+  stats->roi = ((stats->total_value / ctx->amount) - 1.0) * 100.0;
+  /* More info */
+  stats->balance = ctx->balance;
+  stats->max_drawdown = ctx->max_drawdown;
+  stats->rrr = (ctx->balance / fabs(ctx->max_drawdown)) * 100.0;
+}
+
+void engine_display_stats_r(struct engine *ctx, struct engine_stats *stats)
+{
+  double npos = 0.0; /* ! */
   
   /* Basic informations */
   PR_STAT("amount: %.2lf, earnings: %.2lf, npos: %.2lf, fees: %.2lf\n",
-	  ctx->amount, ctx->earnings, npos, ctx->fees);
+	  stats->amount, stats->earnings, npos, stats->fees);
   /* More stats */
   //PR_ERR("nbuy: %d, nsell: %d ", ctx->nbuy, ctx->nsell);
   /* Values */
   PR_STAT("assets_value: %.2lf, total_value: %.2lf, roi: %.2lf%%\n",
-	  assets_value, total_value, roi);
+	  stats->assets_value, stats->total_value, stats->roi);
   /* Interesting stuff */
   PR_STAT("balance: %.2lf, max_drawdown: %.2lf, rrr: %.2lf%%\n",
-	  ctx->balance, ctx->max_drawdown,
-	  (ctx->balance / fabs(ctx->max_drawdown)) * 100.0);
+	  stats->balance, stats->max_drawdown, stats->rrr);
+}
+
+void engine_display_stats(struct engine *ctx)
+{
+  struct engine_stats stats;
+  engine_get_stats(ctx, &stats);
+  engine_display_stats_r(ctx, &stats);
 }

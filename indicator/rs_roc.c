@@ -21,7 +21,7 @@ static int rs_roc_feed(struct indicator *i, struct timeline_entry *e)
   if(!e_last) goto out;
   
   if((e_ref = timeline_entry_find(__list_self__(ctx->ref), e->time))){
-    double value, value_ref;
+    double value, roc, roc_ref;
     struct rs_roc_entry *entry;
     struct candle *c_ref = __timeline_entry_self__(e_ref);
     struct timeline_entry *e_ref_last = __list_relative__(e_ref, -(ctx->period));
@@ -32,10 +32,11 @@ static int rs_roc_feed(struct indicator *i, struct timeline_entry *e)
     /* ROC formula :
      * ((candle[n] / candle[n - period]) - 1) * 100.0
      */
-    value = (c->close / ((struct candle*)__timeline_entry_self__(e_last))->close - 1) * 100.0;
-    value_ref = (c_ref->close / ((struct candle*)__timeline_entry_self__(e_ref_last))->close - 1) * 100.0;
+    roc = (c->close / ((struct candle*)__timeline_entry_self__(e_last))->close - 1) * 100.0;
+    roc_ref = (c_ref->close / ((struct candle*)__timeline_entry_self__(e_ref_last))->close - 1) * 100.0;
+    value = roc - roc_ref;
     
-    if(rs_roc_entry_alloc(entry, i, value - value_ref)){
+    if(rs_roc_entry_alloc(entry, i, value, roc, roc_ref)){
       candle_add_indicator_entry(c, __indicator_entry__(entry));
       // PR_INFO("rs_roc value: self %.2lf ref %.2lf value %.2lf\n",
       //      value, value_ref, entry->value);
