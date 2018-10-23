@@ -60,6 +60,7 @@ int engine_place_order(struct engine *ctx, position_t type,
 
 double engine_npos(struct engine *ctx, int *nrec);
 double engine_assets_value(struct engine *ctx, double close);
+double engine_assets_original_value(struct engine *ctx);
 
 struct engine_stats {
   double amount;

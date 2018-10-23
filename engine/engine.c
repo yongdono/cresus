@@ -71,6 +71,19 @@ double engine_assets_value(struct engine *ctx, double close)
   return ret;
 }
 
+double engine_assets_original_value(struct engine *ctx)
+{
+  double ret = 0.0;
+  struct position *p;
+  
+  __list_for_each__(&ctx->list_position, p){
+    if(p->status == POSITION_CONFIRMED)
+      ret += (p->n * p->value);
+  }
+
+  return ret;
+}
+
 static void engine_run_position_buy(struct engine *ctx,
 				    struct position *p,
 				    struct candle *c)
