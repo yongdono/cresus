@@ -78,4 +78,22 @@ void engine_get_stats(struct engine *ctx, struct engine_stats *stats);
 void engine_display_stats_r(struct engine *ctx, struct engine_stats *stats);
 void engine_display_stats(struct engine *ctx);
 
+#include <math.h>
+
+#define engine_stats_init(stats) memset((stats), 0, sizeof(*stats));
+static inline void engine_stats_aggregate(struct engine_stats *dst,
+					  struct engine_stats *src)
+{
+  /* Accumulate stats */
+  dst->amount += src->amount;
+  dst->earnings += src->earnings;
+  dst->fees += src->fees;
+  dst->assets_value += src->assets_value;
+  dst->total_value += src->total_value;
+  dst->roi = ((dst->total_value / dst->amount) - 1.0) * 100.0;
+  dst->balance += src->balance;
+  dst->max_drawdown += src->max_drawdown;
+  dst->rrr = dst->balance / fabs(dst->max_drawdown) + 1.0;
+}
+
 #endif /* defined(__Cresus_EVO__engine__) */

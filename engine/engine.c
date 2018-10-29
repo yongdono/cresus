@@ -275,7 +275,7 @@ void engine_display_stats_r(struct engine *ctx, struct engine_stats *stats)
   PR_STAT("assets_value: %.2lf, total_value: %.2lf, roi: %.2lf%%\n",
 	  stats->assets_value, stats->total_value, stats->roi);
   /* Interesting stuff */
-  PR_STAT("balance: %.2lf, max_drawdown: %.2lf, rrr: %.2lf%%\n",
+  PR_STAT("balance: %.2lf, max_drawdown: %.2lf, rrr: %.2lf\n",
 	  stats->balance, stats->max_drawdown, stats->rrr);
 }
 
