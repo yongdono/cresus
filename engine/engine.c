@@ -34,10 +34,7 @@ int engine_init(struct engine *ctx, struct timeline *t)
   ctx->quiet = 0;
   /* Csv output */
   ctx->csv_output = 0;
-  ctx->csv.ref = 1.0;
-  ctx->csv.target = 1.0;
-  ctx->csv.last_ref = 0.0;
-  ctx->csv.last_assets = 0.0;
+  ctx->csv_ref = 0.0;
   
   return 0;
 }
@@ -94,25 +91,22 @@ double engine_assets_original_value(struct engine *ctx)
 static void engine_run_csv_output(struct engine *ctx,
                                   struct timeline_entry *e)
 {
-  double assets = 0.0;
-  struct candle *c = __timeline_entry_self__(e);
-  double orig_value = engine_assets_original_value(ctx);
-
-  if(orig_value != 0.0)
-    assets = engine_assets_value(ctx, c->close) / orig_value;
-
-  if(ctx->csv.last_ref != 0.0 && ctx->csv.last_assets != 0.0){
-    double diff = ctx->csv.target - ctx->csv.ref;
-    ctx->csv.ref *= (c->close / ctx->csv.last_ref);
-    ctx->csv.target *= (assets / ctx->csv.last_assets);
-    /* Output csv */
-    printf("%s, %.2lf, %.2lf, %lf\n", timeline_entry_str(e),
-           ctx->csv.ref - 1.0, ctx->csv.target - 1.0, diff);
+  if(TIMECMP(e->time, ctx->filter, GRANULARITY_DAY)  >= 0){
+    struct candle *c = __timeline_entry_self__(e);
+    double orig = engine_assets_original_value(ctx);
+    double value = engine_assets_value(ctx, c->close);
+    
+    if(ctx->csv_ref == 0.0)
+      ctx->csv_ref = c->close; /* One-time init */
+    
+    else{
+      double ref = (c->close / ctx->csv_ref)  - 1.0;
+      double target = (orig != 0.0 ? (value / orig) - 1.0 : 0.0);
+      /* Output csv */
+      printf("%s, %lf, %lf, %lf\n", timeline_entry_str(e),
+	     ref , target, target - ref);
+    }
   }
-
-  /* Remember last values */
-  ctx->csv.last_ref = c->close;
-  ctx->csv.last_assets = assets;
 }
 
 static void engine_run_position_buy(struct engine *ctx,

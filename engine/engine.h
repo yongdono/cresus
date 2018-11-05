@@ -35,10 +35,7 @@ struct engine {
   int quiet;
   /* CSV graph output */
   int csv_output;
-  struct {
-    double ref, target;
-    double last_ref, last_assets;
-  } csv;
+  double csv_ref;
 };
 
 #define engine_set_transaction_fee(ctx, fee)	\
