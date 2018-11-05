@@ -100,11 +100,12 @@ static void engine_run_csv_output(struct engine *ctx,
     assets = engine_assets_value(ctx, c->close) / orig_value;
 
   if(ctx->csv.last_ref != 0.0 && ctx->csv.last_assets != 0.0){
+    double diff = ctx->csv.target - ctx->csv.ref;
     ctx->csv.ref += ((c->close / ctx->csv.last_ref) - 1.0) * 100.0;
     ctx->csv.target += ((assets / ctx->csv.last_assets) - 1.0) * 100.0;
     /* Output csv */
-    printf("%s, %.2lf, %.2lf\n", timeline_entry_str(e),
-           ctx->csv.ref, ctx->csv.target);
+    printf("%s, %.2lf, %.2lf, %lf\n", timeline_entry_str(e),
+           ctx->csv.ref, ctx->csv.target, diff);
   }
 
   /* Remember last values */
