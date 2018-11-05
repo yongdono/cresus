@@ -8,6 +8,8 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
+
 #include "engine.h"
 #include "framework/verbose.h"
 
@@ -31,6 +33,9 @@ int engine_init(struct engine *ctx, struct timeline *t)
   /* Misc */
   ctx->filter = TIME_INIT(1900, 1, 1, 0, 0, 0, 0);
   ctx->quiet = 0;
+  /* Csv output */
+  ctx->csv_output = 0;
+  memset(&ctx->csv, 0, sizeof(ctx->csv));
   
   return 0;
 }
@@ -82,6 +87,29 @@ double engine_assets_original_value(struct engine *ctx)
   }
 
   return ret;
+}
+
+static void engine_run_csv_output(struct engine *ctx,
+                                  struct timeline_entry *e)
+{
+  double assets = 0.0;
+  struct candle *c = __timeline_entry_self__(e);
+  double orig_value = engine_assets_original_value(ctx);
+
+  if(orig_value != 0.0)
+    assets = engine_assets_value(ctx, c->close) / orig_value;
+
+  if(ctx->csv.last_ref != 0.0 && ctx->csv.last_assets != 0.0){
+    ctx->csv.ref += ((c->close / ctx->csv.last_ref) - 1.0) * 100.0;
+    ctx->csv.target += ((assets / ctx->csv.last_assets) - 1.0) * 100.0;
+    /* Output csv */
+    printf("%s, %.2lf, %.2lf\n", timeline_entry_str(e),
+           ctx->csv.ref, ctx->csv.target);
+  }
+
+  /* Remember last values */
+  ctx->csv.last_ref = c->close;
+  ctx->csv.last_assets = assets;
 }
 
 static void engine_run_position_buy(struct engine *ctx,
@@ -213,6 +241,10 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed)
     /* Then : feed the engine */
     feed(ctx, ctx->timeline, entry);
     ctx->close = c->close;
+
+    /* In the end : output csv if asked for */
+    if(ctx->csv_output)
+      engine_run_csv_output(ctx, entry);
   }
 }
 
@@ -275,7 +307,7 @@ void engine_display_stats_r(struct engine *ctx, struct engine_stats *stats)
   PR_STAT("assets_value: %.2lf, total_value: %.2lf, roi: %.2lf%%\n",
 	  stats->assets_value, stats->total_value, stats->roi);
   /* Interesting stuff */
-  PR_STAT("balance: %.2lf, max_drawdown: %.2lf, rrr: %.2lf%%\n",
+  PR_STAT("balance: %.2lf, max_drawdown: %.2lf, rrr: %.2lf\n",
 	  stats->balance, stats->max_drawdown, stats->rrr);
 }
 
