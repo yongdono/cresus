@@ -86,6 +86,8 @@ typedef long long granularity_t;
 #define TIME_INIT(y, m, d, h, mn, s, ms)				\
   (VAL_MSEC(ms) | VAL_SECOND(s) | VAL_MINUTE(mn) | VAL_HOUR(h) |	\
    VAL_DAY(d) | VAL_MONTH(m) | VAL_YEAR(y))
+#define TIME_ZERO()                             \
+  TIME_INIT(1900, 1, 1, 0, 0, 0, 0)
 
 /* Set accessors */
 #define TIME_SET_MSEC(t, m)   t = ((t & ~MSEC_MASK)   | VAL_MSEC(m))

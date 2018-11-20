@@ -21,8 +21,7 @@
 
 static int amount = 250;
 static int occurrence = 1;
-static int current_month = -1;
-time_info_t year_min = TIME_INIT(1900, 1, 1, 0, 0, 0, 0);
+time_info_t year_min = TIME_ZERO();
 
 /* Stats */
 static int quiet = 0;
@@ -32,15 +31,16 @@ static int feed(struct engine *e,
 		struct timeline_entry *entry)
 {
   /* Step by step loop */
+  static int last_month = -1;
   time_info_t time = VAL_YEAR(year_min);
   struct candle *c = __timeline_entry_self__(entry);
   
   /* Execute */
   int month = TIME_GET_MONTH(entry->time);
-  if(month != current_month && !(month % occurrence))
+  if(month != last_month && !(month % occurrence))
     engine_set_order(e, BUY, amount, CASH, NULL);
   
-  current_month = month;
+  last_month = month;
   return 0;
 }
 
