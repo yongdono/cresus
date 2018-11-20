@@ -26,12 +26,21 @@ static time_info_t euronext_time(struct euronext *ctx,
   return TIME_INIT(y, m, d, 0, 0, 0, 0);
 }
 
-static double euronext_dbl(struct euronext *ctx,
-			   const char *str)
+static double euronext_dbl(struct euronext *ctx, char *str)
 {
-  int t, h, c;
-  /* FIXME: bug under 1.000 */
-  sscanf(str, "%d.%d,%d", &t, &h, &c);
+  char *stringp = str;
+  int t = 0, h = 0, c = 0;
+
+  char *thousands = strsep(&stringp, ".");
+  if(!stringp) stringp = str;
+  else sscanf(thousands, "%d", &t);
+  
+  char *hundreds = strsep(&stringp, ",");
+  char *decimal = stringp;
+  
+  sscanf(hundreds, "%d", &h);
+  sscanf(decimal, "%d", &c);
+  
   return ((double)t * 1000.0) + (double)h + ((double)c / 100.0);
 }
 
