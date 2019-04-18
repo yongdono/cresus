@@ -30,7 +30,8 @@ struct engine {
   /* Last close value */
   double close;
   /* Positions filter */
-  time_info_t filter;
+  time_info_t start_time;
+  time_info_t end_time;
   /* Display info */
   int quiet;
   /* CSV graph output */
@@ -40,8 +41,10 @@ struct engine {
 
 #define engine_set_transaction_fee(ctx, fee)	\
   (ctx)->transaction_fee = fee
-#define engine_set_filter(ctx, time_info)	\
-  (ctx)->filter = time_info
+#define engine_set_start_time(ctx, time_info)	\
+  (ctx)->start_time = time_info
+#define engine_set_end_time(ctx, time_info)	\
+  (ctx)->end_time = time_info
 #define engine_set_quiet(ctx, quiet)		\
   (ctx)->quiet = quiet
 #define engine_set_csv_output(ctx, boolean) \

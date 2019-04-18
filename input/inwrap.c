@@ -27,34 +27,33 @@ static struct timeline_entry *inwrap_read(struct input *in)
   return NULL;
 }
 
-int inwrap_init(struct inwrap *ctx, const char *filename,
-	       inwrap_t type, time_info_t from, time_info_t to)
+int inwrap_init(struct inwrap *ctx, const char *filename, inwrap_t type)
 {
   int ret = -1;
 
   /* super() */
-  __input_super__(ctx, inwrap_read, from, to);
+  __input_super__(ctx, inwrap_read);
   ctx->type = type;
 
   switch(type){
   case INWRAP_YAHOO_V7:
-    ret = yahoo_v7_init(&ctx->yahoo_v7, filename, from, to);
+    ret = yahoo_v7_init(&ctx->yahoo_v7, filename);
     break;
     
   case INWRAP_B4B:
-    ret = b4b_init(&ctx->b4b, filename, from, to);
+    ret = b4b_init(&ctx->b4b, filename);
     break;
 
   case INWRAP_MDGMS:
-    ret = mdgms_init(&ctx->mdgms, filename, from, to);
+    ret = mdgms_init(&ctx->mdgms, filename);
     break;
 
   case INWRAP_XTRADE:
-    ret = xtrade_init(&ctx->xtrade, filename, from, to);
+    ret = xtrade_init(&ctx->xtrade, filename);
     break;
     
   case INWRAP_EURONEXT:
-    ret = euronext_init(&ctx->euronext, filename, from, to);
+    ret = euronext_init(&ctx->euronext, filename);
     break;
   }
   

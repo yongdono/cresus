@@ -14,8 +14,8 @@
 #include "framework/alloc.h"
 #include "framework/input.h"
 
-#define xtrade_alloc(ctx, filename, from, to)				\
-  DEFINE_ALLOC(struct xtrade, ctx, xtrade_init, filename, from, to)
+#define xtrade_alloc(ctx, filename)				\
+  DEFINE_ALLOC(struct xtrade, ctx, xtrade_init, filename)
 #define xtrade_free(ctx)			\
   DEFINE_FREE(ctx, xtrade_release)
 
@@ -29,8 +29,7 @@ struct xtrade {
   json_value *data;
 };
 
-int xtrade_init(struct xtrade *ctx, const char *filename,
-		time_info_t from, time_info_t to);
+int xtrade_init(struct xtrade *ctx, const char *filename);
 void xtrade_release(struct xtrade *ctx);
 
 #endif

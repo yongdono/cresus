@@ -75,7 +75,7 @@ static struct timeline *timeline_create(const char *filename, const char *type)
   struct timeline *timeline;
   inwrap_t t = inwrap_t_from_str(type);
   
-  if(inwrap_alloc(inwrap, filename, t, TIME_MIN, TIME_MAX)){
+  if(inwrap_alloc(inwrap, filename, t)){
     if(timeline_alloc(timeline, "buy_red_sell_green_filtered",
                       __input__(inwrap))){
       /* Ok */
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
   if((t = timeline_create(filename, type))){
     engine_init(&engine, t);
     /* Opt */
-    engine_set_filter(&engine, year_min);
+    engine_set_start_time(&engine, year_min);
     engine_set_transaction_fee(&engine, 2.50);
     /* Run */
     engine_run(&engine, feed);

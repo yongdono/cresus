@@ -43,25 +43,22 @@ static struct timeline_entry *xtrade_read(struct input *in)
   double high = o->u.object.values[4].value->u.dbl;
   
   time_info_t time = xtrade_time(ctx, str);
-  if(input_in_boundaries(in, time, GRANULARITY_DAY))
-    /* Filter by time (FIXME ?) */
-    if(candle_alloc(c, time, GRANULARITY_DAY,
-		    open, close, high, low, 0.0))
-      return __timeline_entry__(c);
-
+  if(candle_alloc(c, time, GRANULARITY_DAY,
+                  open, close, high, low, 0.0))
+    return __timeline_entry__(c);
+  
  err:
   return NULL;
 }
 
-int xtrade_init(struct xtrade *ctx, const char *filename,
-	      time_info_t from, time_info_t to)
+int xtrade_init(struct xtrade *ctx, const char *filename)
 {
   int fd;
   size_t size;
   struct stat stat;
 
   /* super */
-  __input_super__(ctx, xtrade_read, from, to);
+  __input_super__(ctx, xtrade_read);
   
   /* internals */
   ctx->i = 0;

@@ -46,25 +46,22 @@ static struct timeline_entry *mdgms_read(struct input *in)
   ctx->i++;
   
   time_info_t time = time_info_epoch(t);
-  if(input_in_boundaries(in, time, GRANULARITY_DAY))
-    /* Filter by time (FIXME ?) */
-    if(candle_alloc(c, time, GRANULARITY_DAY,
-		    open, close, high, low, vol))
-      return __timeline_entry__(c);
-
+  if(candle_alloc(c, time, GRANULARITY_DAY,
+                  open, close, high, low, vol))
+    return __timeline_entry__(c);
+  
  err:
   return NULL;
 }
 
-int mdgms_init(struct mdgms *ctx, const char *filename,
-	      time_info_t from, time_info_t to)
+int mdgms_init(struct mdgms *ctx, const char *filename)
 {
   int fd;
   size_t size;
   struct stat stat;
 
   /* super */
-  __input_super__(ctx, mdgms_read, from, to);
+  __input_super__(ctx, mdgms_read);
   
   /* internals */
   ctx->i = 0;

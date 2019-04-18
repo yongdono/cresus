@@ -34,8 +34,13 @@ static time_info_t common_opt_time_info(struct common_opt *ctx, char *str)
 
 int common_opt_getopt(struct common_opt *ctx, int argc, char **argv)
 {
-  int c;
+  int c; 
 
+  int _optind = optind;
+  int _optarg = optarg;
+  int _opterr = opterr;
+  int _optopt = optopt;
+  
   while((c = getopt(argc, argv, "o:F:S:E:")) != -1){
     switch(c){
     case 'o':
@@ -55,12 +60,21 @@ int common_opt_getopt(struct common_opt *ctx, int argc, char **argv)
       COMMON_OPT_SET(&ctx->end_time, t,
                      common_opt_time_info(ctx, optarg));
       break;
-      
+
     default:
-      PR_ERR("Unknown option %c\n", c);
-      return -1;
+      /* Ignore unknown opt */
+      break;
     }
   }
+
+  /* Filename is some kinda common param, i think */
+  ctx->filename = argv[optind];
+  
+  /* Reset getopt. Not really pretty */
+  optind = _optind;
+  optarg = _optarg;
+  opterr = _opterr;
+  optopt = _optopt;
   
   return 0;
 }

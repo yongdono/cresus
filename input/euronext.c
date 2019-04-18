@@ -66,25 +66,22 @@ static struct timeline_entry *euronext_read(struct input *in)
   double low = euronext_dbl(ctx, slow);
   double close = euronext_dbl(ctx, sclose);
   
-  if(input_in_boundaries(in, time, GRANULARITY_DAY))
-    /* Filter by time (FIXME ?) */
-    if(candle_alloc(c, time, GRANULARITY_DAY,
-		    open, close, high, low, 0.0))
-      return __timeline_entry__(c);
+  if(candle_alloc(c, time, GRANULARITY_DAY,
+                  open, close, high, low, 0.0))
+    return __timeline_entry__(c);
 
  err:
   return NULL;
 }
 
-int euronext_init(struct euronext *ctx, const char *filename,
-	      time_info_t from, time_info_t to)
+int euronext_init(struct euronext *ctx, const char *filename)
 {
   int fd;
   size_t size;
   struct stat stat;
 
   /* super */
-  __input_super__(ctx, euronext_read, from, to);
+  __input_super__(ctx, euronext_read);
   
   /* internals */
   ctx->i = 0;

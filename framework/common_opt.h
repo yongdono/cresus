@@ -30,6 +30,8 @@ struct common_opt {
   struct common_opt_tuple fixed_amount;
   struct common_opt_tuple start_time;
   struct common_opt_tuple end_time;
+  /* Filename */
+  char *filename;
 };
 
 int common_opt_init(struct common_opt *ctx);

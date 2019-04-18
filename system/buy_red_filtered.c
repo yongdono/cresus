@@ -30,7 +30,7 @@ static int level_min = 1;
 /* amount to buy */
 static double amount = 500.0;
 /* Boundaries */
-static time_info_t time_min = VAL_YEAR(1900);
+static time_info_t time_min = TIME_MIN;
 static time_info_t time_max = TIME_MAX;
 /* State machine */
 static state_t state = STATE_NORMAL;
@@ -69,7 +69,7 @@ static struct timeline *timeline_create(const char *filename,
   struct timeline *timeline;
   inwrap_t t = inwrap_t_from_str(type);
   
-  if(inwrap_alloc(inwrap, filename, t, TIME_MIN, time_max)){
+  if(inwrap_alloc(inwrap, filename, t)){
     if(timeline_alloc(timeline, "buy_red_filtered", __input__(inwrap))){
       /* Ok */
       return timeline;
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
   /* Check arguments */
   if(argc < 2)
     goto usage;
-  
+
   /* Options */
   common_opt_init(&opt);
   if(common_opt_getopt(&opt, argc, argv) < 0)
@@ -119,14 +119,12 @@ int main(int argc, char **argv)
     default: break; /* Ignore */
     }
   }
-  
-  /* Filename is only real param */
-  filename = argv[optind];
-  
-  if((t = timeline_create(filename, opt.input_type.value.s))){
+ 
+  if((t = timeline_create(opt.filename, opt.input_type.value.s))){
     engine_init(&engine, t);
     /* Opt */
-    engine_set_filter(&engine, time_min);
+    engine_set_start_time(&engine, time_min);
+    engine_set_end_time(&engine, time_max);
     engine_set_transaction_fee(&engine, 2.50);
     /* Run */
     engine_run(&engine, feed);

@@ -14,8 +14,8 @@
 #include "framework/alloc.h"
 #include "framework/input.h"
 
-#define euronext_alloc(ctx, filename, from, to)				\
-  DEFINE_ALLOC(struct euronext, ctx, euronext_init, filename, from, to)
+#define euronext_alloc(ctx, filename)				\
+  DEFINE_ALLOC(struct euronext, ctx, euronext_init, filename)
 #define euronext_free(ctx)			\
   DEFINE_FREE(ctx, euronext_release)
 
@@ -31,8 +31,7 @@ struct euronext {
   json_value *data;
 };
 
-int euronext_init(struct euronext *ctx, const char *filename,
-		  time_info_t from, time_info_t to);
+int euronext_init(struct euronext *ctx, const char *filename);
 void euronext_release(struct euronext *ctx);
 
 #endif

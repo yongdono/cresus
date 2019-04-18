@@ -29,8 +29,10 @@ int engine_init(struct engine *ctx, struct timeline *t)
   ctx->nsell = 0;
   ctx->max_drawdown = 0;
   ctx->transaction_fee = 0;
+  /* Time boundaries */
+  ctx->start_time = TIME_MIN;
+  ctx->end_time = TIME_MAX;
   /* Misc */
-  ctx->filter = TIME_INIT(1900, 1, 1, 0, 0, 0, 0);
   ctx->quiet = 0;
   /* Csv output */
   ctx->csv_output = 0;
@@ -91,7 +93,7 @@ double engine_assets_original_value(struct engine *ctx)
 static void engine_run_csv_output(struct engine *ctx,
                                   struct timeline_entry *e)
 {
-  if(TIMECMP(e->time, ctx->filter, GRANULARITY_DAY)  >= 0){
+  if(TIMECMP(e->time, ctx->start_time, GRANULARITY_DAY) >= 0){
     struct candle *c = __timeline_entry_self__(e);
     double orig = engine_assets_original_value(ctx);
     double value = engine_assets_value(ctx, c->close);
@@ -216,20 +218,26 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed)
   struct list *safe;
   struct position *p;
   struct timeline_entry *entry;
-  
+
   while((entry = timeline_step(ctx->timeline)) != NULL){
     struct candle *c = __timeline_entry_self__(entry); /* FIXME ? */
+
+    /* We MUST stop at end_time */
+    if(TIMECMP(entry->time, ctx->end_time, GRANULARITY_DAY) > 0)
+      break;
+
+    /* Positions management */
     __list_for_each_safe__(&ctx->list_position, p, safe){
       /* 1st : check if there are opening positions */
       if(p->status == POSITION_REQUESTED)
 	engine_run_position(ctx, p, entry); /* Run */
-
+      
       /* 2nd: check stoplosses */
       if(c->low <= p->cert.stoploss){
 	p->status = POSITION_DESTROY;
 	PR_WARN("%s - Stoploss hit\n", candle_str(c));
       }
-
+      
       /* 3rd: Remove useless positions (sales & lost buys) */
       if(p->status == POSITION_DESTROY){
 	__list_del__(p);
@@ -256,7 +264,7 @@ int engine_set_order(struct engine *ctx, position_t type,
   
   if(timeline_entry_current(ctx->timeline, &entry) != -1){
     /* Filter orders if needed */
-    if(TIMECMP(entry->time, ctx->filter, GRANULARITY_DAY) < 0)
+    if(TIMECMP(entry->time, ctx->start_time, GRANULARITY_DAY) < 0)
       goto err;
     
     if(position_alloc(p, type, req, value, cert)){

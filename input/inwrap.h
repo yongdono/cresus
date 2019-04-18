@@ -21,10 +21,9 @@
 
 /* Object is allocatable */
 
-#define inwrap_alloc(ctx, filename, type, from, to)			\
-  DEFINE_ALLOC(struct inwrap, ctx, inwrap_init, filename,		\
-	       type, from, to)
-#define inwrap_free(ctx)			\
+#define inwrap_alloc(ctx, filename, type)			\
+  DEFINE_ALLOC(struct inwrap, ctx, inwrap_init, filename, type)
+#define inwrap_free(ctx)		\
   DEFINE_FREE(ctx, inwrap_release)
 
 typedef enum {
@@ -47,8 +46,7 @@ struct inwrap {
   struct euronext euronext;
 };
 
-int inwrap_init(struct inwrap *ctx, const char *filename,
-	       inwrap_t type, time_info_t from, time_info_t to);
+int inwrap_init(struct inwrap *ctx, const char *filename, inwrap_t type);
 void inwrap_release(struct inwrap *ctx);
 
 #include <string.h>
