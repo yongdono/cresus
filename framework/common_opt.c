@@ -36,8 +36,12 @@ int common_opt_getopt(struct common_opt *ctx, int argc, char **argv)
 {
   int c;
 
-  while((c = getopt(argc, argv, "E:F:S:")) != -1){
+  while((c = getopt(argc, argv, "o:F:S:E:")) != -1){
     switch(c){
+    case 'o':
+      COMMON_OPT_SET(&ctx->input_type, s, optarg);
+      break;
+      
     case 'F':
       COMMON_OPT_SET(&ctx->fixed_amount, i, atoi(optarg));
       break;

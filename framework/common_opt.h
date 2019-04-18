@@ -26,6 +26,7 @@ struct common_opt_tuple {
     (tuple)->value.type = (val); };
 
 struct common_opt {
+  struct common_opt_tuple input_type;
   struct common_opt_tuple fixed_amount;
   struct common_opt_tuple start_time;
   struct common_opt_tuple end_time;
