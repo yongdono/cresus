@@ -13,9 +13,13 @@
 #include "verbose.h"
 #include "common_opt.h"
 
-int common_opt_init(struct common_opt *ctx)
+int common_opt_init(struct common_opt *ctx, const char *optstring)
 {
   memset(ctx, 0, sizeof(*ctx));
+  /* Create custom optstring */
+  strcpy(ctx->optstring, COMMON_OPTSTRING);
+  strcat(ctx->optstring, optstring);
+  
   return 0;
 }
 
@@ -34,47 +38,31 @@ static time_info_t common_opt_time_info(struct common_opt *ctx, char *str)
 
 int common_opt_getopt(struct common_opt *ctx, int argc, char **argv)
 {
-  int c; 
-
-  int _optind = optind;
-  int _optarg = optarg;
-  int _opterr = opterr;
-  int _optopt = optopt;
+  int c;
   
-  while((c = getopt(argc, argv, "o:F:S:E:")) != -1){
-    switch(c){
-    case 'o':
-      COMMON_OPT_SET(&ctx->input_type, s, optarg);
-      break;
-      
-    case 'F':
-      COMMON_OPT_SET(&ctx->fixed_amount, i, atoi(optarg));
-      break;
-      
-    case 'S':
-      COMMON_OPT_SET(&ctx->start_time, t,
-                     common_opt_time_info(ctx, optarg));
-      break;
-      
-    case 'E':
-      COMMON_OPT_SET(&ctx->end_time, t,
-                     common_opt_time_info(ctx, optarg));
-      break;
-
-    default:
-      /* Ignore unknown opt */
-      break;
-    }
+  switch((c = getopt(argc, argv, ctx->optstring))){
+  case 'o':
+    COMMON_OPT_SET(&ctx->input_type, s, optarg);
+    break;
+    
+  case 'F':
+    COMMON_OPT_SET(&ctx->fixed_amount, i, atoi(optarg));
+    break;
+    
+  case 'S':
+    COMMON_OPT_SET(&ctx->start_time, t,
+                   common_opt_time_info(ctx, optarg));
+    break;
+    
+  case 'E':
+    COMMON_OPT_SET(&ctx->end_time, t,
+                   common_opt_time_info(ctx, optarg));
+    break;
+    
+  default:
+    /* Ignore unknown opt */
+    break;
   }
-
-  /* Filename is some kinda common param, i think */
-  ctx->filename = argv[optind];
   
-  /* Reset getopt. Not really pretty */
-  optind = _optind;
-  optarg = _optarg;
-  opterr = _opterr;
-  optopt = _optopt;
-  
-  return 0;
+  return c;
 }

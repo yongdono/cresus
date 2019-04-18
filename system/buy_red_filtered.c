@@ -103,24 +103,23 @@ int main(int argc, char **argv)
     goto usage;
 
   /* Options */
-  common_opt_init(&opt);
-  if(common_opt_getopt(&opt, argc, argv) < 0)
-    goto usage;
-  
-  if(opt.start_time.set) time_min = opt.start_time.value.t;
-  if(opt.end_time.set) time_max = opt.end_time.value.t;
-  if(opt.fixed_amount.set) amount = opt.fixed_amount.value.i;
-  if(!opt.input_type.set) goto usage;
-
-  /* Specific options */
-  while((c = getopt(argc, argv, "l:")) != -1){
+  common_opt_init(&opt, "l:");
+  while((c = common_opt_getopt(&opt, argc, argv)) != -1){
     switch(c){
     case 'l': level_min = atoi(optarg); break;
     default: break; /* Ignore */
     }
   }
- 
-  if((t = timeline_create(opt.filename, opt.input_type.value.s))){
+  
+  if(opt.start_time.set) time_min = opt.start_time.t;
+  if(opt.end_time.set) time_max = opt.end_time.t;
+  if(opt.fixed_amount.set) amount = opt.fixed_amount.i;
+  if(!opt.input_type.set) goto usage;
+  
+  /* Filename is last argv param */
+  filename = argv[optind];
+  
+  if((t = timeline_create(filename, opt.input_type.s))){
     engine_init(&engine, t);
     /* Opt */
     engine_set_start_time(&engine, time_min);
