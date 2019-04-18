@@ -83,6 +83,7 @@ typedef long long granularity_t;
 #define VAL_MONTH(m) ((BITMASK(MONTH_NBIT) & (m - 1)) << MONTH_SHIFT)
 #define VAL_YEAR(y) ((BITMASK(YEAR_NBIT) & y) << YEAR_SHIFT)
 
+/* FIXME : Shouldn't it be TIME_INFO_INIT ? */
 #define TIME_INIT(y, m, d, h, mn, s, ms)				\
   (VAL_MSEC(ms) | VAL_SECOND(s) | VAL_MINUTE(mn) | VAL_HOUR(h) |	\
    VAL_DAY(d) | VAL_MONTH(m) | VAL_YEAR(y))

@@ -9,6 +9,8 @@
 #ifndef VERBOSE_H
 #define VERBOSE_H
 
+#include <stdio.h>
+
 extern int __verbose__;
 extern int __verbose_color__;
 
