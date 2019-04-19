@@ -30,6 +30,7 @@ struct common_opt_tuple {
  * -c enable csv output (for gnuplot)
  * -f <transaction fee>
  * -o <file type>
+ * -q quiet
  * -v verbose
  * -F <fixed amount>
  * -S <start time> (format : YYYY-MM-DD)
@@ -46,6 +47,7 @@ struct common_opt {
   struct common_opt_tuple end_time;
   struct common_opt_tuple transaction_fee;
   struct common_opt_tuple csv_output;
+  struct common_opt_tuple quiet;
 };
 
 int common_opt_init(struct common_opt *ctx, const char *optstring);

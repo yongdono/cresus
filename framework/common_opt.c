@@ -54,6 +54,10 @@ int common_opt_getopt(struct common_opt *ctx, int argc, char **argv)
     COMMON_OPT_SET(&ctx->input_type, s, optarg);
     break;
 
+  case 'q':
+    COMMON_OPT_SET(&ctx->quiet, i, 1);
+    break;
+    
   case 'v':
     VERBOSE_LEVEL(DBG);
     break;

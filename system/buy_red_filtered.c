@@ -29,9 +29,6 @@ typedef enum {
 static int level_min = 1;
 /* amount to buy */
 static double amount = 500.0;
-/* Boundaries */
-static time_info_t time_min = TIME_MIN;
-static time_info_t time_max = TIME_MAX;
 /* State machine */
 static state_t state = STATE_NORMAL;
 
@@ -92,7 +89,7 @@ int main(int argc, char **argv)
    * Data
    */
   int c;
-  char *filename, *type;
+  char *filename;
   struct common_opt opt;
   
   struct timeline *t;

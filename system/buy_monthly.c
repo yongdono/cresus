@@ -18,13 +18,10 @@
 #include "input/inwrap.h"
 #include "engine/engine.h"
 #include "framework/verbose.h"
+#include "framework/common_opt.h"
 
 static int amount = 250;
 static int occurrence = 1;
-time_info_t year_min = TIME_ZERO();
-
-/* Stats */
-static int quiet = 0;
 
 static int feed(struct engine *e,
 		struct timeline *t,
@@ -32,7 +29,6 @@ static int feed(struct engine *e,
 {
   /* Step by step loop */
   static int last_month = -1;
-  time_info_t time = VAL_YEAR(year_min);
   struct candle *c = __timeline_entry_self__(entry);
   
   /* Execute */
@@ -72,39 +68,32 @@ int main(int argc, char **argv)
    * Data
    */
   int c;
-  char *filename, *type;
+  char *filename;
+  struct common_opt opt;
   
   struct timeline *t;
   struct engine engine;
 
-  if(argc < 2){
-    fprintf(stdout, "Usage: %s -o type filename\n", argv[0]);
-    return -1;
-  }
+  if(argc < 2)
+    goto usage;
 
-  while((c = getopt(argc, argv, "o:m:n:F:q")) != -1){
+  /* Options */
+  common_opt_init(&opt, "m:");
+  while((c = common_opt_getopt(&opt, argc, argv)) != -1){
     switch(c){
-    case 'o': type = optarg; break;
     case 'm': occurrence = atoi(optarg); break;
-    case 'n': year_min = VAL_YEAR(atoi(optarg)); break;
-    case 'F': amount = atoi(optarg); break;
-    case 'q': quiet = 1; break;
-    default:
-      PR_ERR("Unknown option %c\n", c);
-      return -1;
+    default: break;
     }
   }
-
-  /* Filename is only real param */
-  filename = argv[optind];
   
-  if((t = timeline_create(filename, type))){
+  /* Command line params */
+  filename = argv[optind];
+  if(opt.fixed_amount.set) amount = opt.fixed_amount.i;
+  if(!opt.input_type.set) goto usage;
+  
+  if((t = timeline_create(filename, opt.input_type.s))){
     engine_init(&engine, t);
-    /* Options */
-    engine_set_transaction_fee(&engine, 2.50);
-    engine_set_quiet(&engine, quiet);
-    engine_set_start_time(&engine, year_min);
-
+    engine_set_common_opt(&engine, &opt);
     /* Run */
     engine_run(&engine, feed);
     
@@ -116,4 +105,8 @@ int main(int argc, char **argv)
   }
   
   return 0;
+
+ usage:
+  fprintf(stdout, "Usage: %s -o type filename\n", argv[0]);
+  return -1;
 }

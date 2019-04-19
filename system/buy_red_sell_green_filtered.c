@@ -18,6 +18,7 @@
 #include "input/inwrap.h"
 #include "engine/engine.h"
 #include "framework/verbose.h"
+#include "framework/common_opt.h"
 
 typedef enum {
   STATE_NORMAL,
@@ -27,7 +28,6 @@ typedef enum {
 
 static int level_buy_min = 1;
 static int level_sell_min = 1;
-static time_info_t year_min = VAL_YEAR(1900);
 static state_t state = STATE_NORMAL;
 
 static int feed(struct engine *e,
@@ -94,36 +94,33 @@ int main(int argc, char **argv)
    * Data
    */
   int c;
-  char *filename, *type;
+  char *filename;
+  struct common_opt opt;
   
   struct timeline *t;
   struct engine engine;
 
-  if(argc < 2){
-    fprintf(stdout, "Usage: %s -o type filename\n", argv[0]);
-    return -1;
-  }
+  if(argc < 2)
+    goto usage;
 
-  while((c = getopt(argc, argv, "o:n:b:s:")) != -1){
+  /* Options */
+  common_opt_init(&opt, "b:s:");
+  while((c = common_opt_getopt(&opt, argc, argv)) != -1){
     switch(c){
-    case 'o': type = optarg; break;
-    case 'n': year_min = VAL_YEAR(atoi(optarg)); break;
     case 'b': level_buy_min = atoi(optarg); break;
     case 's': level_sell_min = atoi(optarg); break;
-    default:
-      PR_ERR("Unknown option %c\n", c);
-      return -1;
+    default: break;
     }
   }
 
-  /* Filename is only real param */
+  /* Command line params */
   filename = argv[optind];
+  if(!opt.input_type.set) goto usage;
   
-  if((t = timeline_create(filename, type))){
+  if((t = timeline_create(filename, opt.input_type.s))){
+    /* Engine setup */
     engine_init(&engine, t);
-    /* Opt */
-    engine_set_start_time(&engine, year_min);
-    engine_set_transaction_fee(&engine, 2.50);
+    engine_set_common_opt(&engine, &opt);
     /* Run */
     engine_run(&engine, feed);
 
@@ -147,4 +144,8 @@ int main(int argc, char **argv)
   }
   
   return 0;
+
+ usage:
+  fprintf(stdout, "Usage: %s -o type filename\n", argv[0]);
+  return -1;
 }
