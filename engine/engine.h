@@ -12,6 +12,7 @@
 #include "engine/candle.h"
 #include "engine/position.h"
 #include "engine/timeline.h"
+#include "framework/common_opt.h"
 
 struct engine {
   struct timeline *timeline;
@@ -47,14 +48,16 @@ struct engine {
   (ctx)->end_time = time_info
 #define engine_set_quiet(ctx, quiet)		\
   (ctx)->quiet = quiet
-#define engine_set_csv_output(ctx, boolean) \
-    (ctx)->csv_output = boolean
+#define engine_set_csv_output(ctx, boolean)     \
+  (ctx)->csv_output = boolean
 
 /* External pointer to plugin */
 typedef int (*engine_feed_ptr)(struct engine*, struct timeline*, struct timeline_entry*);
 
 int engine_init(struct engine *e, struct timeline *t);
 void engine_release(struct engine *e);
+
+int engine_set_common_opt(struct engine *e, struct common_opt *opt);
 
 void engine_run(struct engine *e, engine_feed_ptr feed);
 

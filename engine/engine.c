@@ -47,6 +47,16 @@ void engine_release(struct engine *ctx)
   list_head_release(&ctx->list_position);
 }
 
+int engine_set_common_opt(struct engine *e, struct common_opt *opt)
+{
+  if(opt->start_time.set) e->start_time = opt->start_time.t;
+  if(opt->end_time.set) e->end_time = opt->end_time.t;
+  if(opt->transaction_fee.set) e->transaction_fee = opt->transaction_fee.d;
+  if(opt->csv_output.set) e->csv_output = opt->csv_output.i;
+  
+  return 0;
+}
+
 double engine_npos(struct engine *ctx, int *nrec)
 {
   int n = 0;

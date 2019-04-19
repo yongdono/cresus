@@ -32,7 +32,7 @@ static time_info_t common_opt_time_info(struct common_opt *ctx, char *str)
   /* Time info format : YYYY-MM-DD (date +%Y-%M-%d) */
   char *Y = strsep(&str, "-");
   char *M = strsep(&str, "-");
-  char *d = strsep(&str, "-"); /* End */
+  char *d = str; /* End */
   return TIME_INIT(atoi(Y), atoi(M), atoi(d), 0, 0, 0, 0);
 }
 
@@ -41,8 +41,21 @@ int common_opt_getopt(struct common_opt *ctx, int argc, char **argv)
   int c;
   
   switch((c = getopt(argc, argv, ctx->optstring))){
+  case 'c':
+    COMMON_OPT_SET(&ctx->csv_output, i, 1);
+    break;
+
+  case 'f':
+    sscanf(optarg, "%lf", &ctx->transaction_fee.d);
+    ctx->transaction_fee.set = 1;
+    break;
+    
   case 'o':
     COMMON_OPT_SET(&ctx->input_type, s, optarg);
+    break;
+
+  case 'v':
+    VERBOSE_LEVEL(DBG);
     break;
     
   case 'F':

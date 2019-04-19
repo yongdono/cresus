@@ -111,20 +111,15 @@ int main(int argc, char **argv)
     }
   }
   
-  if(opt.start_time.set) time_min = opt.start_time.t;
-  if(opt.end_time.set) time_max = opt.end_time.t;
+  /* Command line params */
+  filename = argv[optind];
   if(opt.fixed_amount.set) amount = opt.fixed_amount.i;
   if(!opt.input_type.set) goto usage;
-  
-  /* Filename is last argv param */
-  filename = argv[optind];
-  
+   
   if((t = timeline_create(filename, opt.input_type.s))){
+    /* Engine setup */
     engine_init(&engine, t);
-    /* Opt */
-    engine_set_start_time(&engine, time_min);
-    engine_set_end_time(&engine, time_max);
-    engine_set_transaction_fee(&engine, 2.50);
+    engine_set_common_opt(&engine, &opt);
     /* Run */
     engine_run(&engine, feed);
 
