@@ -9,4 +9,5 @@ add_library(input OBJECT
   inwrap.c
   xtrade.c
   euronext.c
+  kraken.c
   )

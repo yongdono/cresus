@@ -18,6 +18,7 @@
 #include "mdgms.h"
 #include "xtrade.h"
 #include "euronext.h"
+#include "kraken.h"
 
 /* Object is allocatable */
 
@@ -31,7 +32,8 @@ typedef enum {
   INWRAP_B4B,
   INWRAP_MDGMS,
   INWRAP_XTRADE,
-  INWRAP_EURONEXT
+  INWRAP_EURONEXT,
+  INWRAP_KRAKEN
 } inwrap_t;
 
 struct inwrap {
@@ -44,6 +46,7 @@ struct inwrap {
   struct mdgms mdgms;
   struct xtrade xtrade;
   struct euronext euronext;
+  struct kraken kraken;
 };
 
 int inwrap_init(struct inwrap *ctx, const char *filename, inwrap_t type);
@@ -59,6 +62,7 @@ static inline inwrap_t inwrap_t_from_str(const char *str)
     if(!strcmp("mdgms", str)) return INWRAP_MDGMS;
     if(!strcmp("xtrade", str)) return INWRAP_XTRADE;
     if(!strcmp("euronext", str)) return INWRAP_EURONEXT;
+    if(!strcmp("kraken", str)) return INWRAP_KRAKEN;
   }
   return INWRAP_YAHOO_V7;
 }

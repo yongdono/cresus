@@ -22,6 +22,7 @@ static struct timeline_entry *inwrap_read(struct input *in)
   case INWRAP_MDGMS: return __input_read__(&ctx->mdgms);
   case INWRAP_XTRADE: return __input_read__(&ctx->xtrade);
   case INWRAP_EURONEXT: return __input_read__(&ctx->euronext);
+  case INWRAP_KRAKEN: return __input_read__(&ctx->kraken);
   }
   
   return NULL;
@@ -54,6 +55,10 @@ int inwrap_init(struct inwrap *ctx, const char *filename, inwrap_t type)
     
   case INWRAP_EURONEXT:
     ret = euronext_init(&ctx->euronext, filename);
+    break;
+
+  case INWRAP_KRAKEN:
+    ret = kraken_init(&ctx->kraken, filename);
     break;
   }
   
