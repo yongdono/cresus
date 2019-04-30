@@ -41,7 +41,7 @@ static int rs_mansfield_feed(struct indicator *i, struct timeline_entry *e) {
       double value = ((rsd / mma) - 1) * 100.0;
       struct rs_mansfield_entry *rsm;
       if(rs_mansfield_entry_alloc(rsm, i, value, (mma - last)))
-	candle_add_indicator_entry(c, __indicator_entry__(rsm));
+	timeline_entry_add_indicator_entry(e, __indicator_entry__(rsm));
     }
     
     /* Set new ref */
@@ -61,7 +61,7 @@ static void rs_mansfield_reset(struct indicator *i) {
   r->value = 0.0;
 }
 
-int rs_mansfield_init(struct rs_mansfield *r, indicator_id_t id, int period,
+int rs_mansfield_init(struct rs_mansfield *r, unique_id_t id, int period,
 		      list_head_t(struct timeline_entry) *ref) {
 
   __indicator_super__(r, id, rs_mansfield_feed, rs_mansfield_reset);

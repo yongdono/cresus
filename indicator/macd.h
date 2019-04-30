@@ -69,7 +69,7 @@ struct macd {
   struct average signal;
 };
 
-int macd_init(struct macd *m, indicator_id_t id,
+int macd_init(struct macd *m, unique_id_t id,
 	      int fast_p, int slow_p, int signal_p);
 void macd_release(struct macd *m);
 

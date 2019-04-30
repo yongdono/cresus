@@ -42,7 +42,7 @@ static void stoploss_reset(struct indicator *i) {
   s->trigger = 0;
 }
 
-int stoploss_init(struct stoploss *s, indicator_id_t id, double percent) {
+int stoploss_init(struct stoploss *s, unique_id_t id, double percent) {
   
   /* Init parent */
   __indicator_super__(s, id, stoploss_feed, stoploss_reset);

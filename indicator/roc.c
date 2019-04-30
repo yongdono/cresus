@@ -23,7 +23,7 @@ static int roc_feed(struct indicator *i, struct timeline_entry *e) {
     
     if(roc_compute(r, e, &value) != -1){
       if(roc_entry_alloc(entry, i, value)){
-	candle_add_indicator_entry(c, __indicator_entry__(entry));
+	timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
 	return 1;
       }
     }
@@ -65,7 +65,7 @@ int roc_compute(struct roc *r, struct timeline_entry *e, double *rvalue) {
   return -1;
 }
 
-int roc_init(struct roc *r, indicator_id_t id, int period, int average) {
+int roc_init(struct roc *r, unique_id_t id, int period, int average) {
 
   /* Super() */
   __indicator_super__(r, id, roc_feed, _roc_reset_);

@@ -13,12 +13,6 @@
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 
-/* Trend */
-
-typedef enum {
-  TREND_NONE,
-  TREND_UP,
-  TREND_DOWN
-} trend_t;
+typedef unsigned int unique_id_t;
 
 #endif

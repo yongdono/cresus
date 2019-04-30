@@ -10,7 +10,6 @@
 #define __Cresus_EVO__input__
 
 #include <limits.h>
-#include "timeline_entry.h"
 
 #define __inherits_from_input__ struct input __parent_input__
 #define __input_is_superclass__ void *__self_input__
@@ -28,6 +27,9 @@
 
 /* Typedefs */
 struct input; /* FIXME : find another way */
+
+#include "timeline.h"
+
 typedef struct timeline_entry *(*input_read_ptr)(struct input *in);
 
 struct input {

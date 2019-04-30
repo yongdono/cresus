@@ -50,7 +50,7 @@ static void updown_reset(struct indicator *i) {
   /* RAZ */
 }
 
-int updown_init(struct updown *u, indicator_id_t id, candle_value_t cvalue) {
+int updown_init(struct updown *u, unique_id_t id, candle_value_t cvalue) {
   
   /* Super() */
   __indicator_super__(u, id, updown_feed, updown_reset);

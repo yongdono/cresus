@@ -28,7 +28,7 @@ static int macd_feed(struct indicator *i, struct timeline_entry *e) {
     if(average_is_available(&m->signal)){
       struct macd_entry *entry;
       if(macd_entry_alloc(entry, i, value, signal))
-	candle_add_indicator_entry(c, __indicator_entry__(entry));
+	timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
     }
   }
   
@@ -46,7 +46,7 @@ static void macd_reset(struct indicator *i) {
   average_reset(&m->signal);
 }
 
-int macd_init(struct macd *m, indicator_id_t id,
+int macd_init(struct macd *m, unique_id_t id,
 	      int fast_p, int slow_p, int signal_p) {
 
   /* Super */

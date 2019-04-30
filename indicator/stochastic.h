@@ -24,7 +24,7 @@ struct stochastic {
   struct candle *array;
 };
 
-int stochastic_init(struct stochastic *s, indicator_id_t id,
+int stochastic_init(struct stochastic *s, unique_id_t id,
 		    int period, int k, int d);
 void stochastic_release(struct stochastic *s);
 

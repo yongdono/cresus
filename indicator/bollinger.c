@@ -31,7 +31,7 @@ static void bollinger_reset(struct indicator *i) {
   average_reset(&b->avg);
 }
 
-int bollinger_init(struct bollinger *b, indicator_id_t id, int period,
+int bollinger_init(struct bollinger *b, unique_id_t id, int period,
                    double stddev_factor, candle_value_t cvalue) {
   
   /* super */

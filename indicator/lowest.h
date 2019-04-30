@@ -53,7 +53,7 @@ struct lowest {
   int period;
 };
 
-int lowest_init(struct lowest *ctx, indicator_id_t id, int period);
+int lowest_init(struct lowest *ctx, unique_id_t id, int period);
 void lowest_release(struct lowest *ctx);
 
 void lowest_reset(struct lowest *ctx);

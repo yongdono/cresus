@@ -7,16 +7,16 @@ add_library(indicator OBJECT
   bollinger.c
   heikin_ashi.c
   hilo.c
-  jtrend.c
+#  jtrend.c
   linear_reg.c
   lowest.c
   macd.c
   mobile.c
   roc.c
-  rs_dorsey.c
+#  rs_dorsey.c
   rsi.c
-  rs_mansfield.c
-  rs_roc.c
+#  rs_mansfield.c
+#  rs_roc.c
   smi.c
   srsi.c
   stochastic.c

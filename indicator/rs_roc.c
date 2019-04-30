@@ -37,7 +37,7 @@ static int rs_roc_feed(struct indicator *i, struct timeline_entry *e)
     value = roc - roc_ref;
     
     if(rs_roc_entry_alloc(entry, i, value, roc, roc_ref)){
-      candle_add_indicator_entry(c, __indicator_entry__(entry));
+      timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
       // PR_INFO("rs_roc value: self %.2lf ref %.2lf value %.2lf\n",
       //      value, value_ref, entry->value);
     }
@@ -55,7 +55,7 @@ static void rs_roc_reset(struct indicator *i)
 {
 }
 
-int rs_roc_init(struct rs_roc *ctx, indicator_id_t id, int period,
+int rs_roc_init(struct rs_roc *ctx, unique_id_t id, int period,
 		list_head_t(struct timeline_entry) *ref)
 {
   /* Super() */

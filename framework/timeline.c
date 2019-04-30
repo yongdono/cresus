@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "timeline.h"
 #include "framework/verbose.h"
+#include "framework/timeline.h"
 
 int timeline_init(struct timeline *ctx, const char *name)
 {  
@@ -23,7 +23,7 @@ int timeline_init(struct timeline *ctx, const char *name)
   slist_head_init(&ctx->slist_indicator);
   
   /* Parsing data */
-  ctx->current = ctx->list_entry.next;
+  ctx->current = (void*)&ctx->list_entry;
   
   return 0;
 }

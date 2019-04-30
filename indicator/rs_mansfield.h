@@ -72,7 +72,7 @@ struct rs_mansfield {
   double value;
 };
 
-int rs_mansfield_init(struct rs_mansfield *r, indicator_id_t id, int period,
+int rs_mansfield_init(struct rs_mansfield *r, unique_id_t id, int period,
 		      list_head_t(struct timeline_entry) *ref);
 void rs_mansfield_release(struct rs_mansfield *r);
 

@@ -60,7 +60,7 @@ struct jtrend {
   list_head_t(struct timeline_entry) *ref;
 };
 
-int jtrend_init(struct jtrend *j, indicator_id_t id,
+int jtrend_init(struct jtrend *j, unique_id_t id,
 		int period, int average,
 		list_head_t(struct timeline_entry) *ref);
 

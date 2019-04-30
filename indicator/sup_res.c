@@ -15,7 +15,7 @@ static void sup_res_reset(struct indicator *i) {
   /* ? */
 }
 
-int sup_res_init(struct sup_res *s, indicator_id_t id,
+int sup_res_init(struct sup_res *s, unique_id_t id,
 		 int step, candle_value_t cvalue) {
 
   __indicator_super__(s, sup_res_feed, sup_res_reset);

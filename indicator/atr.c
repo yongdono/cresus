@@ -45,7 +45,7 @@ static void atr_reset(struct indicator *i) {
   a->ref = NULL;
 }
 
-int atr_init(struct atr *a, indicator_id_t id, int period) {
+int atr_init(struct atr *a, unique_id_t id, int period) {
   
   /* Super() */
   __indicator_super__(a, id, atr_feed, atr_reset);

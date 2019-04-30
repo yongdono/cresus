@@ -51,7 +51,7 @@ static void rsi_reset(struct indicator *i) {
   average_reset(&r->b);
 }
 
-int rsi_init(struct rsi *r, indicator_id_t id, int period)
+int rsi_init(struct rsi *r, unique_id_t id, int period)
 {
   /* Super() */
   __indicator_super__(r, id, rsi_feed, rsi_reset);

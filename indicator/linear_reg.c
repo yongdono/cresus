@@ -48,7 +48,7 @@ static int linear_reg_feed(struct indicator *i,
   
   /* Create new entry */
   if(linear_reg_entry_alloc(entry, i, value)){
-    candle_add_indicator_entry(c, __indicator_entry__(entry));
+    timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
     entry->a = a; /* For debug */
     entry->b = b; /* For debug */
     return 1;
@@ -62,7 +62,7 @@ static void linear_reg_reset(struct indicator *i)
   /* Empty */
 }
 
-int linear_reg_init(struct linear_reg *l, indicator_id_t id, int period)
+int linear_reg_init(struct linear_reg *l, unique_id_t id, int period)
 {  
   /* Super */
   __indicator_super__(l, id, linear_reg_feed, linear_reg_reset);

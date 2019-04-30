@@ -64,7 +64,7 @@ struct linear_reg {
   int period;
 };
 
-int linear_reg_init(struct linear_reg *m, indicator_id_t id, int period);
+int linear_reg_init(struct linear_reg *m, unique_id_t id, int period);
 void linear_reg_release(struct linear_reg *m);
 
 #endif

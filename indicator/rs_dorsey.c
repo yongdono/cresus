@@ -23,7 +23,7 @@ static int rs_dorsey_feed(struct indicator *i, struct timeline_entry *e)
     
     if(!i->is_empty){
       if(rs_dorsey_entry_alloc(entry, i, value))
-	candle_add_indicator_entry(c, __indicator_entry__(entry));
+	timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
       /* Set new ref for better performance */
       ctx->ref = __list__(ref_entry);
     }
@@ -42,7 +42,7 @@ static void rs_dorsey_reset(struct indicator *i)
   /* Nothing to do */
 }
 
-int rs_dorsey_init(struct rs_dorsey *ctx, indicator_id_t id,
+int rs_dorsey_init(struct rs_dorsey *ctx, unique_id_t id,
 		   list_head_t(struct timeline_entry) *ref)
 {
   /* super() */

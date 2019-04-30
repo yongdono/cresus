@@ -9,9 +9,10 @@
 #ifndef TIMELINE_ENTRY_H
 #define TIMELINE_ENTRY_H
 
-#include "list.h"
-#include "types.h"
-#include "time_info.h"
+#include "framework/list.h"
+#include "framework/types.h"
+#include "framework/time_info.h"
+#include "framework/indicator_entry.h"
 
 /* This is a superclass */
 
@@ -50,15 +51,21 @@ struct timeline_entry {
   /* Time/Date management */
   time_info_t time;
   granularity_t granularity;
+
+  /* Indicators entries list */
+  slist_head_t(struct indicator_entry) slist_ientry;
 };
 
-int timeline_entry_init(struct timeline_entry *e, time_info_t time, granularity_t g);
-void timeline_entry_release(struct timeline_entry *e);
+int timeline_entry_init(struct timeline_entry *ctx, time_info_t time, granularity_t g);
+void timeline_entry_release(struct timeline_entry *ctx);
 
 /* Methods */
-time_info_t timeline_entry_timecmp(struct timeline_entry *e, time_info_t time);
-struct timeline_entry *timeline_entry_find(struct timeline_entry *t, time_info_t time);
-const char *timeline_entry_str(struct timeline_entry *e);
-const char *timeline_entry_str_r(struct timeline_entry *e, char *buf, size_t len);
+void timeline_entry_add_indicator_entry(struct timeline_entry *ctx, struct indicator_entry *ientry);
+struct indicator_entry *timeline_entry_find_indicator_entry(struct timeline_entry *ctx, unique_id_t indicator_id);
+time_info_t timeline_entry_timecmp(struct timeline_entry *ctx, time_info_t time);
+struct timeline_entry *timeline_entry_find(struct timeline_entry *ctx, time_info_t time);
+
+const char *timeline_entry_str(struct timeline_entry *ctx);
+const char *timeline_entry_str_r(struct timeline_entry *ctx, char *buf, size_t len);
 
 #endif

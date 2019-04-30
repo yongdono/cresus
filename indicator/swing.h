@@ -28,7 +28,7 @@ struct swing {
   struct candle *ref;
 };
 
-int swing_init(struct swing *s, indicator_id_t id);
+int swing_init(struct swing *s, unique_id_t id);
 void swing_release(struct swing *s);
 
 /* Indicator-specific */

@@ -16,8 +16,8 @@
  */
 
 #include "framework/alloc.h"
+#include "framework/timeline.h"
 #include "framework/indicator.h"
-#include "framework/timeline_entry.h"
 
 /* Entries */
 
@@ -62,7 +62,7 @@ struct rs_dorsey {
   double ratio_prev;
 };
 
-int rs_dorsey_init(struct rs_dorsey *ctx, indicator_id_t id,
+int rs_dorsey_init(struct rs_dorsey *ctx, unique_id_t id,
 		   list_head_t(struct timeline_entry) *ref);
 void rs_dorsey_release(struct rs_dorsey *ctx);
 

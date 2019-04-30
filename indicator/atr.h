@@ -21,7 +21,7 @@ struct atr {
   double value;
 };
 
-int atr_init(struct atr *a, indicator_id_t id, int period);
+int atr_init(struct atr *a, unique_id_t id, int period);
 void atr_release(struct atr *a);
 
 /* Indicator-specific */

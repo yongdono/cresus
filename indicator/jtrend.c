@@ -30,7 +30,7 @@ static int jtrend_feed(struct indicator *i,
       /* Alloc jentry & store in candle */
       value = value - ref_value;
       if(jtrend_entry_alloc(entry, i, value, ref_value))
-	candle_add_indicator_entry(c, __indicator_entry__(entry));
+	timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
     }
     
     j->ref = __list__(tentry);
@@ -50,7 +50,7 @@ static void jtrend_reset(struct indicator *i) {
   /* TODO : what about j->ref ? */
 }
 
-int jtrend_init(struct jtrend *j, indicator_id_t id,
+int jtrend_init(struct jtrend *j, unique_id_t id,
 		int period, int average,
 		list_head_t(struct timeline_entry) *ref) {
 

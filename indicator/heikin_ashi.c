@@ -51,7 +51,7 @@ static void heikin_ashi_reset(struct indicator *i) {
   /* Nothing to do */
 }
 
-int heikin_ashi_init(struct heikin_ashi *h, indicator_id_t id) {
+int heikin_ashi_init(struct heikin_ashi *h, unique_id_t id) {
   
   /* Init parent */
   __indicator_super__(h, id, heikin_ashi_feed, heikin_ashi_reset);

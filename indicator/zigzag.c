@@ -59,7 +59,7 @@ static int zigzag_feed(struct indicator *i, struct timeline_entry *e) {
   }
 
   if(zigzag_entry_alloc(zz, i, z->dir, (value / base_ref_value), z->ref_count))
-    candle_add_indicator_entry(candle, __indicator_entry__(zz));
+    timeline_entry_add_indicator_entry(e, __indicator_entry__(zz));
   
   z->ref_count++;
   return 0;
@@ -76,7 +76,7 @@ static void zigzag_reset(struct indicator *i) {
   z->ref_count = 0;
 }
 
-int zigzag_init(struct zigzag *z, indicator_id_t id,
+int zigzag_init(struct zigzag *z, unique_id_t id,
 		double threshold, candle_value_t cvalue) {
   
   /* Super */

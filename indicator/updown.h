@@ -28,7 +28,7 @@ struct updown {
   candle_value_t cvalue;
 };
 
-int updown_init(struct updown *u, indicator_id_t id, candle_value_t cvalue);
+int updown_init(struct updown *u, unique_id_t id, candle_value_t cvalue);
 void updown_release(struct updown *u);
 
 /* Indicator-specific */

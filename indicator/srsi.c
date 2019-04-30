@@ -36,7 +36,7 @@ static void srsi_reset(struct indicator *i) {
   s->len = 0;
 }
 
-int srsi_init(struct srsi *s, indicator_id_t id, int max) {
+int srsi_init(struct srsi *s, unique_id_t id, int max) {
   
   /* super() */
   __indicator_super__(s, id, srsi_feed, srsi_reset);

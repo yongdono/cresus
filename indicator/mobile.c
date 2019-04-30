@@ -66,7 +66,7 @@ static int mobile_feed(struct indicator *i, struct timeline_entry *e) {
   if(average_is_available(&m->avg)){
     /* Create new entry */
     if(mobile_entry_alloc(entry, i, avg, (avg - last_avg))){
-      candle_add_indicator_entry(c, __indicator_entry__(entry));
+      timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
       return 1;
     }
   }
@@ -80,7 +80,7 @@ static void mobile_reset(struct indicator *i) {
   average_reset(&m->avg);
 }
 
-int mobile_init(struct mobile *m, indicator_id_t id, mobile_t type,
+int mobile_init(struct mobile *m, unique_id_t id, mobile_t type,
 		int period, candle_value_t cvalue) {
   
   /* Super */

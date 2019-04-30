@@ -70,7 +70,7 @@ static void swing_reset(struct indicator *i) {
   s->type = SWING_NONE;
 }
 
-int swing_init(struct swing *s, indicator_id_t id) {
+int swing_init(struct swing *s, unique_id_t id) {
   
   /* Super() */
   __indicator_super__(s, id, swing_feed, swing_reset);

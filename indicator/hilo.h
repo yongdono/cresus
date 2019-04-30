@@ -57,7 +57,7 @@ struct hilo {
   int filter;
 };
 
-int hilo_init(struct hilo *r, indicator_id_t id, int period, int filter);
+int hilo_init(struct hilo *r, unique_id_t id, int period, int filter);
 void hilo_release(struct hilo *r);
 
 void hilo_reset(struct hilo *r);

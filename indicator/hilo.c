@@ -48,7 +48,7 @@ static int hilo_feed(struct indicator *i, struct timeline_entry *e)
       goto out;
     
     /* Attach new entry */
-    candle_add_indicator_entry(c, __indicator_entry__(entry));
+    timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
     return 1;
   }
 
@@ -56,7 +56,7 @@ static int hilo_feed(struct indicator *i, struct timeline_entry *e)
   return 0;
 }
 
-int hilo_init(struct hilo *ctx, indicator_id_t id, int period, int filter)
+int hilo_init(struct hilo *ctx, unique_id_t id, int period, int filter)
 {
   /* Super() */
   __indicator_super__(ctx, id, hilo_feed, _hilo_reset_);

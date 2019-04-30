@@ -13,61 +13,52 @@
 #include "candle.h"
 #include "framework/verbose.h"
 
-int candle_init(struct candle *c,
-		time_info_t time, granularity_t g,
+int candle_init(struct candle *ctx,
+		time_info_t time,
+                granularity_t g,
 		double open, double close,
 		double high, double low,
 		double volume)
 {  
   /* superclass */
-  __timeline_entry_super__(c, time, g);
+  __timeline_entry_super__(ctx, time, g);
   
   /* Set */
-  c->open = open;
-  c->close = close;
-  c->high = high;
-  c->low = low;
-  c->volume = volume;
-
-  /* Indicators */
-  slist_head_init(&c->slist_indicator);
+  ctx->open = open;
+  ctx->close = close;
+  ctx->high = high;
+  ctx->low = low;
+  ctx->volume = volume;
   
   return 0;
 }
 
-void candle_release(struct candle *c)
+void candle_release(struct candle *ctx)
 {  
-  __timeline_entry_release__(c);
-  slist_head_release(&c->slist_indicator);
+  __timeline_entry_release__(ctx);
 }
 
-void candle_add_indicator_entry(struct candle *c,
-				struct indicator_entry *e)
+void candle_merge(struct candle *ctx, struct candle *c2)
 {
-  __slist_insert__(&c->slist_indicator, e);
+  ctx->open += c2->open;
+  ctx->close += c2->close;
+  ctx->high += c2->high;
+  ctx->low += c2->low;
+  ctx->volume += c2->volume;
 }
 
-void candle_merge(struct candle *c, struct candle *c2)
-{
-  c->open += c2->open;
-  c->close += c2->close;
-  c->high += c2->high;
-  c->low += c2->low;
-  c->volume += c2->volume;
-}
-
-double candle_get_value(struct candle *c, candle_value_t value)
+double candle_get_value(struct candle *ctx, candle_value_t value)
 {  
   switch(value) {
-  case CANDLE_OPEN : return c->open;
-  case CANDLE_CLOSE : return c->close;
-  case CANDLE_HIGH : return c->high;
-  case CANDLE_LOW : return c->low;
-  case CANDLE_VOLUME : return c->volume;
-  case CANDLE_TYPICAL : return (c->high + c->low + c->close) / 3.0;
-  case CANDLE_WEIGHTED : return (c->high + c->low + 2 * c->close) / 4.0;
-  case CANDLE_MEDIAN : return (c->high + c->low) / 2.0;
-  case CANDLE_TOTAL : return (c->high + c->low + c->open + c->close) / 4.0;
+  case CANDLE_OPEN : return ctx->open;
+  case CANDLE_CLOSE : return ctx->close;
+  case CANDLE_HIGH : return ctx->high;
+  case CANDLE_LOW : return ctx->low;
+  case CANDLE_VOLUME : return ctx->volume;
+  case CANDLE_TYPICAL : return (ctx->high + ctx->low + ctx->close) / 3.0;
+  case CANDLE_WEIGHTED : return (ctx->high + ctx->low + 2 * ctx->close) / 4.0;
+  case CANDLE_MEDIAN : return (ctx->high + ctx->low) / 2.0;
+  case CANDLE_TOTAL : return (ctx->high + ctx->low + ctx->open + ctx->close) / 4.0;
   }
   
   /* Unknown */
@@ -75,42 +66,25 @@ double candle_get_value(struct candle *c, candle_value_t value)
   return 0.0;
 }
 
-int candle_get_direction(struct candle *c)
+int candle_get_direction(struct candle *ctx)
 {
-  /*
-  if(c->open > c->close) return -1;
-  if(c->open < c->close) return 1;
-  */
-  return (c->close - c->open);
-}
-
-struct indicator_entry *candle_find_indicator_entry(struct candle *c,
-						    indicator_id_t id)
-{  
-  struct indicator_entry *entry;
-  __slist_for_each__(&c->slist_indicator, entry){
-    if(entry->indicator->id == id)
-      return entry;
-  }
-  
-  //PR_WARN("can't find any indicator %d entry\n", id);
-  return NULL;
+  return (ctx->close - ctx->open);
 }
 
 /* Debug */
 
 static char str[256];
 
-const char *candle_str(struct candle *c)
+const char *candle_str(struct candle *ctx)
 {
-  return candle_str_r(c, str);
+  return candle_str_r(ctx, str);
 }
 
-const char *candle_str_r(struct candle *c, char *buf)
+const char *candle_str_r(struct candle *ctx, char *buf)
 {
   sprintf(buf, "%s o%.2f c%.2f h%.2f l%.2f v%.0f",
-	  __timeline_entry_str__(c), c->open, c->close,
-	  c->high, c->low, c->volume);
+	  __timeline_entry_str__(ctx), ctx->open, ctx->close,
+	  ctx->high, ctx->low, ctx->volume);
   
   return buf;
 }

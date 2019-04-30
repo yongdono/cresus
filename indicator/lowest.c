@@ -40,7 +40,7 @@ static int lowest_feed(struct indicator *i,
     }
     
     /* Attach new entry */
-    candle_add_indicator_entry(c, __indicator_entry__(entry));
+    timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
     return 1;
   }
   
@@ -48,7 +48,7 @@ static int lowest_feed(struct indicator *i,
   return 0;
 }
 
-int lowest_init(struct lowest *ctx, indicator_id_t id, int period)
+int lowest_init(struct lowest *ctx, unique_id_t id, int period)
 {
   /* Super() */
   __indicator_super__(ctx, id, lowest_feed, _lowest_reset_);

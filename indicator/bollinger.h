@@ -32,7 +32,7 @@ struct bollinger {
   char str[32]; /* FIXME */
 };
 
-int bollinger_init(struct bollinger *b, indicator_id_t id, int period,
+int bollinger_init(struct bollinger *b, unique_id_t id, int period,
 		   double stddev_factor, candle_value_t cvalue);
 void bollinger_release(struct bollinger *b);
 

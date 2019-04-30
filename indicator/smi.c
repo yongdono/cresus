@@ -58,7 +58,7 @@ static void smi_reset(struct indicator *i) {
   average_reset(&s->_str);
 }
 
-int smi_init(struct smi *s, indicator_id_t id, int period, int smooth) {
+int smi_init(struct smi *s, unique_id_t id, int period, int smooth) {
   
   /* Super() */
   __indicator_super__(s, id, smi_feed, smi_reset);

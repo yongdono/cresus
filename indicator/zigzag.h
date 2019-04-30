@@ -74,7 +74,7 @@ struct zigzag {
   struct candle *ref, *base_ref;
 };
 
-int zigzag_init(struct zigzag *z, indicator_id_t id,
+int zigzag_init(struct zigzag *z, unique_id_t id,
 		double threshold, candle_value_t cvalue);
 void zigzag_release(struct zigzag *z);
 

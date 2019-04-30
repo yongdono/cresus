@@ -61,7 +61,7 @@ struct rs_roc {
   list_head_t(struct timeline_entry) *ref;
 };
 
-int rs_roc_init(struct rs_roc *ctx, indicator_id_t id, int period,
+int rs_roc_init(struct rs_roc *ctx, unique_id_t id, int period,
 		list_head_t(struct timeline_entry) *ref);
 void rs_roc_release(struct rs_roc *ctx);
 
