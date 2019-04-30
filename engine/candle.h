@@ -38,8 +38,8 @@ typedef enum {
 #define candle_is_red(ctx) ((ctx)->close < (ctx)->open)
 
 struct candle {
-  /* Inherits from timeline,
-   * so we don't need time management */
+  /* Inherits from timeline_entry,
+   * so we don't need time management nor indicator management */
   __inherits_from_timeline_entry__;
   
   /* Content */
