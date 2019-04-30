@@ -76,9 +76,9 @@ static struct timeline *timeline_create(const char *filename, const char *type)
   inwrap_t t = inwrap_t_from_str(type);
   
   if(inwrap_alloc(inwrap, filename, t)){
-    if(timeline_alloc(timeline, "buy_red_sell_green_filtered",
-                      __input__(inwrap))){
+    if(timeline_alloc(timeline, "buy_red_sell_green_filtered")){
       /* Ok */
+      timeline_load(timeline, __input__(inwrap));
       return timeline;
     }
   }

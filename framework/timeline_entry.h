@@ -26,7 +26,7 @@
 #define __timeline_entry_super__(self, time, granularity)		\
   __timeline_entry_self_init__(__timeline_entry__(self), self);		\
   timeline_entry_init(__timeline_entry__(self), time, granularity)
-#define __timeline_entry_release__(self)			\
+#define __timeline_entry_release__(self)                \
   timeline_entry_release(__timeline_entry__(self))
 
 #define __timeline_entry_timecmp__(self, time)			\

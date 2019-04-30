@@ -33,45 +33,31 @@
 #define TIMELINE_NAME_MAX 256
 
 /* Object is allocatable */
-#define timeline_alloc(t, name, input)				\
-  DEFINE_ALLOC(struct timeline, t, timeline_init, name, input)
+#define timeline_alloc(t, name)                         \
+  DEFINE_ALLOC(struct timeline, t, timeline_init, name)
 #define timeline_free(t)			\
   DEFINE_FREE(t, timeline_release)
-
-typedef enum {
-  TIMELINE_STATUS_RESET,
-  TIMELINE_STATUS_RUN
-} timeline_status_t;
 
 struct timeline {
   /* "Listable" & "Heritable" */
   __inherits_from_slist__;
   __timeline_is_superclass__;
-  /* Data */
-  struct input *in;
+  /* Internals */
   char name[TIMELINE_NAME_MAX];
-  /* Main data / graph */
+  /* Main data */
   list_head_t(struct timeline_entry) list_entry;
-  struct timeline_entry *ref;
-  /* Secondary graphs */
   slist_head_t(struct indicator) slist_indicator;
-  /* State machine */
-  timeline_status_t status;
+  /* Parser (?) */
+  struct timeline_entry *current;
 };
 
-int timeline_init(struct timeline *t, const char *name, struct input *in);
-void timeline_release(struct timeline *t);
+int timeline_init(struct timeline *ctx, const char *name);
+void timeline_release(struct timeline *ctx);
 
-void timeline_add_indicator(struct timeline *t, struct indicator *i);
-void timeline_reset_indicators(struct timeline *t);
+void timeline_add_indicator(struct timeline *ctx, struct indicator *i);
+void timeline_load(struct timeline *ctx, struct input *in);
 
-int timeline_entry_current(struct timeline *t, struct timeline_entry **ret);
-int timeline_entry_next(struct timeline *t, struct timeline_entry **ret);
-int timeline_entry_by_time(struct timeline *t, time_info_t time, struct timeline_entry **ret);
-
-void timeline_append_entry(struct timeline *t, struct timeline_entry *entry);
-void timeline_trim_entry(struct timeline *t, struct timeline_entry *entry);
-
-struct timeline_entry *timeline_step(struct timeline *t);
+struct timeline_entry *timeline_step(struct timeline *ctx);
+int timeline_entry_current(struct timeline *ctx, struct timeline_entry **e);
 
 #endif

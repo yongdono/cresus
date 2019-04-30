@@ -58,8 +58,9 @@ static struct timeline *timeline_create(const char *filename,
   inwrap_t t = inwrap_t_from_str(type);
   
   if(inwrap_alloc(inwrap, filename, t)){
-    if(timeline_alloc(timeline, "sell_in_may", __input__(inwrap))){
+    if(timeline_alloc(timeline, "sell_in_may")){
       /* Ok */
+      timeline_load(timeline, __input__(inwrap));
       return timeline;
     }
   }
