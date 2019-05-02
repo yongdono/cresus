@@ -58,6 +58,7 @@ void timeline_load(struct timeline *ctx, struct input *in)
 struct timeline_entry *timeline_step(struct timeline *ctx)
 {
   ctx->current = (void*)__list__(ctx->current)->next;
+  if(__list_is_head__(ctx->current)) return NULL;
   return ctx->current;
 }
 
