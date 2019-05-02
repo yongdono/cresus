@@ -14,7 +14,7 @@ int cluster_init(struct cluster *c, const char *name, struct input *in,
 		 time_info_t time_min, time_info_t time_max)
 {  
   /* Super */
-  __timeline_super__(c, name, in);
+  __timeline_init__(c, name, in);
   slist_head_init(&c->slist_timeline);
   /* Set options */
   c->ref = &__timeline__(c)->list_entry;
@@ -59,21 +59,21 @@ static int cluster_prepare_step(struct cluster *c, time_info_t time,
   struct timeline *t;
   struct candle *candle;
   
-  if(!candle_alloc(candle, time, calendar_granularity(&c->cal),
+  if(!candle_alloc(candle, time, calendar_gr(&c->cal),
 		   0, 0, 0, 0, 0)){
     /* Error */
     PR_ERR("can't allocate candle %s\n",
-	   time2str(time, calendar_granularity(&c->cal), buf));
+	   time2str(time, calendar_gr(&c->cal), buf));
     /* TODO : add some kind of errno */
     return -1;
   }
   
   __slist_for_each__(&c->slist_timeline, t){
     struct timeline_entry *entry;
-    /* Why not use granularity here to merge candles in timeline object ? */
+    /* Why not use gr here to merge candles in timeline object ? */
     if((res = timeline_entry_by_time(t, time, &entry)) <= 0){
       PR_WARN("not enough data available in %s for %s\n", t->name,
-	      time2str(time, calendar_granularity(&c->cal), buf));
+	      time2str(time, calendar_gr(&c->cal), buf));
 
       /* Remove any data that could have been copied anyway */
       candle_free(candle);
@@ -120,7 +120,7 @@ static int cluster_step_ref(struct cluster *c,
     struct timeline_entry *entry;
     if((res = timeline_entry_by_time(t, e->time, &entry)) <= 0){
       PR_WARN("not enough data available in %s for %s\n", t->name,
-	      time2str(e->time, e->granularity, buf));
+	      time2str(e->time, e->gr, buf));
       
       /* Reset indicators for this entry that has a problem */
       /* TODO : How to signal we have to ignore taken positions ? */

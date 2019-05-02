@@ -11,36 +11,30 @@
 #ifndef INDICATOR_ENTRY_H
 #define INDICATOR_ENTRY_H
 
+#include "framework/types.h"
 #include "framework/slist.h"
 
-#define __inherits_from_indicator_entry__		\
-  struct indicator_entry __parent_indicator_entry__
-#define __indicator_entry_is_superclass__ void *__self_indicator_entry__
-#define __indicator_entry__(x) (&(x)->__parent_indicator_entry__)
-#define __indicator_entry_self__(x) ((x)->__self_indicator_entry__)
-#define __indicator_entry_self_init__(x, self)	\
-  (x)->__self_indicator_entry__ = self
+#define __indicator_entry__(x) ((struct indicator_entry*)(x))
 
-#define __indicator_entry_super__(self, indicator)			\
-  __indicator_entry_self_init__(__indicator_entry__(self), self);	\
-  indicator_entry_init(__indicator_entry__(self), indicator);
-#define __indicator_entry_release__(self)			\
-  indicator_entry_release(__indicator_entry__(self));
+/* Heritable */
+#define __indicator_entry_init__(ctx, iparent)                  \
+  indicator_entry_init(__indicator_entry__(ctx), iparent)
+#define __indicator_entry_release__(ctx)                \
+  indicator_entry_release(__indicator_entry__(ctx))
 
 struct indicator; /* Avoid circular dependency */
 
 struct indicator_entry {
-  __inherits_from_slist__;
-  __indicator_entry_is_superclass__;
+  __inherits_from__(struct slist);
   /* Remember who generated this entry */
-  struct indicator *parent;
+  struct indicator *iparent;
 };
 
 static inline int indicator_entry_init(struct indicator_entry *ctx,
-				       struct indicator *parent)
+				       struct indicator *iparent)
 {
-  __slist_super__(ctx);
-  ctx->parent = parent;
+  __slist_init__(ctx);
+  ctx->iparent = iparent;
   return 0; /* alloc rulz */
 }
 

@@ -16,7 +16,7 @@ static int day_max[2][12] = {
   { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
 };
 
-int calendar_init(struct calendar *c, time_info_t time, granularity_t g) {
+int calendar_init(struct calendar *c, time_info_t time, time_gr_t g) {
 
   c->time = time;
   c->g = g;

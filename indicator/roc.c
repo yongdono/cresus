@@ -13,8 +13,8 @@
 
 static int roc_feed(struct indicator *i, struct timeline_entry *e) {
 
-  struct roc *r = __indicator_self__(i);
-  struct candle *c = __timeline_entry_self__(e);
+  struct roc *r = (void*)i;
+  struct candle *c = (void*)e;
   
   if(!i->is_empty){
 
@@ -34,7 +34,7 @@ static int roc_feed(struct indicator *i, struct timeline_entry *e) {
 
 static void _roc_reset_(struct indicator *i) {
 
-  struct roc *r =  __indicator_self__(i);
+  struct roc *r =  (void*)i;
   average_reset(&r->average);
 }
 
@@ -45,15 +45,14 @@ void roc_reset(struct roc *r) {
 
 int roc_compute(struct roc *r, struct timeline_entry *e, double *rvalue) {
   
-  struct candle *c = __timeline_entry_self__(e);
-  struct timeline_entry *ref = __list_relative__(e, -(r->period));
+  struct candle *c = (void*)e;
+  struct candle *ref = __list_relative__(c, -(r->period));
   
   if(ref != NULL){
     /* ROC formula :
      * ((candle[n] / candle[n - period]) - 1) * 100.0
      */
-    struct candle *cref = __timeline_entry_self__(ref);
-    double value = ((c->close / cref->close) - 1) * 100.0;
+    double value = ((c->close / ref->close) - 1) * 100.0;
     double average = average_update(&r->average, value);
     
     if(average_is_available(&r->average)){
@@ -68,7 +67,7 @@ int roc_compute(struct roc *r, struct timeline_entry *e, double *rvalue) {
 int roc_init(struct roc *r, unique_id_t id, int period, int average) {
 
   /* Super() */
-  __indicator_super__(r, id, roc_feed, _roc_reset_);
+  __indicator_init__(r, id, roc_feed, _roc_reset_);
   __indicator_set_string__(r, "roc[%d,%d]", period, average);
   
   r->period = period;

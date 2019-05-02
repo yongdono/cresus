@@ -11,6 +11,7 @@
 
 #include "math/average.h"
 #include "engine/candle.h"
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 /* Sub-indicators */
@@ -18,7 +19,7 @@
 
 struct jtrend_entry {
   /* Always */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Value type ? */
   double value;
   double ref_value;
@@ -32,14 +33,16 @@ struct jtrend_entry {
 
 static inline int jtrend_entry_init(struct jtrend_entry *entry,
 				    struct indicator *parent,
-				    double value, double ref_value){
-  __indicator_entry_super__(entry, parent);
+				    double value, double ref_value)
+{
+  __indicator_entry_init__(entry, parent);
   entry->value = value;
   entry->ref_value = ref_value;
   return 0;
 }
 
-static inline void jtrend_entry_release(struct jtrend_entry *entry) {
+static inline void jtrend_entry_release(struct jtrend_entry *entry)
+{
   __indicator_entry_release__(entry);
 }
 
@@ -53,7 +56,7 @@ static inline void jtrend_entry_release(struct jtrend_entry *entry) {
 
 struct jtrend {
   /* Anyway */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   /* Some other data */
   struct roc roc;
   struct roc roc_ref;

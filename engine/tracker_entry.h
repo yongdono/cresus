@@ -29,7 +29,7 @@ struct tracker_entry {
 static inline int tracker_entry_init(struct tracker_entry *ctx,
                                      time_info_t time)
 {
-  __list_super__(ctx);
+  __list_init__(ctx);
   ctx->time = time;
   slist_head_init(&ctx->slist_tentry);
   return 0;

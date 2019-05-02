@@ -15,13 +15,13 @@
 
 int candle_init(struct candle *ctx,
 		time_info_t time,
-                granularity_t g,
+                time_gr_t g,
 		double open, double close,
 		double high, double low,
 		double volume)
 {  
-  /* superclass */
-  __timeline_entry_super__(ctx, time, g);
+  /* initclass */
+  __timeline_entry_init__(ctx, time, g);
   
   /* Set */
   ctx->open = open;

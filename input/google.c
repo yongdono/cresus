@@ -113,14 +113,14 @@ static int google_input_read(struct input *in,
 			     struct timeline_entry *entry) {
 
   /* Is that small wrapping necessary */
-  return __google_read(__input_self__(in),
+  return __google_read((void*)(in),
 		       __timeline_entry_self__(entry));
 }
 
 int google_init(struct google *g, const char *filename)
 {
-  /* super() */
-  __input_super__(g, google_input_read);
+  /* init() */
+  __input_init__(g, google_input_read);
   
   if(!(g->fp = fopen(filename, "r")))
     return -1;

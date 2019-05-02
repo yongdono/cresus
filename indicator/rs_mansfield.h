@@ -17,7 +17,9 @@
 
 #include <stdlib.h>
 #include "math/average.h"
+
 #include "framework/list.h"
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
@@ -25,7 +27,7 @@
 
 struct rs_mansfield_entry {
   /* As below */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Single value */
   double value;
   /* More info */
@@ -42,15 +44,17 @@ struct rs_mansfield_entry {
 
 static inline int rs_mansfield_entry_init(struct rs_mansfield_entry *entry,
 					  struct indicator *parent,
-					  double value, double direction){
-  __indicator_entry_super__(entry, parent);
+					  double value, double direction)
+{
+  __indicator_entry_init__(entry, parent);
   entry->value = value;
   entry->direction = direction;
   return 0;
 }
 
 static inline void
-rs_mansfield_entry_release(struct rs_mansfield_entry *entry) {
+rs_mansfield_entry_release(struct rs_mansfield_entry *entry)
+{
   __indicator_entry_release__(entry);
 }
 
@@ -63,7 +67,7 @@ rs_mansfield_entry_release(struct rs_mansfield_entry *entry) {
 
 struct rs_mansfield {
   /* As always, inherits from indicator */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   
   struct average mma;
   list_head_t(struct timeline_entry) *ref;

@@ -15,7 +15,7 @@
 
 static struct timeline_entry *yahoo_read(struct input *in) {
   
-  struct yahoo *y = __input_self__(in);
+  struct yahoo *y = (void*)(in);
   
   y->current_entry = y->list_entry.next;
   if(list_is_head(y->current_entry))
@@ -111,8 +111,8 @@ static int yahoo_load(struct yahoo *y) {
 
 int yahoo_init(struct yahoo *y, const char *filename) {
   
-  /* super */
-  __input_super__(y, yahoo_read);
+  /* init */
+  __input_init__(y, yahoo_read);
   list_head_init(&y->list_entry);
   
   strncpy(y->filename, filename, sizeof(y->filename));

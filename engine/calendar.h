@@ -13,10 +13,10 @@
 
 struct calendar {
   time_info_t time;
-  granularity_t g;
+  time_gr_t g;
 };
 
-int calendar_init(struct calendar *c, time_info_t time, granularity_t g);
+int calendar_init(struct calendar *c, time_info_t time, time_gr_t g);
 void calendar_release(struct calendar *c);
 
 int calendar_next(struct calendar *c, time_info_t *time);
@@ -26,7 +26,7 @@ static inline time_info_t calendar_time(struct calendar *c) {
   return c->time;
 }
 
-static inline granularity_t calendar_granularity(struct calendar *c) {
+static inline time_gr_t calendar_gr(struct calendar *c) {
   return c->g;
 }
 

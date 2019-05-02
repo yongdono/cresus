@@ -11,6 +11,8 @@
 
 #include <stdio.h>
 #include <sys/types.h>
+
+#include "framework/types.h"
 #include "framework/input.h"
 
 /* TODO : find a way to clearly tell what objects this input returns */
@@ -18,7 +20,7 @@
 
 struct google {
   /* Super */
-  __inherits_from_input__;
+  __inherits_from__(struct input);
   /* Loader */
   FILE *fp;
   struct {

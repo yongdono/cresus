@@ -11,14 +11,14 @@
 #include "framework/timeline_entry.h"
 
 int timeline_entry_init(struct timeline_entry *ctx,
-                        time_info_t time, granularity_t g)
+                        time_info_t time, time_gr_t g)
 {  
   /* Superclass */
-  __list_super__(ctx);
+  __list_init__(ctx);
   
   /* Internals */
   ctx->time = time;
-  ctx->granularity = g;
+  ctx->gr = g;
   
   /* Indicators */
   slist_head_init(&ctx->slist_ientry);
@@ -44,7 +44,7 @@ timeline_entry_find_indicator_entry(struct timeline_entry *ctx,
   struct indicator_entry *ientry;
   
   __slist_for_each__(&ctx->slist_ientry, ientry){
-    if(ientry->parent->id == indicator_id)
+    if(ientry->iparent->id == indicator_id)
       return ientry;
   }
   
@@ -55,7 +55,7 @@ timeline_entry_find_indicator_entry(struct timeline_entry *ctx,
 time_info_t timeline_entry_timecmp(struct timeline_entry *ctx,
 				   time_info_t time)
 {  
-  return TIMECMP(ctx->time, time, ctx->granularity);
+  return TIMECMP(ctx->time, time, ctx->gr);
 }
 
 static struct timeline_entry *
@@ -67,11 +67,11 @@ timeline_entry_find_forward(struct timeline_entry *ctx, time_info_t time)
       entry != entry->head;
       entry = entry->next){
     /* Find forward */
-    struct timeline_entry *cur = __list_self__(entry);
+    struct timeline_entry *cur = (void*)entry;
     if(!timeline_entry_timecmp(cur, time))
       return cur;
   }
-
+  
   return NULL;
 }
 
@@ -84,7 +84,7 @@ timeline_entry_find_backwards(struct timeline_entry *ctx, time_info_t time)
       entry != entry->head;
       entry = entry->prev){
     /* Find forward */
-    struct timeline_entry *cur = __list_self__(entry);
+    struct timeline_entry *cur = (void*)entry;
     if(!timeline_entry_timecmp(cur, time))
       return cur;
   }
@@ -122,5 +122,5 @@ const char *timeline_entry_str_r(struct timeline_entry *ctx,
 				 char *buf, size_t len)
 {
   /* FIXME : use len */
-  return time_info2str_r(ctx->time, ctx->granularity, buf);
+  return time_info2str_r(ctx->time, ctx->gr, buf);
 }

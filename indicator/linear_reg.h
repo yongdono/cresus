@@ -16,6 +16,7 @@
 #include "math/average.h"
 #include "engine/candle.h"
 
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
@@ -23,7 +24,7 @@
 
 struct linear_reg_entry {
   /* As below */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Single value */
   double value; /* End value for us */
   /* debug */
@@ -40,7 +41,7 @@ static inline int linear_reg_entry_init(struct linear_reg_entry *entry,
 					struct indicator *parent,
 					double value)
 {
-  __indicator_entry_super__(entry, parent);
+  __indicator_entry_init__(entry, parent);
   entry->value = value;
   return 0;
 }
@@ -59,7 +60,7 @@ static inline void linear_reg_entry_release(struct linear_reg_entry *entry)
 
 struct linear_reg {
   /* As always */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   /* Internals */
   int period;
 };

@@ -15,7 +15,7 @@
 int timeline_init(struct timeline *ctx, const char *name)
 {  
   /* Inheritance */
-  __slist_super__(ctx);
+  __slist_init__(ctx);
 
   /* Data */
   strncpy(ctx->name, name, sizeof(ctx->name));
@@ -57,7 +57,7 @@ void timeline_load(struct timeline *ctx, struct input *in)
 
 struct timeline_entry *timeline_step(struct timeline *ctx)
 {
-  ctx->current = __list_self__(__list__(ctx->current)->next);
+  ctx->current = (void*)__list__(ctx->current)->next;
   return ctx->current;
 }
 

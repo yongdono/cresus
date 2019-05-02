@@ -14,13 +14,15 @@
  */
 
 #include "engine/candle.h"
+
 #include "framework/list.h"
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
 struct rs_roc_entry {
   /* As always... */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Data */
   double value;
   double roc, roc_ref;
@@ -34,15 +36,17 @@ struct rs_roc_entry {
 
 static inline int rs_roc_entry_init(struct rs_roc_entry *entry,
 				    struct indicator *parent,
-				    double value, double roc, double roc_ref) {
-  __indicator_entry_super__(entry, parent);
+				    double value, double roc, double roc_ref)
+{
+  __indicator_entry_init__(entry, parent);
   entry->value = value;
   entry->roc =roc;
   entry->roc_ref = roc_ref;
   return 0;
 }
 
-static inline void rs_roc_entry_release(struct rs_roc_entry *entry) {
+static inline void rs_roc_entry_release(struct rs_roc_entry *entry)
+{
   __indicator_entry_release__(entry);
 }
 
@@ -55,7 +59,7 @@ static inline void rs_roc_entry_release(struct rs_roc_entry *entry) {
 
 struct rs_roc {
   /* Inherits from indicator */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   /* Internals */
   int period;
   list_head_t(struct timeline_entry) *ref;

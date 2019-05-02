@@ -11,10 +11,12 @@
 
 #include "math/average.h"
 #include "engine/candle.h"
+
+#include "framework/types.h"
 #include "framework/indicator.h"
 
 struct stochastic {
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   
   int period, k;
   struct average smooth_k;

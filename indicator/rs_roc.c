@@ -59,7 +59,7 @@ int rs_roc_init(struct rs_roc *ctx, unique_id_t id, int period,
 		list_head_t(struct timeline_entry) *ref)
 {
   /* Super() */
-  __indicator_super__(ctx, id, rs_roc_feed, rs_roc_reset);
+  __indicator_init__(ctx, id, rs_roc_feed, rs_roc_reset);
   __indicator_set_string__(ctx, "rs_roc[%d]", period);
 
   ctx->ref = ref->next;

@@ -29,7 +29,7 @@ static int feed(struct engine *e,
 {
   /* Step by step loop */
   static int last_month = -1;
-  struct candle *c = __timeline_entry_self__(entry);
+  struct candle *c = (void*)entry;
   
   /* Execute */
   int month = TIME_GET_MONTH(entry->time);

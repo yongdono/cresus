@@ -104,7 +104,7 @@ static void engine_run_csv_output(struct engine *ctx,
                                   struct timeline_entry *e)
 {
   if(TIMECMP(e->time, ctx->start_time, GRANULARITY_DAY) >= 0){
-    struct candle *c = __timeline_entry_self__(e);
+    struct candle *c = (void*)e;
     double orig = engine_assets_original_value(ctx);
     double value = engine_assets_value(ctx, c->close);
     
@@ -211,7 +211,7 @@ static void engine_run_position(struct engine *ctx,
 				struct position *p,
 				struct timeline_entry *e)
 {
-  struct candle *c = __timeline_entry_self__(e);
+  struct candle *c = (void*)e;
 
   switch(p->type){
   case BUY: engine_run_position_buy(ctx, p, c); break;
@@ -230,8 +230,8 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed)
   struct timeline_entry *entry;
 
   while((entry = timeline_step(ctx->timeline)) != NULL){
-    struct candle *c = __timeline_entry_self__(entry); /* FIXME ? */
-
+    struct candle *c = (void*)entry; /* FIXME ? */
+    
     /* We MUST stop at end_time */
     if(TIMECMP(entry->time, ctx->end_time, GRANULARITY_DAY) > 0)
       break;

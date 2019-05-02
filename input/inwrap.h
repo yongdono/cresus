@@ -9,6 +9,7 @@
 #ifndef INWRAP_H
 #define INWRAP_H
 
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/input.h"
 
@@ -38,7 +39,7 @@ typedef enum {
 
 struct inwrap {
   /* Inherits from input */
-  __inherits_from_input__;
+  __inherits_from__(struct input);
   /* Suported types */  
   inwrap_t type;
   struct yahoo_v7 yahoo_v7;

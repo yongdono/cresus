@@ -17,6 +17,7 @@
 #include "math/average.h"
 #include "engine/candle.h"
 
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
@@ -52,7 +53,7 @@ typedef enum {
 
 struct mobile_entry {
   /* As below */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Single value */
   double value;
   /* More info */
@@ -68,14 +69,16 @@ struct mobile_entry {
 
 static inline int mobile_entry_init(struct mobile_entry *entry,
 				    struct indicator *parent,
-				    double value, double direction){
-  __indicator_entry_super__(entry, parent);
+				    double value, double direction)
+{
+  __indicator_entry_init__(entry, parent);
   entry->value = value;
   entry->direction = direction;
   return 0;
 }
 
-static inline void mobile_entry_release(struct mobile_entry *entry) {
+static inline void mobile_entry_release(struct mobile_entry *entry)
+{
   __indicator_entry_release__(entry);
 }
 
@@ -88,7 +91,7 @@ static inline void mobile_entry_release(struct mobile_entry *entry) {
 
 struct mobile {
   /* As always */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   /* Basic data */
   mobile_t type;
   candle_value_t cvalue;

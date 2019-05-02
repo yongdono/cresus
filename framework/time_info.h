@@ -58,7 +58,7 @@
 /* Our basic types */
 
 typedef long long time_info_t;
-typedef long long granularity_t;
+typedef long long time_gr_t;
 
 #define TIME_MIN  0
 #define TIME_MAX -1
@@ -117,8 +117,8 @@ time_info_t time_info_epoch(time_t time);
 /* Some algorithm */
 int time_info_dayofweek(time_info_t t);
 /* Display */
-const char *time_info2str(time_info_t t, granularity_t g);
-const char *time_info2str_r(time_info_t t, granularity_t g, char *buf);
+const char *time_info2str(time_info_t t, time_gr_t g);
+const char *time_info2str_r(time_info_t t, time_gr_t g, char *buf);
 
 /* Some kinda sync */
 #define TIME_FOR_EACH(start, stop, g, time)		\

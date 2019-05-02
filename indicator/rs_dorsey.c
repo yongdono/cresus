@@ -45,8 +45,8 @@ static void rs_dorsey_reset(struct indicator *i)
 int rs_dorsey_init(struct rs_dorsey *ctx, unique_id_t id,
 		   list_head_t(struct timeline_entry) *ref)
 {
-  /* super() */
-  __indicator_super__(ctx, id, rs_dorsey_feed, rs_dorsey_reset);
+  /* init() */
+  __indicator_init__(ctx, id, rs_dorsey_feed, rs_dorsey_reset);
   __indicator_set_string__(ctx, "rsd[]");
   
   ctx->ref = ref->next;

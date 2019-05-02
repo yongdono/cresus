@@ -9,11 +9,12 @@
 #ifndef ATR_H
 #define ATR_H
 
+#include "framework/types.h"
 #include "framework/indicator.h"
 
 struct atr {
   /* Parent */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   
   int period;
   struct candle *ref;

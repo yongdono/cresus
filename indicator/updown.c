@@ -53,7 +53,7 @@ static void updown_reset(struct indicator *i) {
 int updown_init(struct updown *u, unique_id_t id, candle_value_t cvalue) {
   
   /* Super() */
-  __indicator_super__(u, id, updown_feed, updown_reset);
+  __indicator_init__(u, id, updown_feed, updown_reset);
   __indicator_set_string__(u, "updown");
   
   u->type = UPDOWN_NONE;

@@ -40,7 +40,7 @@ typedef enum {
 struct candle {
   /* Inherits from timeline_entry,
    * so we don't need time management nor indicator management */
-  __inherits_from_timeline_entry__;
+  __inherits_from__(struct timeline_entry);
   
   /* Content */
   double open, close;
@@ -49,7 +49,7 @@ struct candle {
 };
 
 int candle_init(struct candle *ctx,
-		time_info_t time, granularity_t g,
+		time_info_t time, time_gr_t g,
 		double open, double close,
 		double high, double low,
 		double volume);

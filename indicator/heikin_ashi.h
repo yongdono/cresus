@@ -10,6 +10,7 @@
 #define __Cresus_EVO__heikin_ashi__
 
 #include "engine/candle.h"
+#include "framework/types.h"
 #include "framework/indicator.h"
 
 typedef enum {
@@ -22,7 +23,7 @@ typedef enum {
 #define HEIKIN_ASHI_EVENT_CHDIR_DOWN 1
 
 struct heikin_ashi {
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
 
   struct candle value;
   candle_value_t cvalue;

@@ -16,9 +16,8 @@ static int linear_reg_feed(struct indicator *i,
 			   struct timeline_entry *e)
 {  
   struct linear_reg_entry *entry;
-  struct timeline_entry *prev = NULL;
-  struct linear_reg *l = __indicator_self__(i);
-  struct candle *c = __timeline_entry_self__(e);
+  struct linear_reg *l = (void*)i;
+  struct candle *p, *c = (void*)e;
 
   int n = l->period;
   int x = l->period;
@@ -27,8 +26,8 @@ static int linear_reg_feed(struct indicator *i,
   double xysum = 0, xxsum = 0;
   double xsum = x, ysum = c->close;
   
-  __list_for_each_prev__(__list__(e), prev){
-    struct candle *p = __timeline_entry_self__(prev);
+  __list_for_each_prev__(c, p){
+    
     double y = p->close;
     
     if(!--x)
@@ -65,7 +64,7 @@ static void linear_reg_reset(struct indicator *i)
 int linear_reg_init(struct linear_reg *l, unique_id_t id, int period)
 {  
   /* Super */
-  __indicator_super__(l, id, linear_reg_feed, linear_reg_reset);
+  __indicator_init__(l, id, linear_reg_feed, linear_reg_reset);
   __indicator_set_string__(l, "%lr[%d]", period);
 
   l->period = period;

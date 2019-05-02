@@ -9,7 +9,7 @@
 
 static void _hilo_reset_(struct indicator *i)
 {
-  struct hilo *ctx =  __indicator_self__(i);
+  struct hilo *ctx =  (void*)i;
   // TODO
 }
 
@@ -25,8 +25,8 @@ static int hilo_feed(struct indicator *i, struct timeline_entry *e)
 {
   struct hilo_entry *entry;
   struct timeline_entry *prev = NULL;
-  struct hilo *ctx = __indicator_self__(i);
-  struct candle *c = __timeline_entry_self__(e);
+  struct hilo *ctx = (void*)i;
+  struct candle *p, *c = (void*)e;
   
   if(hilo_entry_alloc(entry, i)){
     /* Init */
@@ -34,8 +34,8 @@ static int hilo_feed(struct indicator *i, struct timeline_entry *e)
     entry->high = c->high;
     entry->low = c->low;
     
-    __list_for_each_prev__(__list__(e), prev){
-      struct candle *p = __timeline_entry_self__(prev);
+    __list_for_each_prev__(c, p){
+      
       /* Out after ctx->period iterations */
       if(!--n)
 	break;
@@ -59,7 +59,7 @@ static int hilo_feed(struct indicator *i, struct timeline_entry *e)
 int hilo_init(struct hilo *ctx, unique_id_t id, int period, int filter)
 {
   /* Super() */
-  __indicator_super__(ctx, id, hilo_feed, _hilo_reset_);
+  __indicator_init__(ctx, id, hilo_feed, _hilo_reset_);
   __indicator_set_string__(ctx, "hilo[%d]", period);
   
   ctx->period = period;

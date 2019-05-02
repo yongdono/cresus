@@ -84,7 +84,7 @@ static struct candle *b4b_parse_entry(struct b4b *ctx, char *str)
 
 static struct timeline_entry *b4b_read(struct input *in)
 {
-  struct b4b *ctx = __input_self__(in);
+  struct b4b *ctx = (void*)(in);
   
   char buf[256];
   struct candle *c;
@@ -109,8 +109,8 @@ int b4b_init(struct b4b *ctx, const char *filename)
 {
   char dummy[256];
   
-  /* super */
-  __input_super__(ctx, b4b_read);
+  /* init */
+  __input_init__(ctx, b4b_read);
 
   strncpy(ctx->filename, filename, sizeof(ctx->filename));
   if(!(ctx->fp = fopen(ctx->filename, "r"))){

@@ -64,7 +64,7 @@ static struct candle *yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
 
 static struct timeline_entry *yahoo_v7_read(struct input *in)
 {
-  struct yahoo_v7 *ctx = __input_self__(in);
+  struct yahoo_v7 *ctx = (void*)in;
   
   char buf[256];
   struct candle *c;
@@ -86,8 +86,8 @@ int yahoo_v7_init(struct yahoo_v7 *ctx, const char *filename)
 {
   char dummy[256];
   
-  /* super */
-  __input_super__(ctx, yahoo_v7_read);
+  /* init */
+  __input_init__(ctx, yahoo_v7_read);
 
   strncpy(ctx->filename, filename, sizeof(ctx->filename));
   if(!(ctx->fp = fopen(ctx->filename, "r"))){

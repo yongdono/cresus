@@ -10,28 +10,20 @@
 #define SLIST_H
 
 #include <stdio.h>
+#include "framework/types.h"
 
-/* Inheritance system */
+#define __slist__(x) ((struct slist*)(x))
 
-#define __inherits_from_slist__ struct slist __parent_slist__
-#define __slist_is_superclass__ void *__self_slist__
-#define __slist__(x) (&(x)->__parent_slist__)
-#define __slist_self__(x) (x)->__self_slist__
-#define __slist_self_init__(x, self) (x)->__self_slist__ = self
-
-#define __slist_super__(self)			\
-  __slist_self_init__(__slist__(self), self);	\
-  slist_init(__slist__(self))
-#define __slist_release__(self) slist_release(__slist__(self))
-
-#define __slist_insert__(slist, entry)		\
-  slist_insert((slist), __slist__(entry))
-#define __slist_del__(slist)			\
-  slist_del(__slist__(slist))
+/* Exports */
+#define __slist_init__(ctx) slist_init(__slist__(ctx))
+#define __slist_release__(ctx) slist_release(__slist__(ctx))
+#define __slist_insert__(ctx, entry)                    \
+  slist_insert(__slist__(ctx), __slist__(entry))
+#define __slist_del__(ctx) slist_del(__slist__(ctx))
 /* Iteration */
-#define __slist_for_each__(head, self)			\
-  for(struct slist *ptr = (head)->next;			\
-      ptr != NULL && (self = __slist_self__(ptr));	\
+#define __slist_for_each__(head, ctx)			\
+  for(struct slist *ptr = __slist__(head)->next;        \
+      ptr != NULL && (ctx = (void*)(ptr));              \
       ptr = ptr->next)
 
 /* Basic slist object */
@@ -41,29 +33,33 @@
 #define slist_head_release(x) slist_release(x)
 
 struct slist {
-  __slist_is_superclass__;
   struct slist *next;
 };
 
-static inline int slist_init(struct slist *s) {
-  s->next = NULL;
+static inline int slist_init(struct slist *ctx)
+{
+  ctx->next = NULL;
   return 0;
 }
 
-static inline void slist_release(struct slist *s) {
-  s->next = NULL;
+static inline void slist_release(struct slist *ctx)
+{
+  ctx->next = NULL;
 }
 
-static inline void slist_insert(struct slist *s, struct slist *entry) {
-  entry->next = s->next;
-  s->next = entry;
+static inline void slist_insert(struct slist *ctx, struct slist *entry)
+{
+  entry->next = ctx->next;
+  ctx->next = entry;
 }
 
-static inline void slist_del(struct slist *s) {
-  s->next = s->next->next;
+static inline void slist_del(struct slist *ctx)
+{
+  ctx->next = ctx->next->next;
 }
 
-#define slist_is_empty(head) ((head)->next == NULL)
+#define slist_is_last(ctx) ((ctx)->next == NULL)
+#define slist_is_empty(head) slist_is_last(head)
 #define slist_for_each(head, ptr)				\
   for(ptr = (head)->next; (ptr) != NULL; ptr = (ptr)->next)
 

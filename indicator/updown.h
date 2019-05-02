@@ -10,6 +10,7 @@
 #define UPDOWN_H
 
 #include "engine/candle.h"
+#include "framework/types.h"
 #include "framework/indicator.h"
 
 #define UPDOWN_MAX 3
@@ -22,7 +23,7 @@ typedef enum {
 
 struct updown {
   /* This is an indicator */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   /* Own data */
   updown_t type;
   candle_value_t cvalue;

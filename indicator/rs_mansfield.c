@@ -64,7 +64,7 @@ static void rs_mansfield_reset(struct indicator *i) {
 int rs_mansfield_init(struct rs_mansfield *r, unique_id_t id, int period,
 		      list_head_t(struct timeline_entry) *ref) {
 
-  __indicator_super__(r, id, rs_mansfield_feed, rs_mansfield_reset);
+  __indicator_init__(r, id, rs_mansfield_feed, rs_mansfield_reset);
   __indicator_set_string__(r, "rsm[%d]", period);
   
   average_init(&r->mma, AVERAGE_MATH, period);

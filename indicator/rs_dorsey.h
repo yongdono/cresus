@@ -15,6 +15,7 @@
  * RSD = (close / close_index) * 100.0
  */
 
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/timeline.h"
 #include "framework/indicator.h"
@@ -23,7 +24,7 @@
 
 struct rs_dorsey_entry {
   /* As below */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Single value */
   double value;
 };
@@ -36,13 +37,15 @@ struct rs_dorsey_entry {
 
 static inline int rs_dorsey_entry_init(struct rs_dorsey_entry *entry,
 				       struct indicator *parent,
-				       double value) {
-  __indicator_entry_super__(entry, parent);
+				       double value)
+{
+  __indicator_entry_init__(entry, parent);
   entry->value = value;
   return 0;
 }
 
-static inline void rs_dorsey_entry_release(struct rs_dorsey_entry *entry){
+static inline void rs_dorsey_entry_release(struct rs_dorsey_entry *entry)
+{
   __indicator_entry_release__(entry);
 }
 
@@ -55,7 +58,7 @@ static inline void rs_dorsey_entry_release(struct rs_dorsey_entry *entry){
 
 struct rs_dorsey {
   /* As always, inherits from indicator */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   /* Reference chart */
   list_head_t(struct timeline_entry) *ref;
   /* Internals */

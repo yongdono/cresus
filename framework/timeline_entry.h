@@ -14,49 +14,40 @@
 #include "framework/time_info.h"
 #include "framework/indicator_entry.h"
 
-/* This is a superclass */
+/* This is a initclass */
 
-#define __inherits_from_timeline_entry__		\
-  struct timeline_entry __parent_timeline_entry__
-#define __timeline_entry_is_superclass__ void *__self_timeline_entry__
-#define __timeline_entry__(x) (&((x)->__parent_timeline_entry__))
-#define __timeline_entry_self__(x) (x)->__self_timeline_entry__
-#define __timeline_entry_self_init__(x, self)	\
-  __timeline_entry_self__(x) = self
+#define __timeline_entry__(x) ((struct timeline_entry*)(x))
 
-#define __timeline_entry_super__(self, time, granularity)		\
-  __timeline_entry_self_init__(__timeline_entry__(self), self);		\
-  timeline_entry_init(__timeline_entry__(self), time, granularity)
-#define __timeline_entry_release__(self)                \
-  timeline_entry_release(__timeline_entry__(self))
+#define __timeline_entry_init__(ctx, time, gr)                  \
+  timeline_entry_init(__timeline_entry__(ctx), time, gr)
+#define __timeline_entry_release__(ctx)                 \
+  timeline_entry_release(__timeline_entry__(ctx))
 
-#define __timeline_entry_timecmp__(self, time)			\
-  timeline_entry_timecmp(__timeline_entry__(self), time)
-#define __timeline_entry_find__(self, time)		\
-  timeline_entry_find(__timeline_entry__(self), time)
-#define __timeline_entry_str__(self)		\
-  timeline_entry_str(__timeline_entry__(self))
-#define __timeline_entry_str_r__(self, buf, len)		\
-  timeline_entry_str_r(__timeline_entry__(self), buf, len)
+#define __timeline_entry_timecmp__(ctx, time)           \
+  timeline_entry_timecmp(__timeline_entry__(ctx), time)
+#define __timeline_entry_find__(ctx, time)		\
+  timeline_entry_find(__timeline_entry__(ctx), time)
+#define __timeline_entry_str__(ctx)		\
+  timeline_entry_str(__timeline_entry__(ctx))
+#define __timeline_entry_str_r__(ctx, buf, len)                 \
+  timeline_entry_str_r(__timeline_entry__(ctx), buf, len)
 
-#define __timeline_entry_relative_self__(entry, n)		\
-  __timeline_entry_self__((struct timeline_entry*)		\
-			  __list_relative__((entry), n))
+#define __timeline_entry_relative__(ctx, n)     \
+  (typeof(ctx))__list_relative__((ctx), n)
 
 struct timeline_entry {
   /* parent */
-  __inherits_from_list__;
-  __timeline_entry_is_superclass__;
+  __inherits_from__(struct list);
   
   /* Time/Date management */
   time_info_t time;
-  granularity_t granularity;
+  time_gr_t gr;
 
   /* Indicators entries list */
   slist_head_t(struct indicator_entry) slist_ientry;
 };
 
-int timeline_entry_init(struct timeline_entry *ctx, time_info_t time, granularity_t g);
+int timeline_entry_init(struct timeline_entry *ctx, time_info_t time, time_gr_t g);
 void timeline_entry_release(struct timeline_entry *ctx);
 
 /* Methods */

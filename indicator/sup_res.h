@@ -2,25 +2,29 @@
 #define SUP_RES_H
 
 #include "engine/candle.h"
+
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
 struct sup_res_entry {
   /* As always */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Self */
   double value;
 };
 
 static inline int sup_res_entry_init(struct sup_res_entry *entry,
 				     struct indicator *parent,
-				     double value) {
-  __indicator_entry_super__(entry, parent);
+				     double value)
+{
+  __indicator_entry_init__(entry, parent);
   entry->value = value;
   return 0;
 }
 
-static inline void sup_res_entry_release(struct sup_res_entry *entry) {
+static inline void sup_res_entry_release(struct sup_res_entry *entry)
+{
   __indicator_entry_release__(entry);
 }
 
@@ -33,7 +37,7 @@ static inline void sup_res_entry_release(struct sup_res_entry *entry) {
 
 struct sup_res {
   /* As usual */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   /* Params */
   int step;
   candle_value_t cvalue;

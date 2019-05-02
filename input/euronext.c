@@ -47,7 +47,7 @@ static double euronext_dbl(struct euronext *ctx, char *str)
 static struct timeline_entry *euronext_read(struct input *in)
 {
   struct candle *c;
-  struct euronext *ctx = __input_self__(in);
+  struct euronext *ctx = (void*)(in);
  
   /* Check for EOF at least */
   if(ctx->i >= ctx->len)
@@ -80,8 +80,8 @@ int euronext_init(struct euronext *ctx, const char *filename)
   size_t size;
   struct stat stat;
 
-  /* super */
-  __input_super__(ctx, euronext_read);
+  /* init */
+  __input_init__(ctx, euronext_read);
   
   /* internals */
   ctx->i = 0;

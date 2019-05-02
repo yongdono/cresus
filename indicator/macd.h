@@ -12,12 +12,13 @@
 #include <stdlib.h>
 
 #include "math/average.h"
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
 struct macd_entry {
   /* As always */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Own data */
   double value;
   double signal;
@@ -32,15 +33,17 @@ struct macd_entry {
 
 static inline int macd_entry_init(struct macd_entry *entry,
 				  struct indicator *parent,
-				  double value, double signal){
-  __indicator_entry_super__(entry, parent);
+				  double value, double signal)
+{
+  __indicator_entry_init__(entry, parent);
   entry->value = value;
   entry->signal = signal;
   entry->histogram = (value - signal);
   return 0;
 }
 
-static inline void macd_entry_release(struct macd_entry *entry) {
+static inline void macd_entry_release(struct macd_entry *entry)
+{
   __indicator_entry_release__(entry);
 }
 
@@ -62,7 +65,7 @@ static inline void macd_entry_release(struct macd_entry *entry) {
 
 struct macd {
   /* Parent */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   /* 3 averages required */
   struct average fast;
   struct average slow;

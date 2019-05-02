@@ -29,7 +29,7 @@ static time_info_t xtrade_time(struct xtrade *ctx,
 static struct timeline_entry *xtrade_read(struct input *in)
 {
   struct candle *c;
-  struct xtrade *ctx = __input_self__(in);
+  struct xtrade *ctx = (void*)(in);
  
   /* Check for EOF at least */
   if(ctx->i < 0)
@@ -57,8 +57,8 @@ int xtrade_init(struct xtrade *ctx, const char *filename)
   size_t size;
   struct stat stat;
 
-  /* super */
-  __input_super__(ctx, xtrade_read);
+  /* init */
+  __input_init__(ctx, xtrade_read);
   
   /* internals */
   ctx->i = 0;

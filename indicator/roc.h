@@ -17,12 +17,14 @@
 
 #include "math/average.h"
 #include "engine/candle.h"
+
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
 struct roc_entry {
   /* As always... */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Data */
   double value;
 };
@@ -34,13 +36,15 @@ struct roc_entry {
 
 static inline int roc_entry_init(struct roc_entry *entry,
 				 struct indicator *parent,
-				 double value) {
-  __indicator_entry_super__(entry, parent);
+				 double value)
+{
+  __indicator_entry_init__(entry, parent);
   entry->value = value;
   return 0;
 }
 
-static inline void roc_entry_release(struct roc_entry *entry) {
+static inline void roc_entry_release(struct roc_entry *entry)
+{
   __indicator_entry_release__(entry);
 }
 
@@ -53,7 +57,7 @@ static inline void roc_entry_release(struct roc_entry *entry) {
 
 struct roc {
   /* Inherits from indicator */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   
   int period;
   struct average average;

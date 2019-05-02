@@ -15,12 +15,13 @@
  */
 
 #include "engine/candle.h"
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
 struct lowest_entry {
   /* As always... */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Data */
   double value;
 };
@@ -31,12 +32,14 @@ struct lowest_entry {
   DEFINE_FREE(entry, lowest_entry_free)
 
 static inline int lowest_entry_init(struct lowest_entry *entry,
-					  struct indicator *parent) {
-  __indicator_entry_super__(entry, parent);
+					  struct indicator *parent)
+{
+  __indicator_entry_init__(entry, parent);
   return 0;
 }
 
-static inline void lowest_entry_release(struct lowest_entry *entry) {
+static inline void lowest_entry_release(struct lowest_entry *entry)
+{
   __indicator_entry_release__(entry);
 }
 
@@ -49,7 +52,7 @@ static inline void lowest_entry_release(struct lowest_entry *entry) {
 
 struct lowest {
   /* Inherits from indicator */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   int period;
 };
 

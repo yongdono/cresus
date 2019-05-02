@@ -54,7 +54,7 @@ int jtrend_init(struct jtrend *j, unique_id_t id,
 		int period, int average,
 		list_head_t(struct timeline_entry) *ref) {
 
-  __indicator_super__(j, id, jtrend_feed, jtrend_reset);
+  __indicator_init__(j, id, jtrend_feed, jtrend_reset);
   __indicator_set_string__(j, "jtrend[%d,%d]", period, average);
   
   /* Our sub-indicators */

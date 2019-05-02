@@ -80,7 +80,7 @@ int zigzag_init(struct zigzag *z, unique_id_t id,
 		double threshold, candle_value_t cvalue) {
   
   /* Super */
-  __indicator_super__(z, id, zigzag_feed, zigzag_reset);
+  __indicator_init__(z, id, zigzag_feed, zigzag_reset);
   __indicator_set_string__(z, "zigzag[%.1f%%]", threshold * 100.0);
 
   z->dir = ZIGZAG_NONE;

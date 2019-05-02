@@ -15,11 +15,13 @@
 
 #include "math/average.h"
 #include "engine/candle.h"
+
+#include "framework/types.h"
 #include "framework/indicator.h"
 
 struct smi {
   /* Parent */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
 
   /* Pool */
   int count;

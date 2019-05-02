@@ -13,7 +13,7 @@ int indicator_init(struct indicator *ctx, unique_id_t id,
                    indicator_reset_ptr reset)
 {  
   /* Super */
-  __slist_super__(ctx);
+  __slist_init__(ctx);
   
   /* Self */
   ctx->id = id;

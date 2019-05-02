@@ -16,12 +16,13 @@
  */
 
 #include "engine/candle.h"
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
 struct hilo_entry {
   /* As always... */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Data */
   double high;
   double low;
@@ -33,12 +34,14 @@ struct hilo_entry {
   DEFINE_FREE(entry, hilo_entry_free)
 
 static inline int hilo_entry_init(struct hilo_entry *entry,
-				 struct indicator *parent) {
-  __indicator_entry_super__(entry, parent);
+				 struct indicator *parent)
+{
+  __indicator_entry_init__(entry, parent);
   return 0;
 }
 
-static inline void hilo_entry_release(struct hilo_entry *entry) {
+static inline void hilo_entry_release(struct hilo_entry *entry)
+{
   __indicator_entry_release__(entry);
 }
 
@@ -51,7 +54,7 @@ static inline void hilo_entry_release(struct hilo_entry *entry) {
 
 struct hilo {
   /* Inherits from indicator */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   
   int period;
   int filter;

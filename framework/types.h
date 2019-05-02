@@ -13,6 +13,13 @@
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 
-typedef unsigned int unique_id_t;
+typedef unsigned int unique_id_t; /* TODO : make generator ? */
+
+/* Inheritance management. Beware : no multiple heritage */
+#define __inherits_from__(type) type __parent__
+
+/* Accessors */
+#define __parent__(self) (&(self)->__parent__)
+#define __child__(self, type) ((type*)self)
 
 #endif

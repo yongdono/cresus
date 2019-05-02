@@ -32,7 +32,7 @@ static double kraken_dbl(struct kraken *ctx, char *str)
 static struct timeline_entry *kraken_read(struct input *in)
 {
   struct candle *c;
-  struct kraken *ctx = __input_self__(in);
+  struct kraken *ctx = (void*)(in);
  
   /* Check for EOF at least */
   if(ctx->i >= ctx->len)
@@ -67,8 +67,8 @@ int kraken_init(struct kraken *ctx, const char *filename)
   size_t size;
   struct stat stat;
 
-  /* super */
-  __input_super__(ctx, kraken_read);
+  /* init */
+  __input_init__(ctx, kraken_read);
   
   /* internals */
   ctx->i = 0;

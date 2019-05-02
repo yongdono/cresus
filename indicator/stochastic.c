@@ -47,8 +47,8 @@ static void stochastic_reset(struct indicator *i) {
 int stochastic_init(struct stochastic *s, unique_id_t id,
 		    int period, int k, int d) {
   
-  /* super() */
-  __indicator_super__(s, id, stochastic_feed, stochastic_reset);
+  /* init() */
+  __indicator_init__(s, id, stochastic_feed, stochastic_reset);
   __indicator_set_string__(s, "sto[%d, %d, %d]", period, k, d);
   
   s->k = k;

@@ -10,6 +10,8 @@
 #define ZIGZAG_H
 
 #include "engine/candle.h"
+
+#include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
@@ -31,7 +33,7 @@ typedef enum {
 
 struct zigzag_entry {
   /* As always */
-  __inherits_from_indicator_entry__;
+  __inherits_from__(struct indicator_entry);
   /* Self */
   double value;
   zigzag_dir_t dir;
@@ -42,15 +44,17 @@ struct zigzag_entry {
 static inline int zigzag_entry_init(struct zigzag_entry *entry,
 				    struct indicator *parent,
 				    zigzag_dir_t dir, double value,
-				    int count){
-  __indicator_entry_super__(entry, parent);
+				    int count)
+{
+  __indicator_entry_init__(entry, parent);
   entry->dir = dir;
   entry->value = value;
   entry->n_since_last_ref = count;
   return 0;
 }
 
-static inline void zigzag_entry_release(struct zigzag_entry *entry) {
+static inline void zigzag_entry_release(struct zigzag_entry *entry)
+{
   __indicator_entry_release__(entry);
 }
 
@@ -63,7 +67,7 @@ static inline void zigzag_entry_release(struct zigzag_entry *entry) {
 
 struct zigzag {
   /* As usual */
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   /* Params */
   double threshold;
   candle_value_t cvalue;

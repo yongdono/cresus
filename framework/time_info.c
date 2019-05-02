@@ -35,7 +35,7 @@ int time_info_dayofweek(time_info_t t)
   return (y + y / 4 - y / 100 + y / 400 + x[m-1] + d) % 7;
 }
 
-const char *time_info2str_r(time_info_t t, granularity_t g, char *buf)
+const char *time_info2str_r(time_info_t t, time_gr_t g, char *buf)
 {
   *buf = 0;								
   char *ptr = buf;
@@ -53,7 +53,7 @@ const char *time_info2str_r(time_info_t t, granularity_t g, char *buf)
 
 static char buf[256];
 
-const char *time_info2str(time_info_t t, granularity_t g)
+const char *time_info2str(time_info_t t, time_gr_t g)
 {
   return time_info2str_r(t, g, buf);
 }

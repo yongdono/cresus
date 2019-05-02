@@ -9,10 +9,11 @@
 #ifndef __Cresus_EVO__srsi__
 #define __Cresus_EVO__srsi__
 
+#include "framework/types.h"
 #include "framework/indicator.h"
 
 struct srsi {
-  __inherits_from_indicator__;
+  __inherits_from__(struct indicator);
   
   int max;
   int len;

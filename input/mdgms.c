@@ -20,7 +20,7 @@
 static struct timeline_entry *mdgms_read(struct input *in)
 {
   struct candle *c;
-  struct mdgms *ctx = __input_self__(in);
+  struct mdgms *ctx = (void*)(in);
   
   /* TODO: check !!! */
   json_value *ts = ctx->value->u.object.values[0].value;
@@ -60,8 +60,8 @@ int mdgms_init(struct mdgms *ctx, const char *filename)
   size_t size;
   struct stat stat;
 
-  /* super */
-  __input_super__(ctx, mdgms_read);
+  /* init */
+  __input_init__(ctx, mdgms_read);
   
   /* internals */
   ctx->i = 0;
