@@ -32,7 +32,7 @@ static int feed(struct engine *e,
 {
   /* Step by step loop */
   time_info_t time = VAL_YEAR(year_min);
-  struct candle *c = __timeline_entry_self__(entry);
+  struct candle *c = (void*)entry;
 
 #define MONTH 6 /* June seems to work better */
   

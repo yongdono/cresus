@@ -11,56 +11,56 @@
 
 static int bollinger_feed(struct indicator *i, struct timeline_entry *e)
 {  
-  struct bollinger *b = (void*)i;
+  struct bollinger *ctx = (void*)i;
   struct candle *c = (void*)e;
-  double value = candle_get_value(c, b->cvalue);
-  b->value.mma = average_update(&b->avg, value);
+  double value = candle_get_value(c, ctx->cvalue);
+  ctx->value.mma = average_update(&ctx->avg, value);
 
-  if(average_is_available(&b->avg)){
-    double stddev = average_stddev(&b->avg);
-    b->value.hi = b->value.mma + b->stddev_factor * stddev;
-    b->value.lo = b->value.mma - b->stddev_factor * stddev;
+  if(average_is_available(&ctx->avg)){
+    double stddev = average_stddev(&ctx->avg);
+    ctx->value.hi = ctx->value.mma + ctx->stddev_factor * stddev;
+    ctx->value.lo = ctx->value.mma - ctx->stddev_factor * stddev;
   }
   
-  return (b->value.mma != 0.0 ? 1 : 0);
+  return (ctx->value.mma != 0.0 ? 1 : 0);
 }
 
 static void bollinger_reset(struct indicator *i)
 {
-  struct bollinger *b = (void*)i;
-  average_reset(&b->avg);
+  struct bollinger *ctx = (void*)i;
+  average_reset(&ctx->avg);
 }
 
-int bollinger_init(struct bollinger *b, unique_id_t id, int period,
+int bollinger_init(struct bollinger *ctx, unique_id_t id, int period,
                    double stddev_factor, candle_value_t cvalue)
 {  
   /* init */
-  __indicator_init__(b, id, bollinger_feed, bollinger_reset);
-  __indicator_set_string__(b, "boll[%d, %.1f]", period, stddev_factor);
+  __indicator_init__(ctx, id, bollinger_feed, bollinger_reset);
+  __indicator_set_string__(ctx, "boll[%d, %.1f]", period, stddev_factor);
   
-  b->stddev_factor = stddev_factor;
-  b->cvalue = cvalue;
-  average_init(&b->avg, AVERAGE_MATH, period);
+  ctx->stddev_factor = stddev_factor;
+  ctx->cvalue = cvalue;
+  average_init(&ctx->avg, AVERAGE_MATH, period);
   
   return 0;
 }
 
-void bollinger_release(struct bollinger *b)
+void bollinger_release(struct bollinger *ctx)
 {
-  __indicator_release__(b);
-  average_release(&b->avg);
+  __indicator_release__(ctx);
+  average_release(&ctx->avg);
 }
 
 
-struct bollinger_value *bollinger_get_value(struct bollinger *b)
+struct bollinger_value *ctxollinger_get_value(struct bollinger *ctx)
 {
-  return (b->value.mma != 0.0 ? &b->value : NULL);
+  return (ctx->value.mma != 0.0 ? &ctx->value : NULL);
 }
 
-const char *bollinger_str(struct bollinger *b)
+const char *ctxollinger_str(struct bollinger *ctx)
 {
-  sprintf(b->str, "%.2lf %.2lf:%.2lf", b->value.mma,
-	  b->value.hi, b->value.lo);
+  sprintf(ctx->str, "%.2lf %.2lf:%.2lf", ctx->value.mma,
+	  ctx->value.hi, ctx->value.lo);
 
-  return b->str;
+  return ctx->str;
 }

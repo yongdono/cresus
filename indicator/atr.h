@@ -22,10 +22,10 @@ struct atr {
   double value;
 };
 
-int atr_init(struct atr *a, unique_id_t id, int period);
-void atr_release(struct atr *a);
+int atr_init(struct atr *ctx, unique_id_t id, int period);
+void atr_release(struct atr *ctx);
 
 /* Indicator-specific */
-double atr_value(struct atr *a);
+double atr_value(struct atr *ctx);
 
 #endif

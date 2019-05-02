@@ -38,7 +38,7 @@ static int feed(struct engine *e,
 {
   /* Step by step loop */
   static int level = 0;
-  struct candle *c = __timeline_entry_self__(entry);
+  struct candle *c = (void*)entry;
   
   /* Execute */
   if(candle_is_red(c)) level++;

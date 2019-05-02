@@ -26,8 +26,8 @@ struct stochastic {
   struct candle *array;
 };
 
-int stochastic_init(struct stochastic *s, unique_id_t id,
+int stochastic_init(struct stochastic *ctx, unique_id_t id,
 		    int period, int k, int d);
-void stochastic_release(struct stochastic *s);
+void stochastic_release(struct stochastic *ctx);
 
 #endif /* defined(__Cresus_EVO__stochastic__) */

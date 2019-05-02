@@ -17,8 +17,8 @@
 static int rs_mansfield_feed(struct indicator *i, struct timeline_entry *e) {
 
   struct timeline_entry *entry;
-  struct candle *c = __timeline_entry_self__(e);
-  struct rs_mansfield *r = __indicator_self__(i);
+  struct candle *c = (void*)e;
+  struct rs_mansfield *r = (void*)i;
 
   /* TODO : make this simpler */
   
@@ -55,7 +55,7 @@ static int rs_mansfield_feed(struct indicator *i, struct timeline_entry *e) {
 
 static void rs_mansfield_reset(struct indicator *i) {
 
-  struct rs_mansfield *r = __indicator_self__(i);
+  struct rs_mansfield *r = (void*)i;
   /* Reset insights */
   average_reset(&r->mma);
   r->value = 0.0;

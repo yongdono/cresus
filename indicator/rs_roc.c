@@ -12,9 +12,9 @@
 static int rs_roc_feed(struct indicator *i, struct timeline_entry *e)
 {
   struct timeline_entry *e_ref;
-  struct rs_roc *ctx = __indicator_self__(i);
+  struct rs_roc *ctx = (void*)i;
   
-  struct candle *c = __timeline_entry_self__(e);
+  struct candle *c = (void*)e;
   struct timeline_entry *e_last = __list_relative__(e, -(ctx->period));
 
   /* Error check */

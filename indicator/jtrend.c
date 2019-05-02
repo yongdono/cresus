@@ -14,8 +14,8 @@ static int jtrend_feed(struct indicator *i,
   struct jtrend_entry *jentry;
   struct timeline_entry *tentry;
 
-  struct jtrend *j = __indicator_self__(i);
-  struct candle *c = __timeline_entry_self__(e);
+  struct jtrend *j = (void*)i;
+  struct candle *c = (void*)e;
 
   if(!__list_self__(j->ref))
     j->ref = j->ref->next;
@@ -43,7 +43,7 @@ static int jtrend_feed(struct indicator *i,
 
 static void jtrend_reset(struct indicator *i) {
   
-  struct jtrend *j = __indicator_self__(i);
+  struct jtrend *j = (void*)i;
   /* Reset sub-indicators */
   roc_reset(&j->roc);
   roc_reset(&j->roc_ref);

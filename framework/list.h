@@ -46,8 +46,12 @@
 	(ctx) && (safe = __list__(ctx)->prev))
   
 /* Relative functions */
-#define __list_relative__(ctx, n)               \
+#define __list_relative__(ctx, n)                       \
   ((typeof(ctx))list_relative(__list__(ctx), n))
+#define __list_prev_n__(ctx, n)                 \
+  ((typeof(ctx))list_prev_n(__list__(ctx), n))
+#define __list_next_n__(ctx, n)                 \
+  ((typeof(ctx))list_next_n(__list__(ctx), n))
 
 /* Basic list object */
   

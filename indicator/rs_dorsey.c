@@ -12,8 +12,8 @@
 static int rs_dorsey_feed(struct indicator *i, struct timeline_entry *e)
 {
   struct timeline_entry *ref_entry;
-  struct rs_dorsey *ctx = __indicator_self__(i);
-  struct candle *c = __timeline_entry_self__(e);
+  struct rs_dorsey *ctx = (void*)i;
+  struct candle *c = (void*)e;
  
   if((ref_entry = timeline_entry_find(__list_self__(ctx->ref), e->time))){
     struct rs_dorsey_entry *entry;
@@ -38,7 +38,7 @@ static int rs_dorsey_feed(struct indicator *i, struct timeline_entry *e)
 
 static void rs_dorsey_reset(struct indicator *i)
 {
-  struct rs_dorsey *ctx = __indicator_self__(i);
+  struct rs_dorsey *ctx = (void*)i;
   /* Nothing to do */
 }
 

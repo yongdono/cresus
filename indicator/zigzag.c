@@ -24,8 +24,8 @@ static int zigzag_feed(struct indicator *i, struct timeline_entry *e) {
   
   double threshold;
   struct zigzag_entry *zz;
-  struct zigzag *z = __indicator_self__(i);
-  struct candle *candle = __timeline_entry_self__(e);
+  struct zigzag *z = (void*)i;
+  struct candle *candle = (void*)e;
   double value = candle_get_value(candle, z->cvalue);
   
   if(!z->ref){
@@ -67,7 +67,7 @@ static int zigzag_feed(struct indicator *i, struct timeline_entry *e) {
 
 static void zigzag_reset(struct indicator *i) {
 
-  struct zigzag *z = __indicator_self__(i);
+  struct zigzag *z = (void*)i;
   /* RAZ */
   z->dir = ZIGZAG_NONE;
   /* Refs */

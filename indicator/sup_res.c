@@ -3,8 +3,8 @@
 
 static int sup_res_feed(struct indicator *i, struct timeline_entry *e) {
 
-  struct sup_res *s = __indicator_self__(i);
-  struct candle *candle = __timeline_entry_self__(e);
+  struct sup_res *s = (void*)i;
+  struct candle *candle = (void*)e;
 
   /* TODO */
   return -1;
