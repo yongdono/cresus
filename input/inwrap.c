@@ -10,10 +10,9 @@
 #include <stdlib.h>
 
 #include "inwrap.h"
-#include "engine/candle.h"
 #include "framework/verbose.h"
 
-static struct timeline_entry *inwrap_read(struct input *in)
+static struct input_entry *inwrap_read(struct input *in)
 {
   struct inwrap *ctx = (void*)(in);
   switch(ctx->type){
@@ -28,7 +27,8 @@ static struct timeline_entry *inwrap_read(struct input *in)
   return NULL;
 }
 
-int inwrap_init(struct inwrap *ctx, const char *filename, inwrap_t type)
+int inwrap_init(struct inwrap *ctx, const char *filename,
+		inwrap_t type)
 {
   int ret = -1;
 

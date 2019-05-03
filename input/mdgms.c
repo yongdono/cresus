@@ -14,12 +14,11 @@
 #include <fcntl.h>
 
 #include "mdgms.h"
-#include "engine/candle.h"
 #include "framework/verbose.h"
 
-static struct timeline_entry *mdgms_read(struct input *in)
+static struct input_entry *mdgms_read(struct input *in)
 {
-  struct candle *c;
+  struct input_entry *entry;
   struct mdgms *ctx = (void*)(in);
   
   /* TODO: check !!! */
@@ -46,9 +45,9 @@ static struct timeline_entry *mdgms_read(struct input *in)
   ctx->i++;
   
   time_info_t time = time_info_epoch(t);
-  if(candle_alloc(c, time, GRANULARITY_DAY,
-                  open, close, high, low, vol))
-    return __timeline_entry__(c);
+  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+		       open, close, high, low, vol))
+    return entry;
   
  err:
   return NULL;

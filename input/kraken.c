@@ -14,7 +14,6 @@
 #include <fcntl.h>
 
 #include "kraken.h"
-#include "engine/candle.h"
 #include "framework/verbose.h"
 #include "framework/time_info.h"
 
@@ -29,10 +28,10 @@ static double kraken_dbl(struct kraken *ctx, char *str)
 /*
  * Format : <time>, <open>, <high>, <low>, <close>, <vwap>, <volume>, <count>
  */
-static struct timeline_entry *kraken_read(struct input *in)
+static struct input_entry *kraken_read(struct input *in)
 {
-  struct candle *c;
-  struct kraken *ctx = (void*)(in);
+  struct input_entry *entry;
+  struct kraken *ctx = (void*)in;
  
   /* Check for EOF at least */
   if(ctx->i >= ctx->len)
@@ -53,10 +52,10 @@ static struct timeline_entry *kraken_read(struct input *in)
   double close = kraken_dbl(ctx, sclose);
   double vol = kraken_dbl(ctx, svol);
   
-  if(candle_alloc(c, time, GRANULARITY_DAY,
-                  open, close, high, low, vol))
-    return __timeline_entry__(c);
-
+  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+		       open, close, high, low, vol))
+    return entry;
+  
  err:
   return NULL;
 }

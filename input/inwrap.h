@@ -14,7 +14,6 @@
 #include "framework/input.h"
 
 #include "b4b.h"
-#include "yahoo.h"
 #include "yahoo_v7.h"
 #include "mdgms.h"
 #include "xtrade.h"

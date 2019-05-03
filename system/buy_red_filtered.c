@@ -17,8 +17,8 @@
 
 #include "input/inwrap.h"
 #include "engine/engine.h"
+#include "engine/common_opt.h"
 #include "framework/verbose.h"
-#include "framework/common_opt.h"
 
 typedef enum {
   STATE_NORMAL,

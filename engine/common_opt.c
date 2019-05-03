@@ -10,8 +10,8 @@
 #include <getopt.h>
 #include <stdlib.h>
 
-#include "verbose.h"
-#include "common_opt.h"
+#include "engine/common_opt.h"
+#include "framework/verbose.h"
 
 int common_opt_init(struct common_opt *ctx, const char *optstring)
 {

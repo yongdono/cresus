@@ -10,7 +10,6 @@
 #include <stdlib.h>
 
 #include "b4b.h"
-#include "engine/candle.h"
 #include "framework/verbose.h"
 
 static ssize_t b4b_prepare_str(struct b4b *ctx, char *buf)
@@ -37,11 +36,12 @@ static ssize_t b4b_prepare_str(struct b4b *ctx, char *buf)
   return -1;
 }
 
-static struct candle *b4b_parse_entry(struct b4b *ctx, char *str)
+static struct input_entry *
+b4b_parse_entry(struct b4b *ctx, char *str)
 {
-  struct candle *c; 
   time_info_t time = 0;
   int year, month, day;
+  struct input_entry *entry;
   double open, close, high, low, volume; 
   
   /* Cut string */
@@ -74,30 +74,31 @@ static struct candle *b4b_parse_entry(struct b4b *ctx, char *str)
   TIME_SET_MONTH(time, month);
   TIME_SET_YEAR(time, year);
 
-  if(candle_alloc(c, time, GRANULARITY_DAY,
-                  open, close, high, low, volume))
-    return c;
+  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+		       open, close, high, low, volume))
+    return entry;
   
  err:
   return NULL;
 }
 
-static struct timeline_entry *b4b_read(struct input *in)
+static struct input_entry *b4b_read(struct input *in)
 {
-  struct b4b *ctx = (void*)(in);
+  struct b4b *ctx = (void*)in;
   
   char buf[256];
-  struct candle *c;
+  struct input_entry *entry;
 
   while(fgets(buf, sizeof buf, ctx->fp)){
     /* Prepare string & pre-filter */
     if(b4b_prepare_str(ctx, buf) < 0)
       continue;
     /* Parse entry */
-    if((c = b4b_parse_entry(ctx, buf))){
+    if((entry = b4b_parse_entry(ctx, buf))){
+      PR_DBG("%s %s loaded\n", ctx->filename,
+	     time_info2str_r(entry->time, entry->gr, buf));
       /* We got a new candle */
-      PR_DBG("%s %s loaded\n", ctx->filename, __timeline_entry_str__(c));
-      return __timeline_entry__(c);
+      return entry;
     }
   }
   

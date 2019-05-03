@@ -14,7 +14,6 @@
 #include <fcntl.h>
 
 #include "euronext.h"
-#include "engine/candle.h"
 #include "framework/verbose.h"
 #include "framework/time_info.h"
 
@@ -44,11 +43,11 @@ static double euronext_dbl(struct euronext *ctx, char *str)
   return ((double)t * 1000.0) + (double)h + ((double)c / 100.0);
 }
 
-static struct timeline_entry *euronext_read(struct input *in)
+static struct input_entry *euronext_read(struct input *in)
 {
-  struct candle *c;
-  struct euronext *ctx = (void*)(in);
- 
+  struct input_entry *entry;
+  struct euronext *ctx = (void*)in;
+  
   /* Check for EOF at least */
   if(ctx->i >= ctx->len)
     goto err;
@@ -66,10 +65,10 @@ static struct timeline_entry *euronext_read(struct input *in)
   double low = euronext_dbl(ctx, slow);
   double close = euronext_dbl(ctx, sclose);
   
-  if(candle_alloc(c, time, GRANULARITY_DAY,
-                  open, close, high, low, 0.0))
-    return __timeline_entry__(c);
-
+  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+		       open, close, high, low, 0.0))
+    return entry;
+  
  err:
   return NULL;
 }
@@ -104,7 +103,7 @@ int euronext_init(struct euronext *ctx, const char *filename)
     goto err;
   
   /* Ok */
-  ctx->data = ctx->value->u.object.values->value; //->u.array.values;
+  ctx->data = ctx->value->u.object.values->value;
   ctx->len = ctx->data->u.array.length;
   
   close(fd);

@@ -14,7 +14,6 @@
 #include <fcntl.h>
 
 #include "xtrade.h"
-#include "engine/candle.h"
 #include "framework/verbose.h"
 #include "framework/time_info.h"
 
@@ -26,10 +25,10 @@ static time_info_t xtrade_time(struct xtrade *ctx,
   return TIME_INIT(y, m, d, 0, 0, 0, 0);
 }
 
-static struct timeline_entry *xtrade_read(struct input *in)
+static struct input_entry *xtrade_read(struct input *in)
 {
-  struct candle *c;
-  struct xtrade *ctx = (void*)(in);
+  struct input_entry *entry;
+  struct xtrade *ctx = (void*)in;
  
   /* Check for EOF at least */
   if(ctx->i < 0)
@@ -43,9 +42,9 @@ static struct timeline_entry *xtrade_read(struct input *in)
   double high = o->u.object.values[4].value->u.dbl;
   
   time_info_t time = xtrade_time(ctx, str);
-  if(candle_alloc(c, time, GRANULARITY_DAY,
-                  open, close, high, low, 0.0))
-    return __timeline_entry__(c);
+  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+		       open, close, high, low, 0.0))
+    return entry;
   
  err:
   return NULL;

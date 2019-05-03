@@ -12,7 +12,8 @@
 #include <float.h>
 #include <stdlib.h>
 
-#include "framework/timeline.h"
+#include "framework/slist.h"
+#include "framework/input.h"
 
 typedef enum {
   CANDLE_OPEN,
@@ -28,24 +29,25 @@ typedef enum {
 } candle_value_t;
 
 /* Object is allocatable */
-#define candle_alloc(ctx, time, g, open, close, high, low, volume)	\
-  DEFINE_ALLOC(struct candle, ctx, candle_init,				\
-	       time, g, open, close, high, low, volume)
-#define candle_free(ctx)				\
+#define candle_alloc(ctx, inptu_entry)				\
+  DEFINE_ALLOC(struct candle, ctx, candle_init, input_entry)
+#define candle_free(ctx)			\
   DEFINE_FREE(ctx, candle_release)
 
 #define candle_is_green(ctx) ((ctx)->close >= (ctx)->open)
 #define candle_is_red(ctx) ((ctx)->close < (ctx)->open)
 
 struct candle {
-  /* Inherits from timeline_entry,
-   * so we don't need time management nor indicator management */
-  __inherits_from__(struct timeline_entry);
+  /* Inherits from slist cause we want this to be "stackable"
+   * in a timeline_entry object */
+  __inherits_from__(struct slist);
   
   /* Content */
   double open, close;
   double high, low;
   double volume;
+
+  slist_head_t(struct indicator) slist_indicator;
 };
 
 int candle_init(struct candle *ctx,

@@ -8,5 +8,4 @@ add_library(framework OBJECT
   timeline_entry.c
   verbose.c
   time_info.c
-  common_opt.c
   )

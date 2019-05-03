@@ -11,6 +11,47 @@
 
 #include <limits.h>
 
+#include "framework/alloc.h"
+#include "framework/time_info.h"
+
+/* Input object format */
+
+struct input_entry {
+  /* Time */
+  time_info_t time;
+  time_gr_t gr;
+  /* Data */
+  double open, close, high, low, volume;
+};
+
+static inline int input_entry_init(struct input_entry *ctx,
+				   time_info_t time,
+				   time_gr_t gr,
+				   double open, double close,
+				   double high, double low,
+				   double volume)
+{
+  ctx->time = time;
+  ctx->gr = gr;
+  ctx->open = open;
+  ctx->close = close;
+  ctx->high = high;
+  ctx->low = low;
+  ctx->volume = volume;
+  return 0;
+}
+
+static inline void input_entry_release(struct input_entry *ctx)
+{
+  /* To be defined */
+}
+
+#define input_entry_alloc(ctx, time, gr, open, close, high, low, volume) \
+  DEFINE_ALLOC(struct input_entry, ctx, input_entry_init,		\
+	       time, gr, open, close, high, low, volume)
+#define input_entry_free(ctx)			\
+  DEFINE_FREE(ctx, input_entry_release)
+
 #define __input__(x) ((struct input*)(x))
 
 /* Methods */
@@ -22,9 +63,7 @@
 /* Typedefs */
 struct input; /* FIXME : find another way */
 
-#include "timeline_entry.h"
-
-typedef struct timeline_entry *(*input_read_ptr)(struct input *ctx);
+typedef struct input_entry *(*input_read_ptr)(struct input *ctx);
 
 struct input {
   input_read_ptr read;
@@ -40,7 +79,7 @@ static inline void input_release(struct input *ctx)
 {
 }
 
-static inline struct timeline_entry *input_read(struct input *ctx)
+static inline struct input_entry *input_read(struct input *ctx)
 {
   return ctx->read(ctx);
 }

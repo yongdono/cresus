@@ -28,7 +28,7 @@ struct yahoo {
   /* file loader */
   FILE *fp;
   /* Yahoo file format is LIFO */
-  list_head_t(struct candle) list_entry;
+  list_head_t(struct input_entry) list_entry;
   struct list *current_entry;
   /* Debug */
   char filename[256];

@@ -5,6 +5,7 @@ project(cresus)
 add_library(engine OBJECT
   calendar.c
   candle.c
+  common_opt.c
   engine.c
   order.c
   position.c

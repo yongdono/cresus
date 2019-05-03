@@ -10,12 +10,11 @@
 #include <stdlib.h>
 
 #include "yahoo.h"
-#include "engine/candle.h"
 #include "framework/verbose.h"
 
-static struct timeline_entry *yahoo_read(struct input *in) {
+static struct input_entry *yahoo_read(struct input *in) {
   
-  struct yahoo *y = (void*)(in);
+  struct yahoo *y = (void*)in;
   
   y->current_entry = y->list_entry.next;
   if(list_is_head(y->current_entry))
@@ -27,12 +26,12 @@ static struct timeline_entry *yahoo_read(struct input *in) {
 }
 
 static int yahoo_load_entry(struct yahoo *ctx,
-			    struct timeline_entry **ret) {
+			    struct input_entry **ret) {
   
   char buf[256];
   char *str = buf;
-  struct candle *candle = NULL;
-
+  struct input_entry *entry = NULL;
+  
   time_info_t time = 0;
   int year, month, day;
   double open, close, high, low, volume;
@@ -72,10 +71,10 @@ static int yahoo_load_entry(struct yahoo *ctx,
   TIME_SET_YEAR(time, year);
   
   /* Create candle (at last !) */
-  if(candle_alloc(candle, time, GRANULARITY_DAY,
-                  open, close, high, low, volume)){
+  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+		       open, close, high, low, volume)){
     /* Candle is allocated & init */
-    *ret = __timeline_entry__(candle);
+    *ret = entry;
     PR_DBG("%s %.2d/%.2d/%.4d loaded\n", ctx->filename,
            TIME_GET_MONTH(time), TIME_GET_DAY(time), TIME_GET_YEAR(time));
     

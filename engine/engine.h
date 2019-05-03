@@ -11,8 +11,8 @@
 
 #include "engine/candle.h"
 #include "engine/position.h"
+#include "engine/common_opt.h"
 #include "framework/timeline.h"
-#include "framework/common_opt.h"
 
 struct engine {
   struct timeline *timeline;

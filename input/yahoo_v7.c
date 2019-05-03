@@ -10,12 +10,13 @@
 #include <stdlib.h>
 
 #include "yahoo_v7.h"
-#include "engine/candle.h"
 #include "framework/verbose.h"
 
-static struct candle *yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
+static struct input_entry *
+yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
 {
-  struct candle *c; 
+  struct input_entry *entry;
+
   time_info_t time = 0;
   int year, month, day;
   double open = 0.0, close = 0.0;
@@ -54,27 +55,28 @@ static struct candle *yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
   TIME_SET_YEAR(time, year);
 
   if(open != 0.0 && close != 0.0 && high != 0.0 && low != 0.0)
-    if(candle_alloc(c, time, GRANULARITY_DAY,
-		    open, close, high, low, volume))
-      return c;
+    if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+			 open, close, high, low, volume))
+      return entry;
   
  err:
   return NULL;
 }
 
-static struct timeline_entry *yahoo_v7_read(struct input *in)
+static struct input_entry *yahoo_v7_read(struct input *in)
 {
   struct yahoo_v7 *ctx = (void*)in;
   
   char buf[256];
-  struct candle *c;
-
+  struct input_entry *entry;
+  
   while(fgets(buf, sizeof buf, ctx->fp)){
     /* Parse entry */
-    if((c = yahoo_v7_parse_entry(ctx, buf))){
-      /* We got a new candle */
-      PR_DBG("%s %s loaded\n", ctx->filename, __timeline_entry_str__(c));
-      return __timeline_entry__(c);
+    if((entry = yahoo_v7_parse_entry(ctx, buf))){
+      PR_DBG("%s %s loaded\n", ctx->filename,
+	     time_info2str_r(entry->time, entry->gr, buf));
+      /* We got a new candle */      
+      return entry;
     }
   }
   
