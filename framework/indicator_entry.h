@@ -27,14 +27,14 @@ struct indicator; /* Avoid circular dependency */
 struct indicator_entry {
   __inherits_from__(struct slist);
   /* Remember who generated this entry */
-  struct indicator *iparent;
+  struct indicator *parent;
 };
 
 static inline int indicator_entry_init(struct indicator_entry *ctx,
-				       struct indicator *iparent)
+				       struct indicator *parent)
 {
   __slist_init__(ctx);
-  ctx->iparent = iparent;
+  ctx->parent = parent;
   return 0; /* alloc rulz */
 }
 

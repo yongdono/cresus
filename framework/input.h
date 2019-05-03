@@ -14,6 +14,9 @@
 #include "framework/alloc.h"
 #include "framework/time_info.h"
 
+#define input_entry_interface                   \
+  double open, close, high, low, volume
+
 /* Input object format */
 
 struct input_entry {
