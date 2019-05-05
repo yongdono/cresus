@@ -17,6 +17,11 @@
 #define input_entry_interface                   \
   double open, close, high, low, volume
 
+#define input_entry_interface_copy(a, b)		\
+  ({ (a)->open = (b)->open; (a)->close = (b)->close;	\
+    (a)->high = (b)->high; (a)->low = (b)->low;		\
+    (a)->volume = (b)->volume; })
+
 /* Input object format */
 
 struct input_entry {
@@ -24,7 +29,7 @@ struct input_entry {
   time_info_t time;
   time_gr_t gr;
   /* Data */
-  double open, close, high, low, volume;
+  __implements__(input_entry_interface);
 };
 
 static inline int input_entry_init(struct input_entry *ctx,
