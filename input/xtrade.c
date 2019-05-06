@@ -42,7 +42,7 @@ static struct input_entry *xtrade_read(struct input *in)
   double high = o->u.object.values[4].value->u.dbl;
   
   time_info_t time = xtrade_time(ctx, str);
-  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+  if(input_entry_alloc(entry, time, GR_DAY,
 		       open, close, high, low, 0.0))
     return entry;
   

@@ -9,7 +9,6 @@
 #ifndef __Cresus_EVO__engine__
 #define __Cresus_EVO__engine__
 
-#include "engine/candle.h"
 #include "engine/position.h"
 #include "engine/common_opt.h"
 #include "framework/timeline.h"
@@ -52,7 +51,7 @@ struct engine {
   (ctx)->csv_output = boolean
 
 /* External pointer to plugin */
-typedef int (*engine_feed_ptr)(struct engine*, struct timeline*, struct timeline_entry*);
+typedef int (*engine_feed_ptr)(struct engine*, struct timeline*, struct timeline_slice*);
 
 int engine_init(struct engine *e, struct timeline *t);
 void engine_release(struct engine *e);

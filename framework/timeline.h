@@ -61,6 +61,11 @@ timeline_track_entry_init(struct timeline_track_entry *ctx,
   DEFINE_ALLOC(struct timeline_track_entry, ctx,			\
 	       timeline_track_entry_init, input_entry, track, slice)
 
+/* Methods */
+const char *timeline_track_entry_str(struct timeline_track_entry *ctx);
+const char *timeline_track_entry_str_r(struct timeline_track_entry *ctx, char *buf);
+
+
 struct timeline_track {
   /* It's a slist of lists */
   __inherits_from__(struct slist_by_uid);
@@ -115,7 +120,7 @@ timeline_slice_entry_init(struct timeline_slice_entry *ctx,
 struct timeline_slice {
   __inherits_from__(struct list);
   /* It's a time slice */
-  time_info_t time;
+  time_info_t time; /* No granularity required ? */
   /* Containing one or more timeline_slices_entries */
   slist_head_t(struct timeline_slice_entry) slist_entries;
 };

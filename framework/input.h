@@ -22,25 +22,31 @@
     (a)->high = (b)->high; (a)->low = (b)->low;		\
     (a)->volume = (b)->volume; })
 
+#define input_entry_interface_fmt               \
+  "o%.2f c%.2f h%.2f l%.2f v%.0f"
+#define input_entry_interface_args(x)                           \
+  (x)->open, (x)->close, (x)->high, (x)->low, (x)->volume
+#define input_entry_interface_str(x, buf)       \
+  sprintf(buf, input_entry_interface_fmt,       \
+          input_entry_interface_args(x))
+
 /* Input object format */
 
 struct input_entry {
-  /* Time */
-  time_info_t time;
-  time_gr_t gr;
-  /* Data */
+  /* Time & data */
+  __implements__(time_info_interface);
   __implements__(input_entry_interface);
 };
 
 static inline int input_entry_init(struct input_entry *ctx,
 				   time_info_t time,
-				   time_gr_t gr,
+				   time_gr_t g,
 				   double open, double close,
 				   double high, double low,
 				   double volume)
 {
   ctx->time = time;
-  ctx->gr = gr;
+  ctx->g = g;
   ctx->open = open;
   ctx->close = close;
   ctx->high = high;
@@ -54,9 +60,9 @@ static inline void input_entry_release(struct input_entry *ctx)
   /* To be defined */
 }
 
-#define input_entry_alloc(ctx, time, gr, open, close, high, low, volume) \
+#define input_entry_alloc(ctx, time, g, open, close, high, low, volume) \
   DEFINE_ALLOC(struct input_entry, ctx, input_entry_init,		\
-	       time, gr, open, close, high, low, volume)
+	       time, g, open, close, high, low, volume)
 #define input_entry_free(ctx)			\
   DEFINE_FREE(ctx, input_entry_release)
 

@@ -6,16 +6,38 @@
  *
  */
 
+#include <stdio.h>
 #include "timeline.h"
 
+static char buf[256];
+
+/*
+ * Timeline track object
+ */
+const char *timeline_track_entry_str(struct timeline_track_entry *ctx)
+{
+  return timeline_track_entry_str_r(ctx, buf);
+}
+
+const char *timeline_track_entry_str_r(struct timeline_track_entry *ctx,
+                                       char *buf)
+{
+  return sprintf(buf, "%s " input_entry_interface_fmt,
+                 time_info2str(ctx->slice->time, GR_DAY), /* ! */
+                 input_entry_interface_args(ctx));
+}
+
+/*
+ * Timeline object
+ */
 static struct timeline_slice *
-timeline_get_slice(struct timeline *ctx, time_info_t time, time_gr_t gr)
+timeline_get_slice(struct timeline *ctx, time_info_t time)
 {
   struct timeline_slice *ptr;
   
   /* TODO : Remember last position ? */
   __list_for_each__(&ctx->by_slice, ptr){
-    time_info_t cmp = TIMECMP(time, ptr->time, gr);
+    time_info_t cmp = TIMECMP(ptr->time, time, GR_DAY); /* ! */
     /* Slice already exists, we go out */
     if(!cmp) goto out;
     /* Slice is ahead, sort */
@@ -63,8 +85,7 @@ int timeline_add_track(struct timeline *ctx,
   /* 1) Read input */
   while((input_entry = input_read(input)) != NULL){
     /* 2) Create slice if necessary & sort it */
-    if((slice = timeline_get_slice(ctx, input_entry->time,
-                                   input_entry->gr)) != NULL){
+    if((slice = timeline_get_slice(ctx, input_entry->time)) != NULL){
       /* 3) Create track entry, register slice */
       timeline_track_entry_alloc(track_entry, input_entry, track, slice); /* ! */
       __list_add_tail__(&track->list_entries, track_entry); /* FIXME : sort ? */

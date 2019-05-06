@@ -71,7 +71,7 @@ static int yahoo_load_entry(struct yahoo *ctx,
   TIME_SET_YEAR(time, year);
   
   /* Create candle (at last !) */
-  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+  if(input_entry_alloc(entry, time, GR_DAY,
 		       open, close, high, low, volume)){
     /* Candle is allocated & init */
     *ret = entry;

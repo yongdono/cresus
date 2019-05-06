@@ -52,7 +52,7 @@ static struct input_entry *kraken_read(struct input *in)
   double close = kraken_dbl(ctx, sclose);
   double vol = kraken_dbl(ctx, svol);
   
-  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+  if(input_entry_alloc(entry, time, GR_DAY,
 		       open, close, high, low, vol))
     return entry;
   

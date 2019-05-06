@@ -31,7 +31,7 @@ static int feed(struct engine *e,
   time_info_t time = VAL_YEAR(year_min);
   struct candle *c = __timeline_entry_self__(entry);
   
-  if(TIMECMP(entry->time, time, GRANULARITY_YEAR) < 0)
+  if(TIMECMP(entry->time, time, GR_YEAR) < 0)
     goto out;
   
   /* Execute */

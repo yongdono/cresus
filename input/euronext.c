@@ -65,7 +65,7 @@ static struct input_entry *euronext_read(struct input *in)
   double low = euronext_dbl(ctx, slow);
   double close = euronext_dbl(ctx, sclose);
   
-  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+  if(input_entry_alloc(entry, time, GR_DAY,
 		       open, close, high, low, 0.0))
     return entry;
   

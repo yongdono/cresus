@@ -45,7 +45,7 @@ static struct input_entry *mdgms_read(struct input *in)
   ctx->i++;
   
   time_info_t time = time_info_epoch(t);
-  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+  if(input_entry_alloc(entry, time, GR_DAY,
 		       open, close, high, low, vol))
     return entry;
   

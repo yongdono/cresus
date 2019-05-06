@@ -55,7 +55,7 @@ yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
   TIME_SET_YEAR(time, year);
 
   if(open != 0.0 && close != 0.0 && high != 0.0 && low != 0.0)
-    if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+    if(input_entry_alloc(entry, time, GR_DAY,
 			 open, close, high, low, volume))
       return entry;
   
@@ -74,7 +74,7 @@ static struct input_entry *yahoo_v7_read(struct input *in)
     /* Parse entry */
     if((entry = yahoo_v7_parse_entry(ctx, buf))){
       PR_DBG("%s %s loaded\n", ctx->filename,
-	     time_info2str_r(entry->time, entry->gr, buf));
+	     time_info2str_r(entry->time, entry->g, buf));
       /* We got a new candle */      
       return entry;
     }

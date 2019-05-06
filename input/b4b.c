@@ -74,7 +74,7 @@ b4b_parse_entry(struct b4b *ctx, char *str)
   TIME_SET_MONTH(time, month);
   TIME_SET_YEAR(time, year);
 
-  if(input_entry_alloc(entry, time, GRANULARITY_DAY,
+  if(input_entry_alloc(entry, time, GR_DAY,
 		       open, close, high, low, volume))
     return entry;
   
@@ -96,7 +96,7 @@ static struct input_entry *b4b_read(struct input *in)
     /* Parse entry */
     if((entry = b4b_parse_entry(ctx, buf))){
       PR_DBG("%s %s loaded\n", ctx->filename,
-	     time_info2str_r(entry->time, entry->gr, buf));
+	     time_info2str_r(entry->time, entry->g, buf));
       /* We got a new candle */
       return entry;
     }

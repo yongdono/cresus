@@ -60,19 +60,22 @@
 typedef long long time_info_t;
 typedef long long time_gr_t;
 
+#define time_info_interface                     \
+  long long time, g
+
 #define TIME_MIN  0
 #define TIME_MAX -1
 
-#define GRANULARITY_MSEC   (MSEC_MASK|SECOND_MASK|MINUTE_MASK|HOUR_MASK| \
+#define GR_MSEC   (MSEC_MASK|SECOND_MASK|MINUTE_MASK|HOUR_MASK| \
 			    DAY_MASK|MONTH_MASK|YEAR_MASK)
-#define GRANULARITY_SECOND (SECOND_MASK|MINUTE_MASK|HOUR_MASK|	\
+#define GR_SECOND (SECOND_MASK|MINUTE_MASK|HOUR_MASK|	\
 			    DAY_MASK|MONTH_MASK|YEAR_MASK)
-#define GRANULARITY_MINUTE (MINUTE_MASK|HOUR_MASK|		\
+#define GR_MINUTE (MINUTE_MASK|HOUR_MASK|		\
 			    DAY_MASK|MONTH_MASK|YEAR_MASK)
-#define GRANULARITY_HOUR   (HOUR_MASK|DAY_MASK|MONTH_MASK|YEAR_MASK)
-#define GRANULARITY_DAY    (DAY_MASK|MONTH_MASK|YEAR_MASK)
-#define GRANULARITY_MONTH  (MONTH_MASK|YEAR_MASK)
-#define GRANULARITY_YEAR   (YEAR_MASK)
+#define GR_HOUR   (HOUR_MASK|DAY_MASK|MONTH_MASK|YEAR_MASK)
+#define GR_DAY    (DAY_MASK|MONTH_MASK|YEAR_MASK)
+#define GR_MONTH  (MONTH_MASK|YEAR_MASK)
+#define GR_YEAR   (YEAR_MASK)
 
 /* Value generators */
 #define VAL_MSEC(m) ((BITMASK(MSEC_NBIT) & m) << MSEC_SHIFT)
@@ -109,7 +112,7 @@ typedef long long time_gr_t;
 #define TIME_GET_YEAR(t)   (int)((t & YEAR_MASK)    >> YEAR_SHIFT)
 
 #define TIMECMP(t1, t2, g) ((t1 & g) - (t2 & g))
-#define TIMEADD(t, g, unit) (t = (t + (GRANULARITY_MSEC & (~g + unit))))
+#define TIMEADD(t, g, unit) (t = (t + (GR_MSEC & (~g + unit))))
 
 /* Current time */
 time_info_t time_info(void);
