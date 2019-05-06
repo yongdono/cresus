@@ -15,8 +15,9 @@
 #include <getopt.h>
 #include <math.h>
 
-#include "engine/engine.h"
+#include "engine/engine_v2.h"
 #include "engine/common_opt.h"
+
 #include "framework/verbose.h"
 #include "framework/timeline.h"
 #include "input/input_wrapper.h"
@@ -24,17 +25,25 @@
 static int amount = 250;
 static int occurrence = 1;
 
-static int feed(struct engine *e,
-		struct timeline *t,
-		struct timeline_track_entry *entry)
+static int feed(struct engine_v2 *engine,
+		struct timeline_slice *slice)
 {
   /* Step by step loop */
   static int last_month = -1;
+
+  PR_INFO("%s\n", time_info2str(slice->time, GR_DAY));
   
   /* Execute */
-  int month = TIME_GET_MONTH(entry->slice->time);
-  if(month != last_month && !(month % occurrence))
-    engine_set_order(e, BUY, amount, CASH, NULL);
+  int month = TIME_GET_MONTH(slice->time);
+  if(month != last_month && !(month % occurrence)){
+    //engine_set_order(engine, BUY, amount, CASH, NULL);
+    struct timeline_slice_entry *entry;
+    __slist_for_each__(&slice->slist_slice_entries, entry){
+      PR_WARN("%s - BUY %d\n",
+              timeline_track_entry_str(entry->track_entry),
+              amount);
+    }
+  }
   
   last_month = month;
   return 0;
@@ -65,16 +74,16 @@ static int timeline_create(struct timeline *t,
 
 int main(int argc, char **argv)
 {
-  VERBOSE_LEVEL(INFO);
+  VERBOSE_LEVEL(DBG);
   
   /*
    * Data
    */
   int c;
   char *filename;
-  struct common_opt opt;
   
-  struct engine engine;
+  struct common_opt opt;
+  struct engine_v2 engine;
   struct timeline timeline;
 
   if(argc < 2)
@@ -94,17 +103,17 @@ int main(int argc, char **argv)
   if(opt.fixed_amount.set) amount = opt.fixed_amount.i;
   if(!opt.input_type.set) goto usage;
   
-  if((timeline_create(&timeline, filename, opt.input_type.s))){
-    engine_init(&engine, &timeline);
-    engine_set_common_opt(&engine, &opt);
+  if(!(timeline_create(&timeline, filename, opt.input_type.s))){
+    engine_v2_init(&engine, &timeline);
+    engine_v2_set_common_opt(&engine, &opt);
     /* Run */
-    engine_run(&engine, feed);
+    engine_v2_run(&engine, feed);
     
     /* Print some info */
-    engine_display_stats(&engine);
+    //engine_display_stats(&engine);
     
     /* TODO : Don't forget to release everything */
-    engine_release(&engine);
+    engine_v2_release(&engine);
   }
   
   return 0;

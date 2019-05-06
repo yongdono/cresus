@@ -4,7 +4,7 @@ project(cresus)
 # src for cresus engine
 add_library(engine OBJECT
   common_opt.c
-  engine.c
-  order.c
-  position.c
+  engine_v2.c
+#  order.c
+#  position.c
   )

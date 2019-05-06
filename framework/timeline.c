@@ -7,7 +7,9 @@
  */
 
 #include <stdio.h>
-#include "timeline.h"
+
+#include "framework/verbose.h"
+#include "framework/timeline.h"
 
 static char buf[256];
 
@@ -57,12 +59,16 @@ timeline_get_slice(struct timeline *ctx, time_info_t time)
   __list_for_each__(&ctx->by_slice, ptr){
     time_info_t cmp = TIMECMP(ptr->time, time, GR_DAY); /* ! */
     /* Slice already exists, we go out */
-    if(!cmp) goto out;
+    if(!cmp){
+      PR_DBG("timeline.c: slice already exists\n");
+      goto out;
+    }
     /* Slice is ahead, sort */
     if(cmp > 0){
       struct timeline_slice *slice;
       timeline_slice_alloc(slice, time);
       __list_add__(ptr, slice);
+      PR_DBG("timeline.c: slice is missing, insertion\n");
       goto out;
     }
   }
@@ -70,6 +76,7 @@ timeline_get_slice(struct timeline *ctx, time_info_t time)
   /* Slice doesn't exist, we create it */
   timeline_slice_alloc(ptr, time);
   __list_add_tail__(&ctx->by_slice, ptr);
+  PR_DBG("timeline.c: new slice at %s\n", time_info2str(time, GR_DAY));
   
  out:
   return ptr;
@@ -103,13 +110,17 @@ int timeline_add_track(struct timeline *ctx,
   /* 1) Read input */
   while((input_entry = input_read(input)) != NULL){
     /* 2) Create slice if necessary & sort it */
+    PR_DBG("2) Create slice if necessary & sort it\n");
     if((slice = timeline_get_slice(ctx, input_entry->time)) != NULL){
       /* 3) Create track entry, register slice */
+      PR_DBG("3) Create track entry, register slice\n");
       timeline_track_entry_alloc(track_entry, input_entry, track, slice); /* ! */
       __list_add_tail__(&track->list_track_entries, track_entry); /* FIXME : sort ? */
       /* 4) Create slice entry & register track entry */
+      PR_DBG("4) Create slice entry & register track entry\n");
       timeline_slice_entry_alloc(slice_entry, track->uid, track_entry); /* ! */
-      __list_add_tail__(slice, slice_entry);
+      __slist_insert__(&slice->slist_slice_entries, slice_entry);
+      PR_DBG("5) Back to 1\n");
     }
   }
 }
