@@ -1,11 +1,18 @@
-#ifndef SOME_DATA_STRUCTURES_H
-#define SOME_DATA_STRUCTURES_H
+/*
+ * Cresus CommonTL - timeline.h 
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 06/05/2019
+ * Copyright (c) 2014 Joachim Naulet. All rights reserved.
+ *
+ */
+
+#ifndef TIMELINE_H
+#define TIMELINE_H
 
 #include "framework/list.h"
 #include "framework/alloc.h"
 #include "framework/slist.h"
 #include "framework/input.h"
-#include "framework/indicator.h"
 #include "framework/slist_by_uid.h"
 
 /*
@@ -19,6 +26,7 @@
  */
 
 /* Required for compilation */
+struct indicator;
 struct timeline_slice;
 
 /*

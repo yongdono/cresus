@@ -1,4 +1,12 @@
-#include "some_data_structures.h"
+/*
+ * Cresus CommonTL - timeline.c
+ * 
+ * Created by Joachim Naulet <jnaulet@rdinnovation.fr> on 06/05/2019
+ * Copyright (c) 2014 Joachim Naulet. All rights reserved.
+ *
+ */
+
+#include "timeline.h"
 
 static struct timeline_slice *
 timeline_get_slice(struct timeline *ctx, time_info_t time, time_gr_t gr)

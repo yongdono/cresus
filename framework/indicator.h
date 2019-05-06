@@ -11,7 +11,7 @@
 
 #include "framework/types.h"
 #include "framework/slist.h"
-#include "framework/timeline_entry.h"
+#include "framework/timeline.h"
 
 #define __indicator__(x) ((struct indicator*)(x))
 
@@ -36,7 +36,7 @@
 
 /* Define types */
 struct indicator; /* FIXME : find something more elegant */
-typedef int (*indicator_feed_ptr)(struct indicator*, struct timeline_entry*);
+typedef int (*indicator_feed_ptr)(struct indicator*, struct timeline_track_entry*);
 typedef void (*indicator_reset_ptr)(struct indicator*);
 
 struct indicator {
@@ -48,7 +48,7 @@ struct indicator {
   indicator_feed_ptr feed;
   indicator_reset_ptr reset;
   /* Unique Id & name */
-  unique_id_t id;
+  unique_id_t uid;
   char str[INDICATOR_STR_MAX];
   /* Status */
   int is_empty;
@@ -57,7 +57,7 @@ struct indicator {
 int indicator_init(struct indicator *ctx, unique_id_t id, indicator_feed_ptr feed, indicator_reset_ptr reset);
 void indicator_release(struct indicator *ctx);
 
-int indicator_feed(struct indicator *ctx, struct timeline_entry *e);
+int indicator_feed(struct indicator *ctx, struct timeline_track_entry *e);
 void indicator_reset(struct indicator *ctx);
 
 #endif /* defined(INDICATOR_H) */

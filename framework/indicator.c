@@ -8,7 +8,7 @@
 
 #include "indicator.h"
 
-int indicator_init(struct indicator *ctx, unique_id_t id,
+int indicator_init(struct indicator *ctx, unique_id_t uid,
 		   indicator_feed_ptr feed,
                    indicator_reset_ptr reset)
 {  
@@ -16,7 +16,7 @@ int indicator_init(struct indicator *ctx, unique_id_t id,
   __slist_init__(ctx);
   
   /* Self */
-  ctx->id = id;
+  ctx->uid = uid;
   ctx->feed = feed;
   ctx->reset = reset;
   ctx->is_empty = 1;
@@ -30,11 +30,11 @@ void indicator_release(struct indicator *ctx)
   ctx->feed = NULL;
 }
 
-int indicator_feed(struct indicator *ctx, struct timeline_entry *e)
+int indicator_feed(struct indicator *ctx, struct timeline_track_entry *e)
 {
   int ret = ctx->feed(ctx, e);
   ctx->is_empty = 0;
-
+  
   return ret;
 }
 
