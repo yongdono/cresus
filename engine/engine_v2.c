@@ -40,6 +40,12 @@ int engine_v2_set_common_opt(struct engine_v2 *ctx, struct common_opt *opt)
 void engine_v2_run(struct engine_v2 *ctx, engine_v2_feed_ptr feed)
 {
   struct timeline_slice *slice;
-  __list_for_each__(&ctx->timeline->by_slice, slice)
+  __list_for_each__(&ctx->timeline->by_slice, slice){
+    /* We MUST stop at end_time */
+    if(TIMECMP(slice->time, ctx->end_time, GR_DAY) > 0)
+      break;
+
+    /* Run custom routines */
     feed(ctx, slice);
+  }
 }

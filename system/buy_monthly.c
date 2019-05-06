@@ -22,8 +22,14 @@
 #include "framework/timeline.h"
 #include "input/input_wrapper.h"
 
+#include "indicator/lowest.h"
+
 static int amount = 250;
 static int occurrence = 1;
+
+/* UIDs */
+#define UID_TRACK0        0
+#define UID_TRACK0_LOWEST 1
 
 static int feed(struct engine_v2 *engine,
 		struct timeline_slice *slice)
@@ -31,17 +37,19 @@ static int feed(struct engine_v2 *engine,
   /* Step by step loop */
   static int last_month = -1;
 
-  PR_INFO("%s\n", time_info2str(slice->time, GR_DAY));
-  
   /* Execute */
   int month = TIME_GET_MONTH(slice->time);
   if(month != last_month && !(month % occurrence)){
     //engine_set_order(engine, BUY, amount, CASH, NULL);
     struct timeline_slice_entry *entry;
     __slist_for_each__(&slice->slist_slice_entries, entry){
-      PR_WARN("%s - BUY %d\n",
+      struct lowest_entry *lowest_entry = (struct lowest_entry*)
+	timeline_track_entry_get_indicator_entry(entry->track_entry,
+						 UID_TRACK0_LOWEST);
+      
+      PR_WARN("%s - BUY %d (lowest %.2lf)\n",
               timeline_track_entry_str(entry->track_entry),
-              amount);
+              amount, lowest_entry->value);
     }
   }
   
@@ -62,10 +70,14 @@ static int timeline_create(struct timeline *t,
     struct timeline_track *track0;
     timeline_track_alloc(track0, 0);
     /* Create indicators */
-    /* ... */
+    struct lowest *lowest;
+    lowest_alloc(lowest, UID_TRACK0_LOWEST, 50);
+    timeline_track_add_indicator(track0, __indicator__(lowest));
     /* Add to timeline */
     timeline_init(t);
     timeline_add_track(t, track0, input);
+    /* Execute timeline */
+    timeline_run_and_sync(t);
     return 0;
   }
   

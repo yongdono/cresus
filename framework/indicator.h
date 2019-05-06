@@ -65,24 +65,19 @@ void indicator_reset(struct indicator *ctx);
 #define __indicator_entry__(x) ((struct indicator_entry*)(x))
 
 /* Heritable */
-#define __indicator_entry_init__(ctx, iparent)                  \
-  indicator_entry_init(__indicator_entry__(ctx), iparent)
+#define __indicator_entry_init__(ctx, parent)		\
+  indicator_entry_init(__indicator_entry__(ctx), parent)
 #define __indicator_entry_release__(ctx)                \
   indicator_entry_release(__indicator_entry__(ctx))
 
-struct indicator; /* Avoid circular dependency */
-
 struct indicator_entry {
-  __inherits_from__(struct slist);
-  /* Remember who generated this entry */
-  struct indicator *parent;
+  __inherits_from__(struct slist_by_uid); /* Is that all ? */
 };
 
 static inline int indicator_entry_init(struct indicator_entry *ctx,
 				       struct indicator *parent)
 {
-  __slist_init__(ctx);
-  ctx->parent = parent;
+  __slist_by_uid_init__(ctx, __slist_by_uid__(parent)->uid);
   return 0; /* alloc rulz */
 }
 

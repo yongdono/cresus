@@ -71,6 +71,15 @@ timeline_track_entry_add_indicator_entry(struct timeline_track_entry *ctx,
   slist_insert(&ctx->slist_indicator_entries, __slist__(entry));
 }
 
+static inline struct indicator_entry *
+timeline_track_entry_get_indicator_entry(struct timeline_track_entry *ctx,
+					 unique_id_t indicator_uid)
+{
+  return (struct indicator_entry*)
+    __slist_by_uid_find__(&ctx->slist_indicator_entries,
+			  indicator_uid);
+}
+
 const char *timeline_track_entry_str(struct timeline_track_entry *ctx);
 const char *timeline_track_entry_str_r(struct timeline_track_entry *ctx, char *buf);
 
@@ -99,8 +108,12 @@ timeline_track_init(struct timeline_track *ctx, unique_id_t uid)
   DEFINE_ALLOC(struct timeline_track, ctx, timeline_track_init, \
 	       track_id)
 
-int timeline_track_add_indicator(struct timeline_track *ctx,
-				 struct indicator *indicator);
+static inline void
+timeline_track_add_indicator(struct timeline_track *ctx,
+			     struct indicator *indicator)
+{
+  slist_insert(&ctx->slist_indicators, indicator);
+}
 
 /*
  * Access by slice / indice / time

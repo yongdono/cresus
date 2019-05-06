@@ -10,6 +10,7 @@
 
 #include "framework/verbose.h"
 #include "framework/timeline.h"
+#include "framework/indicator.h"
 
 static char buf[256];
 
@@ -127,6 +128,18 @@ int timeline_add_track(struct timeline *ctx,
 
 int timeline_run_and_sync(struct timeline *ctx)
 {
-  /* Run indicators here */
+  /* Execute tracks one at a time */
+  struct timeline_track *track;
+  __slist_for_each__(&ctx->by_track, track){
+    /* Run each track sequentially */
+    struct timeline_track_entry *track_entry;
+    __list_for_each__(&track->list_track_entries, track_entry){
+      /* On each track_entry, run all indicators */
+      struct indicator *indicator;
+      __slist_for_each__(&track->slist_indicators, indicator)
+	indicator_feed(indicator, track_entry);
+    }
+  }
+  
   return 0;
 }
