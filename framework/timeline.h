@@ -118,7 +118,7 @@ timeline_slice_entry_init(struct timeline_slice_entry *ctx,
 			  struct timeline_track_entry *track_entry)
 {
   __slist_by_uid_init__(ctx, track_uid); /* super() */
-  track_entry = track_entry;
+  ctx->track_entry = track_entry;
   return 0;
 }
 
