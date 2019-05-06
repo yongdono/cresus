@@ -15,8 +15,6 @@
  */
 
 #include "math/average.h"
-#include "engine/candle.h"
-
 #include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
@@ -61,50 +59,49 @@ struct mobile_entry {
   /* Events ? */
 };
 
-#define mobile_entry_alloc(entry, parent, value, direction)		\
-  DEFINE_ALLOC(struct mobile_entry, entry,				\
+#define mobile_entry_alloc(ctx, parent, value, direction)		\
+  DEFINE_ALLOC(struct mobile_entry, ctx,				\
 	       mobile_entry_init, parent, value, direction)
-#define mobile_entry_free(entry)			\
-  DEFINE_FREE(entry, mobile_entry_release)
+#define mobile_entry_free(ctx)			\
+  DEFINE_FREE(ctx, mobile_entry_release)
 
-static inline int mobile_entry_init(struct mobile_entry *entry,
+static inline int mobile_entry_init(struct mobile_entry *ctx,
 				    struct indicator *parent,
 				    double value, double direction)
 {
-  __indicator_entry_init__(entry, parent);
-  entry->value = value;
-  entry->direction = direction;
+  __indicator_entry_init__(ctx, parent);
+  ctx->value = value;
+  ctx->direction = direction;
   return 0;
 }
 
-static inline void mobile_entry_release(struct mobile_entry *entry)
+static inline void mobile_entry_release(struct mobile_entry *ctx)
 {
-  __indicator_entry_release__(entry);
+  __indicator_entry_release__(ctx);
 }
 
 /* Main object */
 
-#define mobile_alloc(m, id, type, period, cvalue)			\
-  DEFINE_ALLOC(struct mobile, m, mobile_init, id, type, period, cvalue)
-#define mobile_free(m)				\
-  DEFINE_FREE(m, mobile_release)
+#define mobile_alloc(ctx, uid, type, period, value)			\
+  DEFINE_ALLOC(struct mobile, ctx, mobile_init, uid, type, period, value)
+#define mobile_free(ctx)                        \
+  DEFINE_FREE(ctx, mobile_release)
 
 struct mobile {
   /* As always */
   __inherits_from__(struct indicator);
   /* Basic data */
   mobile_t type;
-  candle_value_t cvalue;
+  input_entry_value_t value;
   /* Average object */
   struct average avg;
 };
 
-int mobile_init(struct mobile *m, unique_id_t id, mobile_t type,
-		int period, candle_value_t cvalue);
-void mobile_release(struct mobile *m);
+int mobile_init(struct mobile *ctx, unique_id_t id, mobile_t type, int period, input_entry_value_t value);
+void mobile_release(struct mobile *ctx);
 
 /* indicator-specific */
-double mobile_average(struct mobile *m);
-double mobile_stddev(struct mobile *m);
+double mobile_average(struct mobile *ctx);
+double mobile_stddev(struct mobile *ctx);
 
 #endif

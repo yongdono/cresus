@@ -11,7 +11,7 @@
 
 #include "smi.h"
 
-static int smi_feed(struct indicator *i, struct timeline_entry *e)
+static int smi_feed(struct indicator *i, struct timeline_track_entry *e)
 {  
   double hi = 0.0;
   double lo = DBL_MAX;

@@ -1,7 +1,7 @@
 
 #include "sup_res.h"
 
-static int sup_res_feed(struct indicator *i, struct timeline_entry *e) {
+static int sup_res_feed(struct indicator *i, struct timeline_track_entry *e) {
 
   struct sup_res *s = (void*)i;
   struct candle *candle = (void*)e;

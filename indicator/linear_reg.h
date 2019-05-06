@@ -14,8 +14,6 @@
  */
 
 #include "math/average.h"
-#include "engine/candle.h"
-
 #include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
@@ -31,32 +29,32 @@ struct linear_reg_entry {
   double a, b; /* As in Y = aX + b */
 };
 
-#define linear_reg_entry_alloc(entry, parent, value)		\
-  DEFINE_ALLOC(struct linear_reg_entry, entry,			\
+#define linear_reg_entry_alloc(ctx, parent, value)		\
+  DEFINE_ALLOC(struct linear_reg_entry, ctx,			\
 	       linear_reg_entry_init, parent, value)
-#define linear_reg_entry_free(entry)		\
-  DEFINE_FREE(entry, linear_reg_entry_release)
+#define linear_reg_entry_free(ctx)		\
+  DEFINE_FREE(ctx, linear_reg_entry_release)
 
-static inline int linear_reg_entry_init(struct linear_reg_entry *entry,
+static inline int linear_reg_entry_init(struct linear_reg_entry *ctx,
 					struct indicator *parent,
 					double value)
 {
-  __indicator_entry_init__(entry, parent);
-  entry->value = value;
+  __indicator_entry_init__(ctx, parent);
+  ctx->value = value;
   return 0;
 }
 
-static inline void linear_reg_entry_release(struct linear_reg_entry *entry)
+static inline void linear_reg_entry_release(struct linear_reg_entry *ctx)
 {
-  __indicator_entry_release__(entry);
+  __indicator_entry_release__(ctx);
 }
 
 /* Main object */
 
-#define linear_reg_alloc(m, id, period)					\
-  DEFINE_ALLOC(struct linear_reg, m, linear_reg_init, id, period)
-#define linear_reg_free(m)			\
-  DEFINE_FREE(m, linear_reg_release)
+#define linear_reg_alloc(ctx, uid, period)                              \
+  DEFINE_ALLOC(struct linear_reg, ctx, linear_reg_init, uid, period)
+#define linear_reg_free(ctx)			\
+  DEFINE_FREE(ctx, linear_reg_release)
 
 struct linear_reg {
   /* As always */
@@ -65,7 +63,7 @@ struct linear_reg {
   int period;
 };
 
-int linear_reg_init(struct linear_reg *m, unique_id_t id, int period);
-void linear_reg_release(struct linear_reg *m);
+int linear_reg_init(struct linear_reg *ctx, unique_id_t id, int period);
+void linear_reg_release(struct linear_reg *ctx);
 
 #endif

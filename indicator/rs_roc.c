@@ -9,41 +9,35 @@
 #include "rs_roc.h"
 #include "framework/verbose.h"
 
-static int rs_roc_feed(struct indicator *i, struct timeline_entry *e)
+static int rs_roc_feed(struct indicator *i, struct timeline_track_entry *e)
 {
-  struct timeline_entry *e_ref;
+  double value, roc, roc_ref;
+  struct rs_roc_entry *entry;
+
   struct rs_roc *ctx = (void*)i;
+  struct timeline_track_entry *ref;
+  struct timeline_track_entry *last;
+  struct timeline_track_entry *ref_last;
   
-  struct candle *c = (void*)e;
-  struct timeline_entry *e_last = __list_relative__(e, -(ctx->period));
-
-  /* Error check */
-  if(!e_last) goto out;
+  /* Get relative entry */
+  if(!(last = __list_relative__(e, -(ctx->period))))
+    goto out;
+  /* Get synced track_entry */
+  if(!(ref = timeline_slice_track_entry_by_uid(e->slice, ctx->ref_track_uid)))
+    goto out;
+  /* Get relative entry to ext synced */
+  if(!(ref_last = __list_relative__(ref, -(ctx->period))))
+    goto out;
   
-  if((e_ref = timeline_entry_find(__list_self__(ctx->ref), e->time))){
-    double value, roc, roc_ref;
-    struct rs_roc_entry *entry;
-    struct candle *c_ref = __timeline_entry_self__(e_ref);
-    struct timeline_entry *e_ref_last = __list_relative__(e_ref, -(ctx->period));
+  /* ROC formula :
+   * ((candle[n] / candle[n - period]) - 1) * 100.0
+   */
+  roc = (e->close / last->close - 1) * 100.0;
+  roc_ref = (ref->close / ref_last->close - 1) * 100.0;
+  value = roc - roc_ref;
     
-    /* Error check */
-    if(!e_ref_last) goto out;
-    
-    /* ROC formula :
-     * ((candle[n] / candle[n - period]) - 1) * 100.0
-     */
-    roc = (c->close / ((struct candle*)__timeline_entry_self__(e_last))->close - 1) * 100.0;
-    roc_ref = (c_ref->close / ((struct candle*)__timeline_entry_self__(e_ref_last))->close - 1) * 100.0;
-    value = roc - roc_ref;
-    
-    if(rs_roc_entry_alloc(entry, i, value, roc, roc_ref)){
-      timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
-      // PR_INFO("rs_roc value: self %.2lf ref %.2lf value %.2lf\n",
-      //      value, value_ref, entry->value);
-    }
-
-    /* Set new ref for better performance */
-    ctx->ref = __list__(e_ref);
+  if(rs_roc_entry_alloc(entry, i, value, roc, roc_ref)){
+    timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
     return 0;
   }
   
@@ -55,14 +49,14 @@ static void rs_roc_reset(struct indicator *i)
 {
 }
 
-int rs_roc_init(struct rs_roc *ctx, unique_id_t id, int period,
-		list_head_t(struct timeline_entry) *ref)
+int rs_roc_init(struct rs_roc *ctx, unique_id_t uid, int period,
+                unique_id_t ref_track_uid)
 {
   /* Super() */
-  __indicator_init__(ctx, id, rs_roc_feed, rs_roc_reset);
+  __indicator_init__(ctx, uid, rs_roc_feed, rs_roc_reset);
   __indicator_set_string__(ctx, "rs_roc[%d]", period);
 
-  ctx->ref = ref->next;
+  ctx->ref_track_uid = ref_track_uid;
   ctx->period = period;
   return 0;
 }

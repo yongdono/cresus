@@ -9,7 +9,7 @@
 #include "updown.h"
 #include <string.h>
 
-static int updown_feed(struct indicator *i, struct timeline_entry *e)
+static int updown_feed(struct indicator *i, struct timeline_track_entry *e)
 {  
   struct updown *ctx = (void*)i;
   struct candle *c0 = (void*)e;

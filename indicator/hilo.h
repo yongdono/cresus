@@ -15,7 +15,6 @@
  * Typical period is 30
  */
 
-#include "engine/candle.h"
 #include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"

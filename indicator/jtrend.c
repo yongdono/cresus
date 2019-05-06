@@ -9,63 +9,59 @@
 #include "jtrend.h"
 
 static int jtrend_feed(struct indicator *i,
-		       struct timeline_entry *e) {
+		       struct timeline_track_entry *e)
+{
+  double value, ref_value;
+  struct jtrend_entry *entry;
 
-  struct jtrend_entry *jentry;
-  struct timeline_entry *tentry;
-
-  struct jtrend *j = (void*)i;
-  struct candle *c = (void*)e;
-
-  if(!__list_self__(j->ref))
-    j->ref = j->ref->next;
+  struct jtrend *ctx = (void*)i;
+  struct timeline_track_entry *ref;
   
-  if((tentry = timeline_entry_find(__list_self__(j->ref), e->time))){
-    double value, ref_value;
-    struct jtrend_entry *entry;
-    
-    if(roc_compute(&j->roc, e, &value) != -1){
-      /* FIXME : check return */
-      roc_compute(&j->roc_ref, __timeline_entry_self__(tentry), &ref_value);
-      /* Alloc jentry & store in candle */
-      value = value - ref_value;
-      if(jtrend_entry_alloc(entry, i, value, ref_value))
-	timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
-    }
-    
-    j->ref = __list__(tentry);
+  /* Get synced track_entry */
+  if(!(ref = timeline_slice_track_entry_by_uid(e->slice, ctx->ref_track_uid)))
+    goto err;
+  
+  if(roc_compute(&ctx->roc, e, &value) != -1){
+    /* FIXME : check return */
+    roc_compute(&ctx->roc_ref, ref, &ref_value);
+    /* Alloc jentry & store in candle */
+    value = value - ref_value;
+    if(jtrend_entry_alloc(entry, i, value, ref_value))
+      timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
+
     return 0;
   }
-
+  
+ err:
   /* Do something here */
   return -1;
 }
 
-static void jtrend_reset(struct indicator *i) {
-  
-  struct jtrend *j = (void*)i;
+static void jtrend_reset(struct indicator *i)
+{  
+  struct jtrend *ctx = (void*)i;
   /* Reset sub-indicators */
-  roc_reset(&j->roc);
-  roc_reset(&j->roc_ref);
-  /* TODO : what about j->ref ? */
+  roc_reset(&ctx->roc);
+  roc_reset(&ctx->roc_ref);
+  /* TODO : what about ctx->ref ? */
 }
 
-int jtrend_init(struct jtrend *j, unique_id_t id,
-		int period, int average,
-		list_head_t(struct timeline_entry) *ref) {
-
-  __indicator_init__(j, id, jtrend_feed, jtrend_reset);
-  __indicator_set_string__(j, "jtrend[%d,%d]", period, average);
+int jtrend_init(struct jtrend *ctx, unique_id_t uid,
+                int period, int average,
+                unique_id_t ref_track_uid)
+{
+  __indicator_init__(ctx, uid, jtrend_feed, jtrend_reset);
+  __indicator_set_string__(ctx, "jtrend[%d,%d]", period, average);
   
   /* Our sub-indicators */
-  roc_init(&j->roc, id, period, average);
-  roc_init(&j->roc_ref, id, period, average);
+  roc_init(&ctx->roc, uid, period, average);
+  roc_init(&ctx->roc_ref, uid, period, average);
   
-  j->ref = ref;
+  ctx->ref_track_uid = ref_track_uid;
   return 0;
 }
 
-void jtrend_release(struct jtrend *j) {
-  
-  __indicator_release__(j);
+void jtrend_release(struct jtrend *ctx)
+{  
+  __indicator_release__(ctx);
 }

@@ -16,7 +16,6 @@
  */
 
 #include "math/average.h"
-#include "engine/candle.h"
 
 #include "framework/types.h"
 #include "framework/alloc.h"
@@ -34,26 +33,26 @@ struct roc_entry {
 #define roc_entry_free(entry)			\
   DEFINE_FREE(entry, roc_entry_free)
 
-static inline int roc_entry_init(struct roc_entry *entry,
+static inline int roc_entry_init(struct roc_entry *ctx,
 				 struct indicator *parent,
 				 double value)
 {
-  __indicator_entry_init__(entry, parent);
-  entry->value = value;
+  __indicator_entry_init__(ctx, parent);
+  ctx->value = value;
   return 0;
 }
 
-static inline void roc_entry_release(struct roc_entry *entry)
+static inline void roc_entry_release(struct roc_entry *ctx)
 {
-  __indicator_entry_release__(entry);
+  __indicator_entry_release__(ctx);
 }
 
 /* Main object */
 
-#define roc_alloc(r, id, period, average)			\
-  DEFINE_ALLOC(struct roc, r, roc_init, id, period, average)
-#define roc_free(r)				\
-  DEFINE_FREE(r, roc_release)
+#define roc_alloc(ctx, uid, period, average)			\
+  DEFINE_ALLOC(struct roc, ctx, roc_init, uid, period, average)
+#define roc_free(ctx)				\
+  DEFINE_FREE(ctx, roc_release)
 
 struct roc {
   /* Inherits from indicator */
@@ -63,10 +62,10 @@ struct roc {
   struct average average;
 };
 
-int roc_init(struct roc *r, unique_id_t id, int period, int average);
-void roc_release(struct roc *r);
+int roc_init(struct roc *ctx, unique_id_t uid, int period, int average);
+void roc_release(struct roc *ctx);
 
-int roc_compute(struct roc *r, struct timeline_entry *e, double *rvalue);
-void roc_reset(struct roc *r);
+int roc_compute(struct roc *ctx, struct timeline_track_entry *e, double *rvalue);
+void roc_reset(struct roc *ctx);
 
 #endif

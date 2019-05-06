@@ -10,9 +10,8 @@
 #include <stdio.h>
 
 #include "atr.h"
-#include "engine/candle.h"
 
-static int atr_feed(struct indicator *i, struct timeline_entry *e)
+static int atr_feed(struct indicator *i, struct timeline_track_entry *e)
 {
   struct atr *a = (void*)i;
   struct candle *c = (void*)e;

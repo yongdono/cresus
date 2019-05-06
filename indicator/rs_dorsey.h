@@ -29,44 +29,42 @@ struct rs_dorsey_entry {
   double value;
 };
 
-#define rs_dorsey_entry_alloc(entry, parent, value)	\
-  DEFINE_ALLOC(struct rs_dorsey_entry, entry,		\
+#define rs_dorsey_entry_alloc(ctx, parent, value)	\
+  DEFINE_ALLOC(struct rs_dorsey_entry, ctx,		\
 	       rs_dorsey_entry_init, parent, value)
-#define rs_dorsey_entry_free(entry)		\
-  DEFINE_FREE(entry, rs_dorsey_entry_release);
+#define rs_dorsey_entry_free(ctx)		\
+  DEFINE_FREE(ctx, rs_dorsey_entry_release);
 
-static inline int rs_dorsey_entry_init(struct rs_dorsey_entry *entry,
+static inline int rs_dorsey_entry_init(struct rs_dorsey_entry *ctx,
 				       struct indicator *parent,
 				       double value)
 {
-  __indicator_entry_init__(entry, parent);
-  entry->value = value;
+  __indicator_entry_init__(ctx, parent);
+  ctx->value = value;
   return 0;
 }
 
-static inline void rs_dorsey_entry_release(struct rs_dorsey_entry *entry)
+static inline void rs_dorsey_entry_release(struct rs_dorsey_entry *ctx)
 {
-  __indicator_entry_release__(entry);
+  __indicator_entry_release__(ctx);
 }
 
 /* Maion object */
 
-#define rs_dorsey_alloc(r, id, ref)				\
-  DEFINE_ALLOC(struct rs_dorsey, r, rs_dorsey_init, id, ref)
-#define rs_dorsey_free(r)			\
-  DEFINE_FREE(r, rs_dorsey_release)
+#define rs_dorsey_alloc(ctx, uid, ref_track_uid)                        \
+  DEFINE_ALLOC(struct rs_dorsey, ctx, rs_dorsey_init, uid, ref_track_uid)
+#define rs_dorsey_free(ctx)			\
+  DEFINE_FREE(ctx, rs_dorsey_release)
 
 struct rs_dorsey {
   /* As always, inherits from indicator */
   __inherits_from__(struct indicator);
-  /* Reference chart */
-  list_head_t(struct timeline_entry) *ref;
-  /* Internals */
+  /* Reference chart & internals */
+  unique_id_t ref_track_uid;
   double ratio_prev;
 };
 
-int rs_dorsey_init(struct rs_dorsey *ctx, unique_id_t id,
-		   list_head_t(struct timeline_entry) *ref);
+int rs_dorsey_init(struct rs_dorsey *ctx, unique_id_t id, unique_id_t ref_track_uid);
 void rs_dorsey_release(struct rs_dorsey *ctx);
 
 #endif

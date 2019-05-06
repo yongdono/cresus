@@ -22,9 +22,27 @@ const char *timeline_track_entry_str(struct timeline_track_entry *ctx)
 const char *timeline_track_entry_str_r(struct timeline_track_entry *ctx,
                                        char *buf)
 {
-  return sprintf(buf, "%s " input_entry_interface_fmt,
-                 time_info2str(ctx->slice->time, GR_DAY), /* ! */
-                 input_entry_interface_args(ctx));
+  sprintf(buf, "%s " input_entry_interface_fmt,
+          time_info2str(ctx->slice->time, GR_DAY), /* ! */
+          input_entry_interface_args(ctx));
+  
+  return buf;
+}
+
+/*
+ * Timeline slice object
+ */
+struct timeline_track_entry*
+timeline_slice_track_entry_by_uid(struct timeline_slice *ctx, unique_id_t uid)
+{
+  struct timeline_slice_entry *slice_entry;
+  
+  if(!(slice_entry = (struct timeline_slice_entry*)
+       __slist_by_uid_find__(&ctx->slist_slice_entries, uid)))
+    return NULL;
+  
+  /* Finally get sync ref track entry */
+  return slice_entry->track_entry;
 }
 
 /*
@@ -88,7 +106,7 @@ int timeline_add_track(struct timeline *ctx,
     if((slice = timeline_get_slice(ctx, input_entry->time)) != NULL){
       /* 3) Create track entry, register slice */
       timeline_track_entry_alloc(track_entry, input_entry, track, slice); /* ! */
-      __list_add_tail__(&track->list_entries, track_entry); /* FIXME : sort ? */
+      __list_add_tail__(&track->list_track_entries, track_entry); /* FIXME : sort ? */
       /* 4) Create slice entry & register track entry */
       timeline_slice_entry_alloc(slice_entry, track->uid, track_entry); /* ! */
       __list_add_tail__(slice, slice_entry);

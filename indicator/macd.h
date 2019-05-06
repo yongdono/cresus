@@ -31,20 +31,20 @@ struct macd_entry {
 #define macd_entry_free(entry)			\
   DEFINE_FREE(entry, macd_entry_release)
 
-static inline int macd_entry_init(struct macd_entry *entry,
+static inline int macd_entry_init(struct macd_entry *ctx,
 				  struct indicator *parent,
 				  double value, double signal)
 {
-  __indicator_entry_init__(entry, parent);
-  entry->value = value;
-  entry->signal = signal;
-  entry->histogram = (value - signal);
+  __indicator_entry_init__(ctx, parent);
+  ctx->value = value;
+  ctx->signal = signal;
+  ctx->histogram = (value - signal);
   return 0;
 }
 
-static inline void macd_entry_release(struct macd_entry *entry)
+static inline void macd_entry_release(struct macd_entry *ctx)
 {
-  __indicator_entry_release__(entry);
+  __indicator_entry_release__(ctx);
 }
 
 /* Indicator events */
@@ -58,8 +58,8 @@ static inline void macd_entry_release(struct macd_entry *entry)
 #define MACD_DEFAULT_SLOW_P   26
 #define MACD_DEFAULT_SIGNAL_P 9
 
-#define macd_alloc(m, id, fast_p, slow_p, signal_p)			\
-  DEFINE_ALLOC(struct macd, m, macd_init, id, fast_p, slow_p, signal_p)
+#define macd_alloc(m, uid, fast_p, slow_p, signal_p)			\
+  DEFINE_ALLOC(struct macd, m, macd_init, uid, fast_p, slow_p, signal_p)
 #define macd_free(m)				\
   DEFINE_FREE(m, macd_release)
 
@@ -72,8 +72,7 @@ struct macd {
   struct average signal;
 };
 
-int macd_init(struct macd *m, unique_id_t id,
-	      int fast_p, int slow_p, int signal_p);
-void macd_release(struct macd *m);
+int macd_init(struct macd *ctx, unique_id_t uid, int fast_p, int slow_p, int signal_p);
+void macd_release(struct macd *ctx);
 
 #endif

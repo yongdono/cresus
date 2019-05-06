@@ -9,8 +9,6 @@
 #ifndef ZIGZAG_H
 #define ZIGZAG_H
 
-#include "engine/candle.h"
-
 #include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
@@ -25,11 +23,11 @@ typedef enum {
 
 /* Entries */
 
-#define zigzag_entry_alloc(entry, parent, dir, value, count)	\
-  DEFINE_ALLOC(struct zigzag_entry, entry,			\
+#define zigzag_entry_alloc(ctx, parent, dir, value, count)	\
+  DEFINE_ALLOC(struct zigzag_entry, ctx,			\
 	       zigzag_entry_init, parent, dir, value, count)
-#define zigzag_entry_free(entry)		\
-  DEFINE_FREE(entry, zigzag_entry_release)
+#define zigzag_entry_free(ctx)                  \
+  DEFINE_FREE(ctx, zigzag_entry_release)
 
 struct zigzag_entry {
   /* As always */
@@ -37,49 +35,48 @@ struct zigzag_entry {
   /* Self */
   double value;
   zigzag_dir_t dir;
-  struct candle *ref;
   int n_since_last_ref;
+  struct timeline_track_entry *ref;
 };
 
-static inline int zigzag_entry_init(struct zigzag_entry *entry,
+static inline int zigzag_entry_init(struct zigzag_entry *ctx,
 				    struct indicator *parent,
 				    zigzag_dir_t dir, double value,
 				    int count)
 {
-  __indicator_entry_init__(entry, parent);
-  entry->dir = dir;
-  entry->value = value;
-  entry->n_since_last_ref = count;
+  __indicator_entry_init__(ctx, parent);
+  ctx->dir = dir;
+  ctx->value = value;
+  ctx->n_since_last_ref = count;
   return 0;
 }
 
-static inline void zigzag_entry_release(struct zigzag_entry *entry)
+static inline void zigzag_entry_release(struct zigzag_entry *ctx)
 {
-  __indicator_entry_release__(entry);
+  __indicator_entry_release__(ctx);
 }
 
 /* Indicator */
 
-#define zigzag_alloc(z, id, thres, cvalue)				\
-  DEFINE_ALLOC(struct zigzag, z, zigzag_init, id, thres, cvalue)
-#define zigzag_free(z)				\
-  DEFINE_FREE(z, zigzag_release)
+#define zigzag_alloc(ctx, uid, thres, value)				\
+  DEFINE_ALLOC(struct zigzag, ctx, zigzag_init, uid, thres, value)
+#define zigzag_free(ctx)                        \
+  DEFINE_FREE(ctx, zigzag_release)
 
 struct zigzag {
   /* As usual */
   __inherits_from__(struct indicator);
   /* Params */
   double threshold;
-  candle_value_t cvalue;
+  input_entry_value_t value;
   /* Internals */
   zigzag_dir_t dir;
   /* Some other stuff */
   int ref_count; /* Candles since base ref */
-  struct candle *ref, *base_ref;
+  struct timeline_track_entry *ref, *base_ref;
 };
 
-int zigzag_init(struct zigzag *z, unique_id_t id,
-		double threshold, candle_value_t cvalue);
-void zigzag_release(struct zigzag *z);
+int zigzag_init(struct zigzag *ctx, unique_id_t uid, double threshold, input_entry_value_t value);
+void zigzag_release(struct zigzag *ctx);
 
 #endif

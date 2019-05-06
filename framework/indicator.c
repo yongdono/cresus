@@ -8,15 +8,15 @@
 
 #include "indicator.h"
 
-int indicator_init(struct indicator *ctx, unique_id_t uid,
+int indicator_init(struct indicator *ctx,
+                   unique_id_t uid,
 		   indicator_feed_ptr feed,
                    indicator_reset_ptr reset)
 {  
   /* Super */
-  __slist_init__(ctx);
+  __slist_by_uid_init__(ctx, uid);
   
   /* Self */
-  ctx->uid = uid;
   ctx->feed = feed;
   ctx->reset = reset;
   ctx->is_empty = 1;
@@ -26,7 +26,7 @@ int indicator_init(struct indicator *ctx, unique_id_t uid,
 
 void indicator_release(struct indicator *ctx)
 {
-  __slist_release__(ctx);
+  //__slist_release__(ctx);
   ctx->feed = NULL;
 }
 

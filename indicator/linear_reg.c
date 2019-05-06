@@ -13,33 +13,33 @@
 #include "linear_reg.h"
 
 static int linear_reg_feed(struct indicator *i,
-			   struct timeline_entry *e)
+			   struct timeline_track_entry *e)
 {  
   struct linear_reg_entry *entry;
-  struct linear_reg *l = (void*)i;
-  struct candle *p, *c = (void*)e;
-
-  int n = l->period;
-  int x = l->period;
+  struct linear_reg *ctx = (void*)i;
+  struct timeline_track_entry *prev;
+  
+  int n = ctx->period;
+  int x = ctx->period;
   /* Some required variables */
   double a, b, value;
   double xysum = 0, xxsum = 0;
-  double xsum = x, ysum = c->close;
+  double xsum = x, ysum = e->close;
   
-  __list_for_each_prev__(c, p){
+  __list_for_each_prev__(e, prev){
     
-    double y = p->close;
+    double y = prev->close;
     
     if(!--x)
       break;
-
+    
     /* Computation here */
     xsum = xsum + x;
     ysum = ysum + y;
     xysum = xysum + x * y;
     xxsum = xxsum + x * x;
   }
-
+  
   /* Prepare new entry */
   a = (n * xysum - xsum * ysum) / (n * xxsum - xsum * xsum);
   b = (ysum - a * xsum) / n;
@@ -47,7 +47,7 @@ static int linear_reg_feed(struct indicator *i,
   
   /* Create new entry */
   if(linear_reg_entry_alloc(entry, i, value)){
-    timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
+    timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
     entry->a = a; /* For debug */
     entry->b = b; /* For debug */
     return 1;
@@ -61,17 +61,17 @@ static void linear_reg_reset(struct indicator *i)
   /* Empty */
 }
 
-int linear_reg_init(struct linear_reg *l, unique_id_t id, int period)
+int linear_reg_init(struct linear_reg *ctx, unique_id_t uid, int period)
 {  
   /* Super */
-  __indicator_init__(l, id, linear_reg_feed, linear_reg_reset);
-  __indicator_set_string__(l, "%lr[%d]", period);
+  __indicator_init__(ctx, uid, linear_reg_feed, linear_reg_reset);
+  __indicator_set_string__(ctx, "%lr[%d]", period);
 
-  l->period = period;
+  ctx->period = period;
   return 0;
 }
 
-void linear_reg_release(struct linear_reg *l)
+void linear_reg_release(struct linear_reg *ctx)
 {
-  __indicator_release__(l);
+  __indicator_release__(ctx);
 }

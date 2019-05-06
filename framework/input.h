@@ -14,8 +14,15 @@
 #include "framework/alloc.h"
 #include "framework/time_info.h"
 
-#define input_entry_interface                   \
-  double open, close, high, low, volume
+typedef enum {
+  OPEN = 0, CLOSE = 1, HIGH = 2, LOW = 3, VOLUME = 4
+} input_entry_value_t;
+
+#define input_entry_interface                           \
+  union {                                               \
+    struct { double open, close, high, low, volume; };  \
+    double __input_entry_value__[0];                     \
+  }
 
 #define input_entry_interface_copy(a, b)		\
   ({ (a)->open = (b)->open; (a)->close = (b)->close;	\
@@ -24,11 +31,14 @@
 
 #define input_entry_interface_fmt               \
   "o%.2f c%.2f h%.2f l%.2f v%.0f"
-#define input_entry_interface_args(x)                           \
-  (x)->open, (x)->close, (x)->high, (x)->low, (x)->volume
-#define input_entry_interface_str(x, buf)       \
+#define input_entry_interface_args(itf)                                 \
+  (itf)->open, (itf)->close, (itf)->high, (itf)->low, (itf)->volume
+#define input_entry_interface_str(itf, buf)     \
   sprintf(buf, input_entry_interface_fmt,       \
-          input_entry_interface_args(x))
+          input_entry_interface_args(itf))
+
+#define input_entry_value(itf, value)           \
+  ((itf)->__input_entry_value__[value])
 
 /* Input object format */
 

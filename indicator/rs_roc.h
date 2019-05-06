@@ -13,8 +13,6 @@
  * Relative Strength / ROC comparison
  */
 
-#include "engine/candle.h"
-
 #include "framework/list.h"
 #include "framework/types.h"
 #include "framework/alloc.h"
@@ -28,32 +26,33 @@ struct rs_roc_entry {
   double roc, roc_ref;
 };
 
-#define rs_roc_entry_alloc(entry, parent, value, roc, roc_ref)		\
-  DEFINE_ALLOC(struct rs_roc_entry, entry, rs_roc_entry_init, parent,	\
+#define rs_roc_entry_alloc(ctx, parent, value, roc, roc_ref)		\
+  DEFINE_ALLOC(struct rs_roc_entry, ctx, rs_roc_entry_init, parent,	\
 	       value, roc, roc_ref)
-#define rs_roc_entry_free(entry)		\
-  DEFINE_FREE(entry, rs_roc_entry_free)
+#define rs_roc_entry_free(ctx)                  \
+  DEFINE_FREE(ctx, rs_roc_entry_free)
 
-static inline int rs_roc_entry_init(struct rs_roc_entry *entry,
+static inline int rs_roc_entry_init(struct rs_roc_entry *ctx,
 				    struct indicator *parent,
-				    double value, double roc, double roc_ref)
+				    double value, double roc,
+                                    double roc_ref)
 {
-  __indicator_entry_init__(entry, parent);
-  entry->value = value;
-  entry->roc =roc;
-  entry->roc_ref = roc_ref;
+  __indicator_entry_init__(ctx, parent);
+  ctx->value = value;
+  ctx->roc = roc;
+  ctx->roc_ref = roc_ref;
   return 0;
 }
 
-static inline void rs_roc_entry_release(struct rs_roc_entry *entry)
+static inline void rs_roc_entry_release(struct rs_roc_entry *ctx)
 {
-  __indicator_entry_release__(entry);
+  __indicator_entry_release__(ctx);
 }
 
 /* Main object */
 
-#define rs_roc_alloc(ctx, id, period, ref)				\
-  DEFINE_ALLOC(struct rs_roc, ctx, rs_roc_init, id, period, ref)
+#define rs_roc_alloc(ctx, uid, period, ref_track_uid)                   \
+  DEFINE_ALLOC(struct rs_roc, ctx, rs_roc_init, uid, period, ref_track_uid)
 #define rs_roc_free(ctx)			\
   DEFINE_FREE(ctx, rs_roc_release)
 
@@ -62,11 +61,10 @@ struct rs_roc {
   __inherits_from__(struct indicator);
   /* Internals */
   int period;
-  list_head_t(struct timeline_entry) *ref;
+  unique_id_t ref_track_uid;
 };
 
-int rs_roc_init(struct rs_roc *ctx, unique_id_t id, int period,
-		list_head_t(struct timeline_entry) *ref);
+int rs_roc_init(struct rs_roc *ctx, unique_id_t id, int period, unique_id_t ref_track_uid);
 void rs_roc_release(struct rs_roc *ctx);
 
 #endif

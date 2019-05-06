@@ -10,7 +10,6 @@
 #define JTREND_H
 
 #include "math/average.h"
-#include "engine/candle.h"
 #include "framework/types.h"
 #include "framework/alloc.h"
 #include "framework/indicator.h"
@@ -48,9 +47,8 @@ static inline void jtrend_entry_release(struct jtrend_entry *entry)
 
 /* Main object */
 
-#define jtrend_alloc(jt, id, period, average, ref)			\
-  DEFINE_ALLOC(struct jtrend, jt, jtrend_init, id,			\
-	       period, average, ref)
+#define jtrend_alloc(jt, uid, period, average)                           \
+  DEFINE_ALLOC(struct jtrend, jt, jtrend_init, uid, period, average)
 #define jtrend_free(jt)				\
   DEFINE_FREE(jt, jtrend_release)
 
@@ -60,13 +58,11 @@ struct jtrend {
   /* Some other data */
   struct roc roc;
   struct roc roc_ref;
-  list_head_t(struct timeline_entry) *ref;
+  /* Referecne flow */
+  unique_id_t ref_track_uid;
 };
 
-int jtrend_init(struct jtrend *j, unique_id_t id,
-		int period, int average,
-		list_head_t(struct timeline_entry) *ref);
-
-void jtrend_release(struct jtrend *j);
+int jtrend_init(struct jtrend *ctx, unique_id_t uid, int period, int average, unique_id_t ref_track_uid);
+void jtrend_release(struct jtrend *ctx);
 
 #endif

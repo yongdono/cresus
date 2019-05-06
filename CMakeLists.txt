@@ -10,7 +10,7 @@ include_directories(.)
 
 # subdirs for cresus project
 add_subdirectory(framework)
-add_subdirectory(engine)
+# add_subdirectory(engine)
 add_subdirectory(math)
 add_subdirectory(indicator)
 add_subdirectory(input)
@@ -18,7 +18,7 @@ add_subdirectory(input)
 
 add_library(cresus SHARED
   $<TARGET_OBJECTS:framework>
-  $<TARGET_OBJECTS:engine>
+#  $<TARGET_OBJECTS:engine>
   $<TARGET_OBJECTS:math>
   $<TARGET_OBJECTS:indicator>
   $<TARGET_OBJECTS:input>
@@ -27,6 +27,6 @@ add_library(cresus SHARED
 target_link_libraries(cresus m jsonparser)
 
 # add_subdirectory(sample)
-add_subdirectory(system)
+# add_subdirectory(system)
 
 install(TARGETS cresus DESTINATION lib)

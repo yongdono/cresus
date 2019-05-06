@@ -21,34 +21,33 @@ void hilo_reset(struct hilo *ctx)
 #define HIGH(x, y) (((x) > (y)) ? (x) : (y))
 #define LOW(x, y) (((x) < (y)) ? (x) : (y))
 
-static int hilo_feed(struct indicator *i, struct timeline_entry *e)
+static int hilo_feed(struct indicator *i, struct timeline_track_entry *e)
 {
   struct hilo_entry *entry;
-  struct timeline_entry *prev = NULL;
   struct hilo *ctx = (void*)i;
-  struct candle *p, *c = (void*)e;
+  struct timeline_track_entry *prev = NULL;
   
   if(hilo_entry_alloc(entry, i)){
     /* Init */
     int n = ctx->period;
-    entry->high = c->high;
-    entry->low = c->low;
+    entry->high = e->high;
+    entry->low = e->low;
     
-    __list_for_each_prev__(c, p){
+    __list_for_each_prev__(e, prev){
       
       /* Out after ctx->period iterations */
       if(!--n)
 	break;
       
-      entry->high = HIGH(entry->high, p->high);
-      entry->low = LOW(entry->low, p->low);
+      entry->high = HIGH(entry->high, prev->high);
+      entry->low = LOW(entry->low, prev->low);
     }
-
+    
     if(ctx->filter && n)
       goto out;
     
     /* Attach new entry */
-    timeline_entry_add_indicator_entry(e, __indicator_entry__(entry));
+    timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
     return 1;
   }
 

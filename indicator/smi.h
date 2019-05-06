@@ -14,8 +14,6 @@
  */
 
 #include "math/average.h"
-#include "engine/candle.h"
-
 #include "framework/types.h"
 #include "framework/indicator.h"
 

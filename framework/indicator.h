@@ -12,6 +12,7 @@
 #include "framework/types.h"
 #include "framework/slist.h"
 #include "framework/timeline.h"
+#include "framework/slist_by_uid.h"
 
 #define __indicator__(x) ((struct indicator*)(x))
 
@@ -40,24 +41,54 @@ typedef int (*indicator_feed_ptr)(struct indicator*, struct timeline_track_entry
 typedef void (*indicator_reset_ptr)(struct indicator*);
 
 struct indicator {
-  /* Inherits from slist */
-  __inherits_from__(struct slist);
-
-#define INDICATOR_STR_MAX 64
+  /* Inherits from slist_by_uid */
+  __inherits_from__(struct slist_by_uid);
   /* Fn pointers */
   indicator_feed_ptr feed;
   indicator_reset_ptr reset;
-  /* Unique Id & name */
-  unique_id_t uid;
+  /* Name */
+#define INDICATOR_STR_MAX 64
   char str[INDICATOR_STR_MAX];
   /* Status */
   int is_empty;
 };
 
-int indicator_init(struct indicator *ctx, unique_id_t id, indicator_feed_ptr feed, indicator_reset_ptr reset);
+int indicator_init(struct indicator *ctx, unique_id_t uid, indicator_feed_ptr feed, indicator_reset_ptr reset);
 void indicator_release(struct indicator *ctx);
 
 int indicator_feed(struct indicator *ctx, struct timeline_track_entry *e);
 void indicator_reset(struct indicator *ctx);
+
+/*
+ * Indicator entry object
+ */
+#define __indicator_entry__(x) ((struct indicator_entry*)(x))
+
+/* Heritable */
+#define __indicator_entry_init__(ctx, iparent)                  \
+  indicator_entry_init(__indicator_entry__(ctx), iparent)
+#define __indicator_entry_release__(ctx)                \
+  indicator_entry_release(__indicator_entry__(ctx))
+
+struct indicator; /* Avoid circular dependency */
+
+struct indicator_entry {
+  __inherits_from__(struct slist);
+  /* Remember who generated this entry */
+  struct indicator *parent;
+};
+
+static inline int indicator_entry_init(struct indicator_entry *ctx,
+				       struct indicator *parent)
+{
+  __slist_init__(ctx);
+  ctx->parent = parent;
+  return 0; /* alloc rulz */
+}
+
+static inline void indicator_entry_release(struct indicator_entry *ctx)
+{
+  __slist_release__(ctx);
+}
 
 #endif /* defined(INDICATOR_H) */
