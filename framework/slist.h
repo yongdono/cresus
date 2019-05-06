@@ -21,11 +21,11 @@
   slist_insert(__slist__(ctx), __slist__(entry))
 #define __slist_del__(ctx) slist_del(__slist__(ctx))
 /* Iteration */
-#define __slist_for_each__(head, ctx)			\
-  for(struct slist *ptr = __slist__(head)->next;        \
-      ptr != NULL && (ctx = (void*)(ptr));              \
-      ptr = ptr->next)
-
+#define __slist_for_each__(head, ctx)                           \
+  for(struct slist *__ptr__ = __slist__(head)->next;            \
+      __ptr__ != NULL && (ctx = (typeof(ctx))(__ptr__));        \
+      __ptr__ = __ptr__->next)
+  
 /* Basic slist object */
 
 #define slist_head_t(type) struct slist /* Type is indicative */
