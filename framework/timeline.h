@@ -130,7 +130,7 @@ static inline void
 timeline_track_add_indicator(struct timeline_track *ctx,
 			     struct indicator *indicator)
 {
-  slist_insert(&ctx->slist_indicators, indicator);
+  __slist_insert__(&ctx->slist_indicators, indicator);
 }
 
 /*
