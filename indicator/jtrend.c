@@ -18,7 +18,7 @@ static int jtrend_feed(struct indicator *i,
   struct timeline_track_entry *ref;
   
   /* Get synced track_entry */
-  if(!(ref = timeline_slice_track_entry_by_uid(e->slice, ctx->ref_track_uid)))
+  if(!(ref = timeline_slice_get_track_entry(e->slice, ctx->ref_track_uid)))
     goto err;
   
   if(roc_compute(&ctx->roc, e, &value) != -1){

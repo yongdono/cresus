@@ -21,7 +21,7 @@ static int rs_mansfield_feed(struct indicator *i,
   struct rs_mansfield *ctx = (void*)i;
   
   /* Get synced track_entry */
-  if(!(ref = timeline_slice_track_entry_by_uid(e->slice, ctx->ref_track_uid)))
+  if(!(ref = timeline_slice_get_track_entry(e->slice, ctx->ref_track_uid)))
     goto err;
   
   double rsd = e->close / ref->close;

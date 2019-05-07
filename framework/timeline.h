@@ -73,7 +73,7 @@ timeline_track_entry_add_indicator_entry(struct timeline_track_entry *ctx,
 
 static inline struct indicator_entry *
 timeline_track_entry_get_indicator_entry(struct timeline_track_entry *ctx,
-					 unique_id_t indicator_uid)
+                                         unique_id_t indicator_uid)
 {
   return (struct indicator_entry*)
     __slist_by_uid_find__(&ctx->slist_indicator_entries,
@@ -160,7 +160,7 @@ timeline_slice_init(struct timeline_slice *ctx, time_info_t time)
   DEFINE_ALLOC(struct timeline_slice, ctx, timeline_slice_init, time)
 
 struct timeline_track_entry*
-timeline_slice_track_entry_by_uid(struct timeline_slice *ctx, unique_id_t uid);
+timeline_slice_get_track_entry(struct timeline_slice *ctx, unique_id_t uid);
 
 /*
  * The final timeline object

@@ -23,7 +23,7 @@ static int rs_roc_feed(struct indicator *i, struct timeline_track_entry *e)
   if(!(last = __list_relative__(e, -(ctx->period))))
     goto out;
   /* Get synced track_entry */
-  if(!(ref = timeline_slice_track_entry_by_uid(e->slice, ctx->ref_track_uid)))
+  if(!(ref = timeline_slice_get_track_entry(e->slice, ctx->ref_track_uid)))
     goto out;
   /* Get relative entry to ext synced */
   if(!(ref_last = __list_relative__(ref, -(ctx->period))))

@@ -36,7 +36,8 @@ const char *timeline_track_entry_str_r(struct timeline_track_entry *ctx,
  * Timeline slice object
  */
 struct timeline_track_entry*
-timeline_slice_track_entry_by_uid(struct timeline_slice *ctx, unique_id_t uid)
+timeline_slice_get_track_entry(struct timeline_slice *ctx,
+                               unique_id_t uid)
 {
   struct timeline_slice_entry *slice_entry;
   
