@@ -25,7 +25,8 @@ const char *timeline_track_n3_str(struct timeline_track_n3 *ctx)
 const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx,
                                     char *buf)
 {
-  sprintf(buf, "%s " input_n3_interface_fmt,
+  sprintf(buf, "%s: %s " input_n3_interface_fmt,
+          ctx->track->name,
           time64_str(ctx->slice->time, GR_DAY), /* ! */
           input_n3_interface_args(ctx));
   
@@ -52,7 +53,7 @@ timeline_slice_get_track_n3(struct timeline_slice *ctx,
  * Timeline object
  */
 static struct timeline_slice *
-timeline_get_slice(struct timeline *ctx, time64_t time)
+timeline_get_slice_anyway(struct timeline *ctx, time64_t time)
 {
   struct timeline_slice *ptr;
   
@@ -112,11 +113,11 @@ int timeline_add_track(struct timeline *ctx,
   while((input_n3 = input_read(input)) != NULL){
     /* 2) Create slice if necessary & sort it */
     PR_DBG("2) Create slice if necessary & sort it\n");
-    if((slice = timeline_get_slice(ctx, input_n3->time)) != NULL){
+    if((slice = timeline_get_slice_anyway(ctx, input_n3->time)) != NULL){
       /* 3) Create track n3, register slice */
       PR_DBG("3) Create track n3, register slice\n");
       timeline_track_n3_alloc(track_n3, input_n3, track, slice); /* TODO : check return */
-      __list_add_tail__(&track->list_track_n3s, track_n3); /* FIXME : sort ? */
+      __list_add_tail__(&track->list_track_n3s, track_n3); /* FIXME : sort this */
       /* 4) Create slice n3 & register track n3 */
       PR_DBG("4) Create slice n3 & register track n3\n");
       timeline_slice_n3_alloc(slice_n3, track_n3); /* TODO : check return */

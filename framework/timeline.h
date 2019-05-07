@@ -9,6 +9,8 @@
 #ifndef TIMELINE_H
 #define TIMELINE_H
 
+#include <string.h>
+
 #include "framework/list.h"
 #include "framework/alloc.h"
 #include "framework/slist.h"
@@ -113,6 +115,8 @@ struct timeline_track {
   __inherits_from__(struct slist_by_uid);
   /* Should have an unique id */
   unique_id_t uid;
+#define TIMELINE_TRACK_NAME_MAX 64
+  char name[TIMELINE_TRACK_NAME_MAX];
   /* Here's the beginning of the track */
   list_head_t(struct timeline_track_n3) list_track_n3s;
   /* The indicators we want to play on that particular track */
@@ -120,16 +124,18 @@ struct timeline_track {
 };
 
 static inline int
-timeline_track_init(struct timeline_track *ctx, unique_id_t uid)
+timeline_track_init(struct timeline_track *ctx, unique_id_t uid,
+                    const char *name)
 {
   __slist_by_uid_init__(ctx, uid); /* super() */
+  strncpy(ctx->name, name, sizeof(ctx->name));
   list_head_init(&ctx->list_track_n3s);
   slist_head_init(&ctx->slist_indicators);
   return uid;
 }
 
-#define timeline_track_alloc(ctx, uid)                                  \
-  DEFINE_ALLOC(struct timeline_track, ctx, timeline_track_init, uid)
+#define timeline_track_alloc(ctx, uid, name)                            \
+  DEFINE_ALLOC(struct timeline_track, ctx, timeline_track_init, uid, name)
 
 static inline void
 timeline_track_add_indicator(struct timeline_track *ctx,

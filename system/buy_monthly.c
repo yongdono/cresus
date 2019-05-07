@@ -26,6 +26,7 @@
 
 static int amount = 250;
 static int occurrence = 1;
+static int last_month = -1;
 
 /* UIDs */
 #define UID_TRACK0        0
@@ -41,7 +42,7 @@ static void feed2(struct engine_v2 *engine,
   
   switch(uid){
   case UID_TRACK0_LOWEST:
-    PR_INFO("feed2: %s (lowest %.2lf)\n",
+    PR_INFO("%s (lowest %.2lf)\n",
             timeline_track_n3_str(track_n3),
             lowest_n3->value);
     break;
@@ -57,9 +58,6 @@ static void feed1(struct engine_v2 *engine,
                   struct timeline_slice *slice,
                   struct timeline_track_n3 *track_n3)
 {
-  /* Step by step loop */
-  static int last_month = -1;
-  
   struct indicator_n3 *indicator_n3;
   timeline_track_n3_for_each_indicator_n3(track_n3, indicator_n3)
     feed2(engine, track_n3, indicator_n3);
@@ -70,8 +68,6 @@ static void feed1(struct engine_v2 *engine,
     /* We can't get lowest here :( */
     PR_WARN("%s - BUY %d\n", timeline_track_n3_str(track_n3), amount);
   }
-  
-  last_month = month;
 }
 
 /* For each slice */
@@ -83,6 +79,7 @@ static int feed(struct engine_v2 *engine,
   timeline_slice_for_each_track_n3(slice, track_n3)
     feed1(engine, slice, track_n3);
   
+  last_month = TIME64_GET_MONTH(slice->time);
   return 0;
 }
 
@@ -97,7 +94,7 @@ static int timeline_create(struct timeline *t,
   if((input = input_wrapper_create(filename, type))){
     /* Create tracks */
     struct timeline_track *track0;
-    timeline_track_alloc(track0, 0);
+    timeline_track_alloc(track0, 0, filename);
     /* Create indicators */
     struct lowest *lowest;
     lowest_alloc(lowest, UID_TRACK0_LOWEST, 50);
