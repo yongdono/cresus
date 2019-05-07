@@ -11,7 +11,7 @@
 
 #include "macd.h"
 
-static int macd_feed(struct indicator *i, struct timeline_track_entry *e)
+static int macd_feed(struct indicator *i, struct timeline_track_n3 *e)
 {  
   struct macd *ctx = (void*)i;
 
@@ -24,9 +24,9 @@ static int macd_feed(struct indicator *i, struct timeline_track_entry *e)
     double value = (fast - slow);
     double signal = average_update(&ctx->signal, value);
     if(average_is_available(&ctx->signal)){
-      struct macd_entry *entry;
-      if(macd_entry_alloc(entry, i, value, signal))
-	timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
+      struct macd_n3 *n3;
+      if(macd_n3_alloc(n3, i, value, signal))
+	timeline_track_n3_add_indicator_n3(e, __indicator_n3__(n3));
     }
   }
   

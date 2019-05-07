@@ -9,23 +9,23 @@
 #include "rs_roc.h"
 #include "framework/verbose.h"
 
-static int rs_roc_feed(struct indicator *i, struct timeline_track_entry *e)
+static int rs_roc_feed(struct indicator *i, struct timeline_track_n3 *e)
 {
   double value, roc, roc_ref;
-  struct rs_roc_entry *entry;
+  struct rs_roc_n3 *n3;
 
   struct rs_roc *ctx = (void*)i;
-  struct timeline_track_entry *ref;
-  struct timeline_track_entry *last;
-  struct timeline_track_entry *ref_last;
+  struct timeline_track_n3 *ref;
+  struct timeline_track_n3 *last;
+  struct timeline_track_n3 *ref_last;
   
-  /* Get relative entry */
+  /* Get relative n3 */
   if(!(last = __list_relative__(e, -(ctx->period))))
     goto out;
-  /* Get synced track_entry */
-  if(!(ref = timeline_slice_get_track_entry(e->slice, ctx->ref_track_uid)))
+  /* Get synced track_n3 */
+  if(!(ref = timeline_slice_get_track_n3(e->slice, ctx->ref_track_uid)))
     goto out;
-  /* Get relative entry to ext synced */
+  /* Get relative n3 to ext synced */
   if(!(ref_last = __list_relative__(ref, -(ctx->period))))
     goto out;
   
@@ -36,8 +36,8 @@ static int rs_roc_feed(struct indicator *i, struct timeline_track_entry *e)
   roc_ref = (ref->close / ref_last->close - 1) * 100.0;
   value = roc - roc_ref;
     
-  if(rs_roc_entry_alloc(entry, i, value, roc, roc_ref)){
-    timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
+  if(rs_roc_n3_alloc(n3, i, value, roc, roc_ref)){
+    timeline_track_n3_add_indicator_n3(e, __indicator_n3__(n3));
     return 0;
   }
   

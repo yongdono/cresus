@@ -16,10 +16,10 @@
 #define __list_init__(ctx) list_init(__list__(ctx))
 #define __list_release__(ctx) list_release(__list__(ctx))
 
-#define __list_add__(ctx, entry)                \
-  list_add(__list__(ctx), __list__(entry))
-#define __list_add_tail__(ctx, entry)           \
-  list_add_tail(__list__(ctx), __list__(entry))
+#define __list_add__(ctx, n3)                \
+  list_add(__list__(ctx), __list__(n3))
+#define __list_add_tail__(ctx, n3)           \
+  list_add_tail(__list__(ctx), __list__(n3))
 #define __list_del__(ctx)			\
   list_del(__list__(ctx))
 
@@ -83,9 +83,9 @@ static inline void list_add(struct list *l, struct list *new)
   l->next = new;
 }
 
-static inline void list_add_tail(struct list *l, struct list *entry)
+static inline void list_add_tail(struct list *l, struct list *n3)
 {
-  list_add(l->prev, entry);
+  list_add(l->prev, n3);
 }
 
 static inline void list_del(struct list *l)

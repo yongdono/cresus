@@ -25,9 +25,9 @@ static time64_t xtrade_time(struct xtrade *ctx,
   return TIME64_INIT(y, m, d, 0, 0, 0, 0);
 }
 
-static struct input_entry *xtrade_read(struct input *in)
+static struct input_n3 *xtrade_read(struct input *in)
 {
-  struct input_entry *entry;
+  struct input_n3 *n3;
   struct xtrade *ctx = (void*)in;
  
   /* Check for EOF at least */
@@ -42,9 +42,9 @@ static struct input_entry *xtrade_read(struct input *in)
   double high = o->u.object.values[4].value->u.dbl;
   
   time64_t time = xtrade_time(ctx, str);
-  if(input_entry_alloc(entry, time, GR_DAY,
+  if(input_n3_alloc(n3, time, GR_DAY,
 		       open, close, high, low, 0.0))
-    return entry;
+    return n3;
   
  err:
   return NULL;

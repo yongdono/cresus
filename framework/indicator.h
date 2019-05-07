@@ -28,8 +28,8 @@
 	   fmt, ##__VA_ARGS__)
 #define __indicator_set_event__(ctx, candle, event)		\
   indicator_set_event(__indicator__(ctx), candle, event)
-#define __indicator_feed__(ctx, entry)          \
-  indicator_feed(__indicator__(ctx), entry);
+#define __indicator_feed__(ctx, n3)          \
+  indicator_feed(__indicator__(ctx), n3);
 
 /* Internal values get */
 #define __indicator_string__(ctx) __indicator__(ctx)->str
@@ -37,7 +37,7 @@
 
 /* Define types */
 struct indicator; /* FIXME : find something more elegant */
-typedef int (*indicator_feed_ptr)(struct indicator*, struct timeline_track_entry*);
+typedef int (*indicator_feed_ptr)(struct indicator*, struct timeline_track_n3*);
 typedef void (*indicator_reset_ptr)(struct indicator*);
 
 struct indicator {
@@ -56,32 +56,32 @@ struct indicator {
 int indicator_init(struct indicator *ctx, unique_id_t uid, indicator_feed_ptr feed, indicator_reset_ptr reset);
 void indicator_release(struct indicator *ctx);
 
-int indicator_feed(struct indicator *ctx, struct timeline_track_entry *e);
+int indicator_feed(struct indicator *ctx, struct timeline_track_n3 *e);
 void indicator_reset(struct indicator *ctx);
 
 /*
- * Indicator entry object
+ * Indicator n3 object
  */
-#define __indicator_entry__(x) ((struct indicator_entry*)(x))
+#define __indicator_n3__(x) ((struct indicator_n3*)(x))
 
 /* Heritable */
-#define __indicator_entry_init__(ctx, parent)		\
-  indicator_entry_init(__indicator_entry__(ctx), parent)
-#define __indicator_entry_release__(ctx)                \
-  indicator_entry_release(__indicator_entry__(ctx))
+#define __indicator_n3_init__(ctx, parent)		\
+  indicator_n3_init(__indicator_n3__(ctx), parent)
+#define __indicator_n3_release__(ctx)                \
+  indicator_n3_release(__indicator_n3__(ctx))
 
-struct indicator_entry {
+struct indicator_n3 {
   __inherits_from__(struct slist_by_uid); /* Is that all ? */
 };
 
-static inline int indicator_entry_init(struct indicator_entry *ctx,
+static inline int indicator_n3_init(struct indicator_n3 *ctx,
 				       struct indicator *parent)
 {
   __slist_by_uid_init__(ctx, __slist_by_uid__(parent)->uid);
   return 0; /* alloc rulz */
 }
 
-static inline void indicator_entry_release(struct indicator_entry *ctx)
+static inline void indicator_n3_release(struct indicator_n3 *ctx)
 {
   __slist_release__(ctx);
 }

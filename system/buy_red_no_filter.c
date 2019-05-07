@@ -24,14 +24,14 @@ double last_close;
 
 static int feed(struct engine *e,
 		struct timeline *t,
-		struct timeline_entry *entry)
+		struct timeline_n3 *n3)
 {
   /* Step by step loop */
   static int n = 0;
   time64_t time = VAL_YEAR(year_min);
-  struct candle *c = __timeline_entry_self__(entry);
+  struct candle *c = __timeline_n3_self__(n3);
   
-  if(TIME64CMP(entry->time, time, GR_YEAR) < 0)
+  if(TIME64CMP(n3->time, time, GR_YEAR) < 0)
     goto out;
   
   /* Execute */

@@ -12,7 +12,7 @@
 
 #include "stochastic.h"
 
-static int stochastic_feed(struct indicator *i, struct timeline_track_entry *e)
+static int stochastic_feed(struct indicator *i, struct timeline_track_n3 *e)
 {  
   struct stochastic *ctx = (void*)i;
   struct candle *candle = (void*)e;

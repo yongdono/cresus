@@ -12,7 +12,7 @@
 #include "rsi.h"
 #include "mobile.h"
 
-static int rsi_feed(struct indicator *i, struct timeline_track_entry *e)
+static int rsi_feed(struct indicator *i, struct timeline_track_n3 *e)
 {  
   double h, b, sub;
   struct rsi *ctx = (void*)i;

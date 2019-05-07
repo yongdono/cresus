@@ -17,17 +17,17 @@ static char buf[256];
 /*
  * Timeline track object
  */
-const char *timeline_track_entry_str(struct timeline_track_entry *ctx)
+const char *timeline_track_n3_str(struct timeline_track_n3 *ctx)
 {
-  return timeline_track_entry_str_r(ctx, buf);
+  return timeline_track_n3_str_r(ctx, buf);
 }
 
-const char *timeline_track_entry_str_r(struct timeline_track_entry *ctx,
+const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx,
                                        char *buf)
 {
-  sprintf(buf, "%s " input_entry_interface_fmt,
+  sprintf(buf, "%s " input_n3_interface_fmt,
           time64_str(ctx->slice->time, GR_DAY), /* ! */
-          input_entry_interface_args(ctx));
+          input_n3_interface_args(ctx));
   
   return buf;
 }
@@ -35,18 +35,18 @@ const char *timeline_track_entry_str_r(struct timeline_track_entry *ctx,
 /*
  * Timeline slice object
  */
-struct timeline_track_entry*
-timeline_slice_get_track_entry(struct timeline_slice *ctx,
+struct timeline_track_n3*
+timeline_slice_get_track_n3(struct timeline_slice *ctx,
                                unique_id_t uid)
 {
-  struct timeline_slice_entry *slice_entry;
+  struct timeline_slice_n3 *slice_n3;
   
-  if(!(slice_entry = (struct timeline_slice_entry*)
-       __slist_by_uid_find__(&ctx->slist_slice_entries, uid)))
+  if(!(slice_n3 = (struct timeline_slice_n3*)
+       __slist_by_uid_find__(&ctx->slist_slice_n3s, uid)))
     return NULL;
   
-  /* Finally get sync ref track entry */
-  return slice_entry->track_entry;
+  /* Finally get sync ref track n3 */
+  return slice_n3->track_n3;
 }
 
 /*
@@ -102,26 +102,26 @@ int timeline_add_track(struct timeline *ctx,
 		       struct input *input)
 {
   struct timeline_slice *slice;
-  struct input_entry *input_entry;
-  struct timeline_track_entry *track_entry;
-  struct timeline_slice_entry *slice_entry;
+  struct input_n3 *input_n3;
+  struct timeline_track_n3 *track_n3;
+  struct timeline_slice_n3 *slice_n3;
 
   /* 0) Add track to timeline */
   __slist_insert__(&ctx->by_track, track);
   
   /* 1) Read input */
-  while((input_entry = input_read(input)) != NULL){
+  while((input_n3 = input_read(input)) != NULL){
     /* 2) Create slice if necessary & sort it */
     PR_DBG("2) Create slice if necessary & sort it\n");
-    if((slice = timeline_get_slice(ctx, input_entry->time)) != NULL){
-      /* 3) Create track entry, register slice */
-      PR_DBG("3) Create track entry, register slice\n");
-      timeline_track_entry_alloc(track_entry, input_entry, track, slice); /* ! */
-      __list_add_tail__(&track->list_track_entries, track_entry); /* FIXME : sort ? */
-      /* 4) Create slice entry & register track entry */
-      PR_DBG("4) Create slice entry & register track entry\n");
-      timeline_slice_entry_alloc(slice_entry, track->uid, track_entry); /* ! */
-      __slist_insert__(&slice->slist_slice_entries, slice_entry);
+    if((slice = timeline_get_slice(ctx, input_n3->time)) != NULL){
+      /* 3) Create track n3, register slice */
+      PR_DBG("3) Create track n3, register slice\n");
+      timeline_track_n3_alloc(track_n3, input_n3, track, slice); /* ! */
+      __list_add_tail__(&track->list_track_n3s, track_n3); /* FIXME : sort ? */
+      /* 4) Create slice n3 & register track n3 */
+      PR_DBG("4) Create slice n3 & register track n3\n");
+      timeline_slice_n3_alloc(slice_n3, track->uid, track_n3); /* ! */
+      __slist_insert__(&slice->slist_slice_n3s, slice_n3);
       PR_DBG("5) Back to 1\n");
     }
   }
@@ -133,12 +133,12 @@ int timeline_run_and_sync(struct timeline *ctx)
   struct timeline_track *track;
   __slist_for_each__(&ctx->by_track, track){
     /* Run each track sequentially */
-    struct timeline_track_entry *track_entry;
-    __list_for_each__(&track->list_track_entries, track_entry){
-      /* On each track_entry, run all indicators */
+    struct timeline_track_n3 *track_n3;
+    __list_for_each__(&track->list_track_n3s, track_n3){
+      /* On each track_n3, run all indicators */
       struct indicator *indicator;
       __slist_for_each__(&track->slist_indicators, indicator)
-	indicator_feed(indicator, track_entry);
+	indicator_feed(indicator, track_n3);
     }
   }
   

@@ -18,28 +18,28 @@
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
-struct lowest_entry {
+struct lowest_n3 {
   /* As always... */
-  __inherits_from__(struct indicator_entry);
+  __inherits_from__(struct indicator_n3);
   /* Data */
   double value;
 };
 
-#define lowest_entry_alloc(ctx, parent)                                 \
-  DEFINE_ALLOC(struct lowest_entry, ctx, lowest_entry_init, parent)
-#define lowest_entry_free(ctx)                  \
-  DEFINE_FREE(ctx, lowest_entry_free)
+#define lowest_n3_alloc(ctx, parent)                                 \
+  DEFINE_ALLOC(struct lowest_n3, ctx, lowest_n3_init, parent)
+#define lowest_n3_free(ctx)                  \
+  DEFINE_FREE(ctx, lowest_n3_free)
 
-static inline int lowest_entry_init(struct lowest_entry *ctx,
+static inline int lowest_n3_init(struct lowest_n3 *ctx,
                                     struct indicator *parent)
 {
-  __indicator_entry_init__(ctx, parent);
+  __indicator_n3_init__(ctx, parent);
   return 0;
 }
 
-static inline void lowest_entry_release(struct lowest_entry *ctx)
+static inline void lowest_n3_release(struct lowest_n3 *ctx)
 {
-  __indicator_entry_release__(ctx);
+  __indicator_n3_release__(ctx);
 }
 
 /* Main object */

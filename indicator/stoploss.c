@@ -9,7 +9,7 @@
 #include "stoploss.h"
 #include "engine/candle.h"
 
-static int stoploss_feed(struct indicator *i, struct timeline_track_entry *e)
+static int stoploss_feed(struct indicator *i, struct timeline_track_n3 *e)
 {  
   struct stoploss *ctx = (void*)i;
   struct candle *candle = (void*)e;

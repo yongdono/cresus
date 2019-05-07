@@ -16,7 +16,7 @@
 #include "framework/input.h"
 
 /* TODO : find a way to clearly tell what objects this input returns */
-#define __google_timeline_entry_t__(x) (struct candle*)(x)
+#define __google_timeline_n3_t__(x) (struct candle*)(x)
 
 struct google {
   /* Super */

@@ -28,16 +28,16 @@ static int quiet = 0;
 
 static int feed(struct engine *e,
 		struct timeline *t,
-		struct timeline_entry *entry)
+		struct timeline_n3 *n3)
 {
   /* Step by step loop */
   time64_t time = VAL_YEAR(year_min);
-  struct candle *c = (void*)entry;
+  struct candle *c = (void*)n3;
 
 #define MONTH 6 /* June seems to work better */
   
   /* Execute */
-  int month = TIME64_GET_MONTH(entry->time);
+  int month = TIME64_GET_MONTH(n3->time);
   if(month != current_month){
     if(month != MONTH) engine_set_order(e, BUY, amount, CASH, NULL);
     else engine_set_order(e, SELL, CASH, 100000, NULL); /* FIXME */

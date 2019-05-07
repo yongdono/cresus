@@ -28,9 +28,9 @@ static double kraken_dbl(struct kraken *ctx, char *str)
 /*
  * Format : <time>, <open>, <high>, <low>, <close>, <vwap>, <volume>, <count>
  */
-static struct input_entry *kraken_read(struct input *in)
+static struct input_n3 *kraken_read(struct input *in)
 {
-  struct input_entry *entry;
+  struct input_n3 *n3;
   struct kraken *ctx = (void*)in;
  
   /* Check for EOF at least */
@@ -52,9 +52,9 @@ static struct input_entry *kraken_read(struct input *in)
   double close = kraken_dbl(ctx, sclose);
   double vol = kraken_dbl(ctx, svol);
   
-  if(input_entry_alloc(entry, time, GR_DAY,
+  if(input_n3_alloc(n3, time, GR_DAY,
 		       open, close, high, low, vol))
-    return entry;
+    return n3;
   
  err:
   return NULL;

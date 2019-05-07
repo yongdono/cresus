@@ -27,7 +27,7 @@ struct b4b {
   __inherits_from__(struct input);
   /* file loader */
   FILE *fp;
-  struct list *current_entry;
+  struct list *current_n3;
   /* Debug */
   char filename[256];
 };

@@ -65,15 +65,15 @@ static int sim_feed(struct sim *s, struct cluster *c) {
   int status = 0;
   
   struct timeline *t;
-  struct timeline_entry *entry;
-  struct indicator_entry *ientry;
-  struct zigzag_entry *zref = NULL;
+  struct timeline_n3 *n3;
+  struct indicator_n3 *in3;
+  struct zigzag_n3 *zref = NULL;
   
   /* TODO : better management of this ? */
-  if(timeline_entry_current(__timeline__(c), &entry) != -1){
-    struct candle *candle = __timeline_entry_self__(entry);
-    if((ientry = candle_find_indicator_entry(candle, ZIGZAG))){
-      zref = __indicator_entry_self__(ientry);
+  if(timeline_n3_current(__timeline__(c), &n3) != -1){
+    struct candle *candle = __timeline_n3_self__(n3);
+    if((in3 = candle_find_indicator_n3(candle, ZIGZAG))){
+      zref = __indicator_n3_self__(in3);
       PR_WARN("%s ZIGZAG is %.2f\n", __timeline__(c)->name, zref->value);
       /* Manage cluster's status here */
       if(trend_set(zref->dir)){
@@ -96,19 +96,19 @@ static int sim_feed(struct sim *s, struct cluster *c) {
       continue;
     }
     
-    if(timeline_entry_current(t, &entry) != -1){
+    if(timeline_n3_current(t, &n3) != -1){
       struct position *p;
-      struct candle *candle = __timeline_entry_self__(entry);
-      if((ientry = candle_find_indicator_entry(candle, ZIGZAG))){
-	struct zigzag_entry *zentry = __indicator_entry_self__(ientry);
-	PR_WARN("%s ZZ is %.2f\n", t->name, zentry->value);
+      struct candle *candle = __timeline_n3_self__(n3);
+      if((in3 = candle_find_indicator_n3(candle, ZIGZAG))){
+	struct zigzag_n3 *zn3 = __indicator_n3_self__(in3);
+	PR_WARN("%s ZZ is %.2f\n", t->name, zn3->value);
 	
 	/* Always check if something's open */
 	sim_find_opened_position(s, t, &p);
 
 	/* LONG positions */
 	if(__trend__ == ZIGZAG_UP){
-	  if(zentry->value > zref->value &&
+	  if(zn3->value > zref->value &&
 	     zref->n_since_last_ref <= zz_window){
 	    if(p == NULL){
 	      sim_open_position(s, t, POSITION_LONG, 1);
@@ -126,7 +126,7 @@ static int sim_feed(struct sim *s, struct cluster *c) {
 
 	/* SHORT positions */
 	if(__trend__ == ZIGZAG_DOWN){
-	  if(zentry->value < zref->value &&
+	  if(zn3->value < zref->value &&
 	     zref->n_since_last_ref <= zz_window){
 	    if(p == NULL){
 	      sim_open_position(s, t, POSITION_SHORT, 1);

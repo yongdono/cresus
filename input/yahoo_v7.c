@@ -12,10 +12,10 @@
 #include "yahoo_v7.h"
 #include "framework/verbose.h"
 
-static struct input_entry *
-yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
+static struct input_n3 *
+yahoo_v7_parse_n3(struct yahoo_v7 *ctx, char *str)
 {
-  struct input_entry *entry;
+  struct input_n3 *n3;
 
   time64_t time = 0;
   int year, month, day;
@@ -55,28 +55,28 @@ yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
   TIME64_SET_YEAR(time, year);
 
   if(open != 0.0 && close != 0.0 && high != 0.0 && low != 0.0)
-    if(input_entry_alloc(entry, time, GR_DAY,
+    if(input_n3_alloc(n3, time, GR_DAY,
 			 open, close, high, low, volume))
-      return entry;
+      return n3;
   
  err:
   return NULL;
 }
 
-static struct input_entry *yahoo_v7_read(struct input *in)
+static struct input_n3 *yahoo_v7_read(struct input *in)
 {
   struct yahoo_v7 *ctx = (void*)in;
   
   char buf[256];
-  struct input_entry *entry;
+  struct input_n3 *n3;
   
   while(fgets(buf, sizeof buf, ctx->fp)){
-    /* Parse entry */
-    if((entry = yahoo_v7_parse_entry(ctx, buf))){
+    /* Parse n3 */
+    if((n3 = yahoo_v7_parse_n3(ctx, buf))){
       PR_DBG("%s %s loaded\n", ctx->filename,
-	     time64_str_r(entry->time, entry->g, buf));
+	     time64_str_r(n3->time, n3->g, buf));
       /* We got a new candle */      
-      return entry;
+      return n3;
     }
   }
   

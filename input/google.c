@@ -70,7 +70,7 @@ static int __google_readline(struct google *g,
   if(new_day){
     cdl->type = CANDLE_SOD;
     fprintf(stderr, "--- Parsed new day at %s ---\n",
-            __timeline_entry_localtime_str__(candle, buf, sizeof buf));
+            __timeline_n3_localtime_str__(candle, buf, sizeof buf));
     
   }else
     cdl->type = CANDLE_OTHER;
@@ -110,11 +110,11 @@ static int __google_read(struct google *g, struct candle *candle)
 }
 
 static int google_input_read(struct input *in,
-			     struct timeline_entry *entry) {
+			     struct timeline_n3 *n3) {
 
   /* Is that small wrapping necessary */
   return __google_read((void*)(in),
-		       __timeline_entry_self__(entry));
+		       __timeline_n3_self__(n3));
 }
 
 int google_init(struct google *g, const char *filename)

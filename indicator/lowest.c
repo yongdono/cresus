@@ -19,26 +19,26 @@ void lowest_reset(struct lowest *ctx)
 }
 
 static int lowest_feed(struct indicator *i,
-		       struct timeline_track_entry *e)
+		       struct timeline_track_n3 *e)
 {
   int n = 0;
-  struct lowest_entry *entry;
+  struct lowest_n3 *n3;
   struct lowest *ctx = (void*)i;
-  struct timeline_track_entry *prev = NULL;
+  struct timeline_track_n3 *prev = NULL;
   
-  if(lowest_entry_alloc(entry, i)){
-    /* Init entry value */
-    entry->value = e->low;
+  if(lowest_n3_alloc(n3, i)){
+    /* Init n3 value */
+    n3->value = e->low;
     /* Find a lower value to exit */
     __list_for_each_prev__(e, prev){
-      entry->value = MIN(prev->low, entry->value);
+      n3->value = MIN(prev->low, n3->value);
       /* End of loop */
       if(++n >= ctx->period)
 	break;
     }
     
-    /* Attach new entry */
-    timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
+    /* Attach new n3 */
+    timeline_track_n3_add_indicator_n3(e, __indicator_n3__(n3));
     return 1;
   }
   

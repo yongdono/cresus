@@ -47,11 +47,11 @@ typedef enum {
 #define MOBILE_EVENT_CROSSED_DOWN 2
 #define MOBILE_EVENT_CROSSED_UP   3
 
-/* Timeline entries object */
+/* Timeline n3s object */
 
-struct mobile_entry {
+struct mobile_n3 {
   /* As below */
-  __inherits_from__(struct indicator_entry);
+  __inherits_from__(struct indicator_n3);
   /* Single value */
   double value;
   /* More info */
@@ -59,25 +59,25 @@ struct mobile_entry {
   /* Events ? */
 };
 
-#define mobile_entry_alloc(ctx, parent, value, direction)		\
-  DEFINE_ALLOC(struct mobile_entry, ctx,				\
-	       mobile_entry_init, parent, value, direction)
-#define mobile_entry_free(ctx)			\
-  DEFINE_FREE(ctx, mobile_entry_release)
+#define mobile_n3_alloc(ctx, parent, value, direction)		\
+  DEFINE_ALLOC(struct mobile_n3, ctx,				\
+	       mobile_n3_init, parent, value, direction)
+#define mobile_n3_free(ctx)			\
+  DEFINE_FREE(ctx, mobile_n3_release)
 
-static inline int mobile_entry_init(struct mobile_entry *ctx,
+static inline int mobile_n3_init(struct mobile_n3 *ctx,
 				    struct indicator *parent,
 				    double value, double direction)
 {
-  __indicator_entry_init__(ctx, parent);
+  __indicator_n3_init__(ctx, parent);
   ctx->value = value;
   ctx->direction = direction;
   return 0;
 }
 
-static inline void mobile_entry_release(struct mobile_entry *ctx)
+static inline void mobile_n3_release(struct mobile_n3 *ctx)
 {
-  __indicator_entry_release__(ctx);
+  __indicator_n3_release__(ctx);
 }
 
 /* Main object */
@@ -92,12 +92,12 @@ struct mobile {
   __inherits_from__(struct indicator);
   /* Basic data */
   mobile_t type;
-  input_entry_value_t value;
+  input_n3_value_t value;
   /* Average object */
   struct average avg;
 };
 
-int mobile_init(struct mobile *ctx, unique_id_t id, mobile_t type, int period, input_entry_value_t value);
+int mobile_init(struct mobile *ctx, unique_id_t id, mobile_t type, int period, input_n3_value_t value);
 void mobile_release(struct mobile *ctx);
 
 /* indicator-specific */

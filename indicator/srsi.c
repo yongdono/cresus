@@ -10,7 +10,7 @@
 #include "srsi.h"
 #include "engine/candle.h"
 
-static int srsi_feed(struct indicator *i, struct timeline_track_entry *e)
+static int srsi_feed(struct indicator *i, struct timeline_track_n3 *e)
 {  
   struct srsi *ctx = (void*)i;
   struct candle *c = (void*)e;

@@ -30,7 +30,7 @@ void indicator_release(struct indicator *ctx)
   ctx->feed = NULL;
 }
 
-int indicator_feed(struct indicator *ctx, struct timeline_track_entry *e)
+int indicator_feed(struct indicator *ctx, struct timeline_track_n3 *e)
 {
   int ret = ctx->feed(ctx, e);
   ctx->is_empty = 0;

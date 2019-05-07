@@ -14,14 +14,14 @@
  */
 
 static int rs_mansfield_feed(struct indicator *i,
-                             struct timeline_track_entry *e)
+                             struct timeline_track_n3 *e)
 {
-  struct timeline_track_entry *ref;
-  struct timeline_track_entry *entry;
+  struct timeline_track_n3 *ref;
+  struct timeline_track_n3 *n3;
   struct rs_mansfield *ctx = (void*)i;
   
-  /* Get synced track_entry */
-  if(!(ref = timeline_slice_get_track_entry(e->slice, ctx->ref_track_uid)))
+  /* Get synced track_n3 */
+  if(!(ref = timeline_slice_get_track_n3(e->slice, ctx->ref_track_uid)))
     goto err;
   
   double rsd = e->close / ref->close;
@@ -29,10 +29,10 @@ static int rs_mansfield_feed(struct indicator *i,
   double mma = average_update(&ctx->mma, rsd);
   if(average_is_available(&ctx->mma)){
     /* Finally set value */
-    struct rs_mansfield_entry *rsm;
+    struct rs_mansfield_n3 *rsm;
     double value = ((rsd / mma) - 1) * 100.0;
-    if(rs_mansfield_entry_alloc(rsm, i, value, (mma - last)))
-      timeline_track_entry_add_indicator_entry(e, __indicator_entry__(rsm));
+    if(rs_mansfield_n3_alloc(rsm, i, value, (mma - last)))
+      timeline_track_n3_add_indicator_n3(e, __indicator_n3__(rsm));
     
     return 0;
   }

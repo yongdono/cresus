@@ -21,17 +21,17 @@ void hilo_reset(struct hilo *ctx)
 #define HIGH(x, y) (((x) > (y)) ? (x) : (y))
 #define LOW(x, y) (((x) < (y)) ? (x) : (y))
 
-static int hilo_feed(struct indicator *i, struct timeline_track_entry *e)
+static int hilo_feed(struct indicator *i, struct timeline_track_n3 *e)
 {
-  struct hilo_entry *entry;
+  struct hilo_n3 *n3;
   struct hilo *ctx = (void*)i;
-  struct timeline_track_entry *prev = NULL;
+  struct timeline_track_n3 *prev = NULL;
   
-  if(hilo_entry_alloc(entry, i)){
+  if(hilo_n3_alloc(n3, i)){
     /* Init */
     int n = ctx->period;
-    entry->high = e->high;
-    entry->low = e->low;
+    n3->high = e->high;
+    n3->low = e->low;
     
     __list_for_each_prev__(e, prev){
       
@@ -39,15 +39,15 @@ static int hilo_feed(struct indicator *i, struct timeline_track_entry *e)
       if(!--n)
 	break;
       
-      entry->high = HIGH(entry->high, prev->high);
-      entry->low = LOW(entry->low, prev->low);
+      n3->high = HIGH(n3->high, prev->high);
+      n3->low = LOW(n3->low, prev->low);
     }
     
     if(ctx->filter && n)
       goto out;
     
-    /* Attach new entry */
-    timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
+    /* Attach new n3 */
+    timeline_track_n3_add_indicator_n3(e, __indicator_n3__(n3));
     return 1;
   }
 

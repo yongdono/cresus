@@ -16,35 +16,35 @@
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
-struct macd_entry {
+struct macd_n3 {
   /* As always */
-  __inherits_from__(struct indicator_entry);
+  __inherits_from__(struct indicator_n3);
   /* Own data */
   double value;
   double signal;
   double histogram;
 };
 
-#define macd_entry_alloc(entry, parent, value, signal)		\
-  DEFINE_ALLOC(struct macd_entry, entry,			\
-	       macd_entry_init, parent, value, signal)
-#define macd_entry_free(entry)			\
-  DEFINE_FREE(entry, macd_entry_release)
+#define macd_n3_alloc(n3, parent, value, signal)		\
+  DEFINE_ALLOC(struct macd_n3, n3,			\
+	       macd_n3_init, parent, value, signal)
+#define macd_n3_free(n3)			\
+  DEFINE_FREE(n3, macd_n3_release)
 
-static inline int macd_entry_init(struct macd_entry *ctx,
+static inline int macd_n3_init(struct macd_n3 *ctx,
 				  struct indicator *parent,
 				  double value, double signal)
 {
-  __indicator_entry_init__(ctx, parent);
+  __indicator_n3_init__(ctx, parent);
   ctx->value = value;
   ctx->signal = signal;
   ctx->histogram = (value - signal);
   return 0;
 }
 
-static inline void macd_entry_release(struct macd_entry *ctx)
+static inline void macd_n3_release(struct macd_n3 *ctx)
 {
-  __indicator_entry_release__(ctx);
+  __indicator_n3_release__(ctx);
 }
 
 /* Indicator events */

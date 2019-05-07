@@ -42,7 +42,7 @@ static int trend_set(trend_t trend) {
 
 static struct timeline *
 timeline_create(const char *filename, const char *name, time64_t min,
-		list_head_t(struct timeline_entry) *ref_index) {
+		list_head_t(struct timeline_n3) *ref_index) {
 
   struct yahoo *yahoo;
   struct timeline *timeline;
@@ -71,21 +71,21 @@ static void timeline_display_info(struct timeline *t) {
   char buf[256]; /* debug */
   
   /* FIXME : change interface */
-  struct timeline_entry *entry;
-  if(timeline_entry_current(t, &entry) != -1){
-    struct indicator_entry *ientry;
-    struct candle *candle = __timeline_entry_self__(entry);
+  struct timeline_n3 *n3;
+  if(timeline_n3_current(t, &n3) != -1){
+    struct indicator_n3 *in3;
+    struct candle *candle = __timeline_n3_self__(n3);
     /* Indicators management */
     /* This interface is not easy to use. Find something better */
-    candle_indicator_for_each(candle, ientry) {
-      switch(ientry->iid){
+    candle_indicator_for_each(candle, in3) {
+      switch(in3->iid){
       case EMA : PR_WARN("%s EMA is %.2f\n", t->name,
-			 ((struct mobile_entry*)
-			  __indicator_entry_self__(ientry))->value);
+			 ((struct mobile_n3*)
+			  __indicator_n3_self__(in3))->value);
 	break;
 	
       case JTREND : {
-	struct jtrend_entry *e = __indicator_entry_self__(ientry);
+	struct jtrend_n3 *e = __indicator_n3_self__(in3);
 	PR_WARN("%s JTREND is %.2f, %.2f\n", t->name,
 		e->value, e->ref_value);
 	
@@ -112,17 +112,17 @@ static int sim_feed(struct sim *s, struct cluster *c) {
   int status = 0;
   
   struct timeline *t;
-  struct timeline_entry *entry;
-  struct indicator_entry *ientry;
+  struct timeline_n3 *n3;
+  struct indicator_n3 *in3;
   
   /* TODO : better management of this ? */
-  if(timeline_entry_current(__timeline__(c), &entry) != -1){
-    struct candle *candle = __timeline_entry_self__(entry);
-    if((ientry = candle_find_indicator_entry(candle, ROC))){
-      struct roc_entry *rentry = __indicator_entry_self__(ientry);
-      PR_WARN("%s ROC is %.2f\n", __timeline__(c)->name, rentry->value);
+  if(timeline_n3_current(__timeline__(c), &n3) != -1){
+    struct candle *candle = __timeline_n3_self__(n3);
+    if((in3 = candle_find_indicator_n3(candle, ROC))){
+      struct roc_n3 *rn3 = __indicator_n3_self__(in3);
+      PR_WARN("%s ROC is %.2f\n", __timeline__(c)->name, rn3->value);
       /* Manage cluster's status here */
-      if(trend_set(rentry->value > 0 ? TREND_UP : TREND_DOWN)){
+      if(trend_set(rn3->value > 0 ? TREND_UP : TREND_DOWN)){
 	/* We got a change here */
 	PR_INFO("General trend switched to %s\n",
 		__trend__ == TREND_UP ? "up" : "down");
@@ -142,13 +142,13 @@ static int sim_feed(struct sim *s, struct cluster *c) {
       continue;
     }
     
-    if(timeline_entry_current(t, &entry) != -1){
+    if(timeline_n3_current(t, &n3) != -1){
       struct position *p;
-      struct candle *candle = __timeline_entry_self__(entry);
-      if((ientry = candle_find_indicator_entry(candle, JTREND))){
-	struct jtrend_entry *jentry = __indicator_entry_self__(ientry);
+      struct candle *candle = __timeline_n3_self__(n3);
+      if((in3 = candle_find_indicator_n3(candle, JTREND))){
+	struct jtrend_n3 *jn3 = __indicator_n3_self__(in3);
 	PR_WARN("%s JTREND is %.2f, %.2f\n", t->name,
-		jentry->value, jentry->ref_value);
+		jn3->value, jn3->ref_value);
 
 	/* Always check if something's open */
 	sim_find_opened_position(s, t, &p);
@@ -156,7 +156,7 @@ static int sim_feed(struct sim *s, struct cluster *c) {
 	/* LONG positions */
 	if(__trend__ == TREND_UP){
 	  
-	  if(jentry->value > 0.0){	    
+	  if(jn3->value > 0.0){	    
 	    if(p == NULL){
 	      sim_open_position(s, t, POSITION_LONG, 1);
 	      PR_ERR("Taking LONG position on %s at %s\n",
@@ -173,7 +173,7 @@ static int sim_feed(struct sim *s, struct cluster *c) {
 
 	/* SHORT positions */
 	if(__trend__ == TREND_DOWN){
-	  if(jentry->value < 0.0){	    
+	  if(jn3->value < 0.0){	    
 	    if(p == NULL){
 	      sim_open_position(s, t, POSITION_SHORT, 1);
 	      PR_ERR("Taking SHORT position on %s at %s\n",
@@ -200,7 +200,7 @@ static void add_timeline_to_cluster(struct cluster *c, const char *path,
 				    const char *name, time64_t time) {
 
   struct timeline *sub;
-  sub = timeline_create(path, name, time, &__timeline__(c)->list_entry);
+  sub = timeline_create(path, name, time, &__timeline__(c)->list_n3);
   cluster_add_timeline(c, sub);
 }
 

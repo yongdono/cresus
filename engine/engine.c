@@ -105,9 +105,9 @@ static void engine_run_csv_output(struct engine *ctx,
 {
 #if 0
   if(TIME64CMP(slice->time, ctx->start_time, GR_DAY) >= 0){
-    struct timeline_slice_entry *entry;
-    __slist_for_each__(slice->slist_entries, entry){
-      struct timeline_track_entry *c = entry->track_entry;
+    struct timeline_slice_n3 *n3;
+    __slist_for_each__(slice->slist_n3s, n3){
+      struct timeline_track_n3 *c = n3->track_n3;
       double orig = engine_assets_original_value(ctx);
       double value = engine_assets_value(ctx, c->close);
       
@@ -118,7 +118,7 @@ static void engine_run_csv_output(struct engine *ctx,
         double ref = (c->close / ctx->csv_ref)  - 1.0;
         double target = (orig != 0.0 ? (value / orig) - 1.0 : 0.0);
         /* Output csv */
-        printf("%s, %lf, %lf, %lf\n", timeline_entry_str(e),
+        printf("%s, %lf, %lf, %lf\n", timeline_n3_str(e),
                ref , target, target - ref);
       }
     }
@@ -128,7 +128,7 @@ static void engine_run_csv_output(struct engine *ctx,
 
 static void engine_run_position_buy(struct engine *ctx,
 				    struct position *p,
-				    struct timeline_track_entry *c)
+				    struct timeline_track_n3 *c)
 {
   /* Record open value */
   position_set_value(p, c->open);
@@ -137,7 +137,7 @@ static void engine_run_position_buy(struct engine *ctx,
     double unit = position_unit_value(p);
     position_set_n(p, p->request.shares);
     PR_INFO("%s - Buy %.0lf securities at %.2lf (%.2lf) VALUE\n",
-	    timeline_track_entry_str(c),
+	    timeline_track_n3_str(c),
             p->n * 1.0, unit, p->n * unit);
     
     /* Some stats */
@@ -147,7 +147,7 @@ static void engine_run_position_buy(struct engine *ctx,
   }else{
     position_set_n(p, p->request.cash / c->open);
     PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
-            timeline_track_entry_str(c),
+            timeline_track_n3_str(c),
             p->n * 1.0, p->request.cash);
 
     /* Some stats */
@@ -161,7 +161,7 @@ static void engine_run_position_buy(struct engine *ctx,
 
 static void engine_run_position_sell(struct engine *ctx,
 				     struct position *p,
-				     struct timeline_track_entry *c)
+				     struct timeline_track_n3 *c)
 {
   /* Stats */
   double req = 0.0;
@@ -200,11 +200,11 @@ static void engine_run_position_sell(struct engine *ctx,
   if(nsold > 0.0){
     if(p->req == SHARES){
       PR_WARN("%s - Sell %.0lf securities at %.2lf (%.2lf) VALUE\n",
-	      timeline_track_entry_str(c),
+	      timeline_track_n3_str(c),
               nsold, cash / nsold, cash);
     }else{
       PR_WARN("%s - Sell %.4lf securities for %.2lf CASH\n",
-              timeline_track_entry_str(c),
+              timeline_track_n3_str(c),
               nsold, cash);
     }
   }
@@ -218,7 +218,7 @@ static void engine_run_position_sell(struct engine *ctx,
 
 static void engine_run_position(struct engine *ctx,
 				struct position *p,
-				struct timeline_track_entry *c)
+				struct timeline_track_n3 *c)
 {
   switch(p->type){
   case BUY: engine_run_position_buy(ctx, p, c); break;
@@ -252,7 +252,7 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed)
       /* 2nd: check stoplosses */
       if(c->low <= p->cert.stoploss){
 	p->status = POSITION_DESTROY;
-	PR_WARN("%s - Stoploss hit\n", timeline_track_entry_str(c));
+	PR_WARN("%s - Stoploss hit\n", timeline_track_n3_str(c));
       }
       
       /* 3rd: Remove useless positions (sales & lost buys) */
@@ -277,11 +277,11 @@ int engine_set_order(struct engine *ctx, position_t type,
 		     struct cert *cert)
 {
   struct position *p;
-  struct timeline_entry *entry;
+  struct timeline_n3 *n3;
   
-  if(timeline_entry_current(ctx->timeline, &entry) != -1){
+  if(timeline_n3_current(ctx->timeline, &n3) != -1){
     /* Filter orders if needed */
-    if(TIME64CMP(entry->time, ctx->start_time, GR_DAY) < 0)
+    if(TIME64CMP(n3->time, ctx->start_time, GR_DAY) < 0)
       goto err;
     
     if(position_alloc(p, type, req, value, cert)){
@@ -297,7 +297,7 @@ int engine_set_order(struct engine *ctx, position_t type,
 int engine_place_order(struct engine *ctx, position_t type,
 		       position_req_t by, double value)
 {
-  struct timeline_entry *entry;
+  struct timeline_n3 *n3;
   return engine_set_order(ctx, type, by, value, NULL);
 }
 

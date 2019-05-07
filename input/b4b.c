@@ -36,12 +36,12 @@ static ssize_t b4b_prepare_str(struct b4b *ctx, char *buf)
   return -1;
 }
 
-static struct input_entry *
-b4b_parse_entry(struct b4b *ctx, char *str)
+static struct input_n3 *
+b4b_parse_n3(struct b4b *ctx, char *str)
 {
   time64_t time = 0;
   int year, month, day;
-  struct input_entry *entry;
+  struct input_n3 *n3;
   double open, close, high, low, volume; 
   
   /* Cut string */
@@ -74,31 +74,31 @@ b4b_parse_entry(struct b4b *ctx, char *str)
   TIME64_SET_MONTH(time, month);
   TIME64_SET_YEAR(time, year);
 
-  if(input_entry_alloc(entry, time, GR_DAY,
+  if(input_n3_alloc(n3, time, GR_DAY,
 		       open, close, high, low, volume))
-    return entry;
+    return n3;
   
  err:
   return NULL;
 }
 
-static struct input_entry *b4b_read(struct input *in)
+static struct input_n3 *b4b_read(struct input *in)
 {
   struct b4b *ctx = (void*)in;
   
   char buf[256];
-  struct input_entry *entry;
+  struct input_n3 *n3;
 
   while(fgets(buf, sizeof buf, ctx->fp)){
     /* Prepare string & pre-filter */
     if(b4b_prepare_str(ctx, buf) < 0)
       continue;
-    /* Parse entry */
-    if((entry = b4b_parse_entry(ctx, buf))){
+    /* Parse n3 */
+    if((n3 = b4b_parse_n3(ctx, buf))){
       PR_DBG("%s %s loaded\n", ctx->filename,
-	     time64_str_r(entry->time, entry->g, buf));
+	     time64_str_r(n3->time, n3->g, buf));
       /* We got a new candle */
-      return entry;
+      return n3;
     }
   }
   

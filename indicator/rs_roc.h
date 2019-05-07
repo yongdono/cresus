@@ -18,35 +18,35 @@
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
-struct rs_roc_entry {
+struct rs_roc_n3 {
   /* As always... */
-  __inherits_from__(struct indicator_entry);
+  __inherits_from__(struct indicator_n3);
   /* Data */
   double value;
   double roc, roc_ref;
 };
 
-#define rs_roc_entry_alloc(ctx, parent, value, roc, roc_ref)		\
-  DEFINE_ALLOC(struct rs_roc_entry, ctx, rs_roc_entry_init, parent,	\
+#define rs_roc_n3_alloc(ctx, parent, value, roc, roc_ref)		\
+  DEFINE_ALLOC(struct rs_roc_n3, ctx, rs_roc_n3_init, parent,	\
 	       value, roc, roc_ref)
-#define rs_roc_entry_free(ctx)                  \
-  DEFINE_FREE(ctx, rs_roc_entry_free)
+#define rs_roc_n3_free(ctx)                  \
+  DEFINE_FREE(ctx, rs_roc_n3_free)
 
-static inline int rs_roc_entry_init(struct rs_roc_entry *ctx,
+static inline int rs_roc_n3_init(struct rs_roc_n3 *ctx,
 				    struct indicator *parent,
 				    double value, double roc,
                                     double roc_ref)
 {
-  __indicator_entry_init__(ctx, parent);
+  __indicator_n3_init__(ctx, parent);
   ctx->value = value;
   ctx->roc = roc;
   ctx->roc_ref = roc_ref;
   return 0;
 }
 
-static inline void rs_roc_entry_release(struct rs_roc_entry *ctx)
+static inline void rs_roc_n3_release(struct rs_roc_n3 *ctx)
 {
-  __indicator_entry_release__(ctx);
+  __indicator_n3_release__(ctx);
 }
 
 /* Main object */

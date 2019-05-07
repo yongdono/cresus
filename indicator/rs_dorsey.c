@@ -8,23 +8,23 @@
 
 #include "rs_dorsey.h"
 
-static int rs_dorsey_feed(struct indicator *i, struct timeline_track_entry *e)
+static int rs_dorsey_feed(struct indicator *i, struct timeline_track_n3 *e)
 {
   double ratio, value;
-  struct rs_dorsey_entry *entry;
+  struct rs_dorsey_n3 *n3;
   struct rs_dorsey *ctx = (void*)i;
-  struct timeline_track_entry *ref;
+  struct timeline_track_n3 *ref;
 
-  /* Get synced track_entry */
-  if(!(ref = timeline_slice_get_track_entry(e->slice, ctx->ref_track_uid)))
+  /* Get synced track_n3 */
+  if(!(ref = timeline_slice_get_track_n3(e->slice, ctx->ref_track_uid)))
     goto err;
   
   ratio = e->close / ref->close * 100.0;
   value = ratio / ctx->ratio_prev - 1.0; /* Ref is 0 */
   
   if(!i->is_empty){
-    if(rs_dorsey_entry_alloc(entry, i, value))
-      timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
+    if(rs_dorsey_n3_alloc(n3, i, value))
+      timeline_track_n3_add_indicator_n3(e, __indicator_n3__(n3));
   }
   
   /* Update ratio & diff for next round */

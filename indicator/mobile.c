@@ -12,19 +12,19 @@
 
 #include "mobile.h"
 
-static int mobile_feed(struct indicator *i, struct timeline_track_entry *e)
+static int mobile_feed(struct indicator *i, struct timeline_track_n3 *e)
 {  
-  struct mobile_entry *entry;
+  struct mobile_n3 *n3;
   struct mobile *ctx = (void*)i;
   
   /* Trying to get average values */
   double last_avg = average_value(&ctx->avg);
-  double avg = average_update(&ctx->avg, input_entry_value(e, ctx->value));
+  double avg = average_update(&ctx->avg, input_n3_value(e, ctx->value));
   
   if(average_is_available(&ctx->avg)){
-    /* Create new entry */
-    if(mobile_entry_alloc(entry, i, avg, (avg - last_avg))){
-      timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
+    /* Create new n3 */
+    if(mobile_n3_alloc(n3, i, avg, (avg - last_avg))){
+      timeline_track_n3_add_indicator_n3(e, __indicator_n3__(n3));
       return 1;
     }
   }
@@ -39,7 +39,7 @@ static void mobile_reset(struct indicator *i)
 }
 
 int mobile_init(struct mobile *ctx, unique_id_t uid, mobile_t type,
-		int period, input_entry_value_t value)
+		int period, input_n3_value_t value)
 {  
   /* Super */
   __indicator_init__(ctx, uid, mobile_feed, mobile_reset);

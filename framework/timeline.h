@@ -19,8 +19,8 @@
  * Order of operation :
  * 1) Read input
  * 2) Create slice if necessary. Sort it
- * 3) Create track entry. Append to previous. Register slice
- * 4) Create slice entry. Register track entry. Append to slice
+ * 3) Create track n3. Append to previous. Register slice
+ * 4) Create slice n3. Register track n3. Append to slice
  * 5) Back to 1
  * 6) Play indicators once slices are sync
  */
@@ -28,60 +28,79 @@
 /* Required for compilation */
 struct indicator;
 struct timeline_slice;
-struct indicator_entry;
+struct indicator_n3;
+
+/*
+ * Data hierarchy
+ *
+ * Timeline by slice
+ * |- slice #0
+ *    |- slice_n3 -> slice_n3 -> slice_n3
+ * |- slice #x
+ *    |- slice_n3 -> slice_n3 -> slice_n3
+ * |- ...
+ *
+ * Timeline by track
+ * |- track #0
+ *    |- track_n3 <> track_n3 <> track_n3 <> ...
+ * |- track #x
+ *    |- track_n3 <> track_n3 <> track_n3 <> ...
+ * |- ...
+ *
+ */
 
 /*
  * Linear access
  */
-struct timeline_track_entry {
+struct timeline_track_n3 {
   /* Can be parsed either way */
   __inherits_from__(struct list);
   /* Internal data */
-  __implements__(input_entry_interface);
+  __implements__(input_n3_interface);
   /* Where are we from ? */
   struct timeline_track *track; /* Who created this */
   struct timeline_slice *slice; /* By-slice sorting */
   /* More data, append later */
-  slist_head_t(struct indicator_entry) slist_indicator_entries;
+  slist_head_t(struct indicator_n3) slist_indicator_n3s;
 };
 
 static inline int
-timeline_track_entry_init(struct timeline_track_entry *ctx,
-			  struct input_entry *entry,
-			  struct timeline_track *track,
-			  struct timeline_slice *slice)
+timeline_track_n3_init(struct timeline_track_n3 *ctx,
+                       struct input_n3 *input_n3,
+                       struct timeline_track *track,
+                       struct timeline_slice *slice)
 {
   __list_init__(ctx); /* super() */
-  input_entry_interface_copy(ctx, entry);
+  input_n3_interface_copy(ctx, input_n3);
   ctx->track = track;
   ctx->slice = slice;
-  slist_head_init(&ctx->slist_indicator_entries);
+  slist_head_init(&ctx->slist_indicator_n3s);
   return 0;
 }
 
-#define timeline_track_entry_alloc(ctx, input_entry, track, slice)      \
-  DEFINE_ALLOC(struct timeline_track_entry, ctx,			\
-	       timeline_track_entry_init, input_entry, track, slice)
+#define timeline_track_n3_alloc(ctx, input_n3, track, slice)            \
+  DEFINE_ALLOC(struct timeline_track_n3, ctx, timeline_track_n3_init,   \
+               input_n3, track, slice)
 
 /* Methods */
 static inline void
-timeline_track_entry_add_indicator_entry(struct timeline_track_entry *ctx,
-                                         struct indicator_entry *entry)
+timeline_track_n3_add_indicator_n3(struct timeline_track_n3 *ctx,
+                                   struct indicator_n3 *indicator_n3)
 {
-  slist_insert(&ctx->slist_indicator_entries, __slist__(entry));
+  slist_insert(&ctx->slist_indicator_n3s, __slist__(indicator_n3));
 }
 
-static inline struct indicator_entry *
-timeline_track_entry_get_indicator_entry(struct timeline_track_entry *ctx,
-                                         unique_id_t indicator_uid)
+static inline struct indicator_n3 *
+timeline_track_n3_get_indicator_n3(struct timeline_track_n3 *ctx,
+                                   unique_id_t indicator_uid)
 {
-  return (struct indicator_entry*)
-    __slist_by_uid_find__(&ctx->slist_indicator_entries,
+  return (struct indicator_n3*)
+    __slist_by_uid_find__(&ctx->slist_indicator_n3s,
 			  indicator_uid);
 }
 
-const char *timeline_track_entry_str(struct timeline_track_entry *ctx);
-const char *timeline_track_entry_str_r(struct timeline_track_entry *ctx, char *buf);
+const char *timeline_track_n3_str(struct timeline_track_n3 *ctx);
+const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx, char *buf);
 
 
 struct timeline_track {
@@ -90,7 +109,7 @@ struct timeline_track {
   /* Should have an unique id */
   unique_id_t uid;
   /* Here's the beginning of the track */
-  list_head_t(struct timeline_track_entry) list_track_entries;
+  list_head_t(struct timeline_track_n3) list_track_n3s;
   /* The indicators we want to play on that particular track */
   slist_head_t(struct indicator) slist_indicators;
 };
@@ -99,7 +118,7 @@ static inline int
 timeline_track_init(struct timeline_track *ctx, unique_id_t uid)
 {
   __slist_by_uid_init__(ctx, uid); /* super() */
-  list_head_init(&ctx->list_track_entries);
+  list_head_init(&ctx->list_track_n3s);
   slist_head_init(&ctx->slist_indicators);
   return uid;
 }
@@ -118,33 +137,33 @@ timeline_track_add_indicator(struct timeline_track *ctx,
 /*
  * Access by slice / indice / time
  */
-struct timeline_slice_entry {
+struct timeline_slice_n3 {
   /* Can be parsed either way ? */
   __inherits_from__(struct slist_by_uid);
-  /* Should be easy to find (track_entry->track->uid ?) */
-  struct timeline_track_entry *track_entry;
+  /* Should be easy to find (track_n3->track->uid ?) */
+  struct timeline_track_n3 *track_n3;
 };
 
 static inline int
-timeline_slice_entry_init(struct timeline_slice_entry *ctx,
-                          unique_id_t track_uid,
-			  struct timeline_track_entry *track_entry)
+timeline_slice_n3_init(struct timeline_slice_n3 *ctx,
+                       unique_id_t track_uid,
+                       struct timeline_track_n3 *track_n3)
 {
   __slist_by_uid_init__(ctx, track_uid); /* super() */
-  ctx->track_entry = track_entry;
+  ctx->track_n3 = track_n3;
   return 0;
 }
 
-#define timeline_slice_entry_alloc(ctx, track_uid, track_entry)         \
-  DEFINE_ALLOC(struct timeline_slice_entry, ctx,                        \
-               timeline_slice_entry_init, track_uid, track_entry)
+#define timeline_slice_n3_alloc(ctx, track_uid, track_n3)               \
+  DEFINE_ALLOC(struct timeline_slice_n3, ctx, timeline_slice_n3_init,   \
+               track_uid, track_n3)
 
 struct timeline_slice {
   __inherits_from__(struct list);
   /* It's a time slice */
   time64_t time; /* No granularity required ? */
-  /* Containing one or more timeline_slices_entries */
-  slist_head_t(struct timeline_slice_entry) slist_slice_entries;
+  /* Containing one or more timeline_slices_n3s */
+  slist_head_t(struct timeline_slice_n3) slist_slice_n3s;
 };
 
 static inline int
@@ -152,15 +171,15 @@ timeline_slice_init(struct timeline_slice *ctx, time64_t time)
 {
   __list_init__(ctx); /* super() */
   ctx->time = time;
-  slist_head_init(&ctx->slist_slice_entries);
+  slist_head_init(&ctx->slist_slice_n3s);
   return 0;
 }
 
 #define timeline_slice_alloc(ctx, time)                                 \
   DEFINE_ALLOC(struct timeline_slice, ctx, timeline_slice_init, time)
 
-struct timeline_track_entry*
-timeline_slice_get_track_entry(struct timeline_slice *ctx, unique_id_t uid);
+struct timeline_track_n3*
+timeline_slice_get_track_n3(struct timeline_slice *ctx, unique_id_t uid);
 
 /*
  * The final timeline object

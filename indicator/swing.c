@@ -13,7 +13,7 @@
   ((c)->high < (p)->high &&                                     \
    (c)->low > (p)->low)
 
-static int swing_feed(struct indicator *i, struct timeline_track_entry *e)
+static int swing_feed(struct indicator *i, struct timeline_track_n3 *e)
 {  
   struct swing *ctx = (void*)i;
   struct candle *p, *c = (void*)e;

@@ -28,8 +28,8 @@ struct yahoo {
   /* file loader */
   FILE *fp;
   /* Yahoo file format is LIFO */
-  list_head_t(struct input_entry) list_entry;
-  struct list *current_entry;
+  list_head_t(struct input_n3) list_n3;
+  struct list *current_n3;
   /* Debug */
   char filename[256];
 };

@@ -9,7 +9,7 @@
 #include <string.h>
 #include "heikin_ashi.h"
 
-static int heikin_ashi_feed(struct indicator *i, struct timeline_track_entry *e)
+static int heikin_ashi_feed(struct indicator *i, struct timeline_track_n3 *e)
 {  
   struct heikin_ashi *h = (void*)i;
   struct candle *c = (void*)e;

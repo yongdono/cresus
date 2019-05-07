@@ -12,7 +12,7 @@
 #include "zigzag.h"
 
 static void zigzag_chdir(struct zigzag *ctx, zigzag_dir_t dir,
-                         struct timeline_track_entry *e)
+                         struct timeline_track_n3 *e)
 {  
   ctx->base_ref = ctx->ref;
   ctx->dir = dir;
@@ -20,12 +20,12 @@ static void zigzag_chdir(struct zigzag *ctx, zigzag_dir_t dir,
   ctx->ref_count = 0;
 }
 
-static int zigzag_feed(struct indicator *i, struct timeline_track_entry *e)
+static int zigzag_feed(struct indicator *i, struct timeline_track_n3 *e)
 {  
   double threshold;
-  struct zigzag_entry *entry;
+  struct zigzag_n3 *n3;
   struct zigzag *ctx = (void*)i;
-  double value = input_entry_value(e, ctx->value);
+  double value = input_n3_value(e, ctx->value);
   
   if(!ctx->ref){
     ctx->ref = e;
@@ -35,8 +35,8 @@ static int zigzag_feed(struct indicator *i, struct timeline_track_entry *e)
   }
   
   /* Compute limits (every time ? */
-  double base_ref_value = input_entry_value(ctx->base_ref, ctx->value);
-  double ref_value = input_entry_value(ctx->ref, ctx->value);
+  double base_ref_value = input_n3_value(ctx->base_ref, ctx->value);
+  double ref_value = input_n3_value(ctx->ref, ctx->value);
   double hi_limit = (1.0 + ctx->threshold) * ref_value;
   double lo_limit = (1.0 - ctx->threshold) * ref_value;
   
@@ -57,8 +57,8 @@ static int zigzag_feed(struct indicator *i, struct timeline_track_entry *e)
     break;
   }
   
-  if(zigzag_entry_alloc(entry, i, ctx->dir, (value / base_ref_value), ctx->ref_count))
-    timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
+  if(zigzag_n3_alloc(n3, i, ctx->dir, (value / base_ref_value), ctx->ref_count))
+    timeline_track_n3_add_indicator_n3(e, __indicator_n3__(n3));
   
   ctx->ref_count++;
   return 0;
@@ -76,7 +76,7 @@ static void zigzag_reset(struct indicator *i)
 }
 
 int zigzag_init(struct zigzag *ctx, unique_id_t uid,
-		double threshold, input_entry_value_t value)
+		double threshold, input_n3_value_t value)
 {  
   /* Super */
   __indicator_init__(ctx, uid, zigzag_feed, zigzag_reset);

@@ -25,9 +25,9 @@
 
 /* Entries */
 
-struct rs_mansfield_entry {
+struct rs_mansfield_n3 {
   /* As below */
-  __inherits_from__(struct indicator_entry);
+  __inherits_from__(struct indicator_n3);
   /* Single value */
   double value;
   /* More info */
@@ -35,27 +35,27 @@ struct rs_mansfield_entry {
   /* Events ? */
 };
 
-#define rs_mansfield_entry_alloc(ctx, parent, value, direction)         \
-  DEFINE_ALLOC(struct rs_mansfield_entry, ctx,                          \
-	       rs_mansfield_entry_init, parent, value,			\
+#define rs_mansfield_n3_alloc(ctx, parent, value, direction)         \
+  DEFINE_ALLOC(struct rs_mansfield_n3, ctx,                          \
+	       rs_mansfield_n3_init, parent, value,			\
 	       direction)
-#define rs_mansfield_entry_free(ctx)            \
-  DEFINE_FREE(ctx, rs_mansfield_entry_release)
+#define rs_mansfield_n3_free(ctx)            \
+  DEFINE_FREE(ctx, rs_mansfield_n3_release)
 
-static inline int rs_mansfield_entry_init(struct rs_mansfield_entry *ctx,
+static inline int rs_mansfield_n3_init(struct rs_mansfield_n3 *ctx,
 					  struct indicator *parent,
 					  double value, double direction)
 {
-  __indicator_entry_init__(ctx, parent);
+  __indicator_n3_init__(ctx, parent);
   ctx->value = value;
   ctx->direction = direction;
   return 0;
 }
 
 static inline void
-rs_mansfield_entry_release(struct rs_mansfield_entry *ctx)
+rs_mansfield_n3_release(struct rs_mansfield_n3 *ctx)
 {
-  __indicator_entry_release__(ctx);
+  __indicator_n3_release__(ctx);
 }
 
 /* Object */

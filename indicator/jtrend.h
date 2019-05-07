@@ -16,33 +16,33 @@
 /* Sub-indicators */
 #include "indicator/roc.h"
 
-struct jtrend_entry {
+struct jtrend_n3 {
   /* Always */
-  __inherits_from__(struct indicator_entry);
+  __inherits_from__(struct indicator_n3);
   /* Value type ? */
   double value;
   double ref_value;
 };
 
-#define jtrend_entry_alloc(entry, parent, value, ref_value)		\
-  DEFINE_ALLOC(struct jtrend_entry, entry, jtrend_entry_init,		\
+#define jtrend_n3_alloc(n3, parent, value, ref_value)		\
+  DEFINE_ALLOC(struct jtrend_n3, n3, jtrend_n3_init,		\
 	       parent, value, ref_value)
-#define jtrend_entry_free(entry)		\
-  DEFINE_FREE(entry, jtrend_entry_release)
+#define jtrend_n3_free(n3)		\
+  DEFINE_FREE(n3, jtrend_n3_release)
 
-static inline int jtrend_entry_init(struct jtrend_entry *entry,
+static inline int jtrend_n3_init(struct jtrend_n3 *n3,
 				    struct indicator *parent,
 				    double value, double ref_value)
 {
-  __indicator_entry_init__(entry, parent);
-  entry->value = value;
-  entry->ref_value = ref_value;
+  __indicator_n3_init__(n3, parent);
+  n3->value = value;
+  n3->ref_value = ref_value;
   return 0;
 }
 
-static inline void jtrend_entry_release(struct jtrend_entry *entry)
+static inline void jtrend_n3_release(struct jtrend_n3 *n3)
 {
-  __indicator_entry_release__(entry);
+  __indicator_n3_release__(n3);
 }
 
 /* Main object */

@@ -11,7 +11,7 @@
 
 #include "atr.h"
 
-static int atr_feed(struct indicator *i, struct timeline_track_entry *e)
+static int atr_feed(struct indicator *i, struct timeline_track_n3 *e)
 {
   struct atr *a = (void*)i;
   struct candle *c = (void*)e;

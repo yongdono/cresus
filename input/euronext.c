@@ -43,9 +43,9 @@ static double euronext_dbl(struct euronext *ctx, char *str)
   return ((double)t * 1000.0) + (double)h + ((double)c / 100.0);
 }
 
-static struct input_entry *euronext_read(struct input *in)
+static struct input_n3 *euronext_read(struct input *in)
 {
-  struct input_entry *entry;
+  struct input_n3 *n3;
   struct euronext *ctx = (void*)in;
   
   /* Check for EOF at least */
@@ -65,9 +65,9 @@ static struct input_entry *euronext_read(struct input *in)
   double low = euronext_dbl(ctx, slow);
   double close = euronext_dbl(ctx, sclose);
   
-  if(input_entry_alloc(entry, time, GR_DAY,
+  if(input_n3_alloc(n3, time, GR_DAY,
 		       open, close, high, low, 0.0))
-    return entry;
+    return n3;
   
  err:
   return NULL;

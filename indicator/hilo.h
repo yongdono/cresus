@@ -19,29 +19,29 @@
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
-struct hilo_entry {
+struct hilo_n3 {
   /* As always... */
-  __inherits_from__(struct indicator_entry);
+  __inherits_from__(struct indicator_n3);
   /* Data */
   double high;
   double low;
 };
 
-#define hilo_entry_alloc(entry, parent)					\
-  DEFINE_ALLOC(struct hilo_entry, entry, hilo_entry_init, parent)
-#define hilo_entry_free(entry)			\
-  DEFINE_FREE(entry, hilo_entry_free)
+#define hilo_n3_alloc(n3, parent)					\
+  DEFINE_ALLOC(struct hilo_n3, n3, hilo_n3_init, parent)
+#define hilo_n3_free(n3)			\
+  DEFINE_FREE(n3, hilo_n3_free)
 
-static inline int hilo_entry_init(struct hilo_entry *entry,
+static inline int hilo_n3_init(struct hilo_n3 *n3,
 				 struct indicator *parent)
 {
-  __indicator_entry_init__(entry, parent);
+  __indicator_n3_init__(n3, parent);
   return 0;
 }
 
-static inline void hilo_entry_release(struct hilo_entry *entry)
+static inline void hilo_n3_release(struct hilo_n3 *n3)
 {
-  __indicator_entry_release__(entry);
+  __indicator_n3_release__(n3);
 }
 
 /* Main object */

@@ -9,25 +9,25 @@
 #include "jtrend.h"
 
 static int jtrend_feed(struct indicator *i,
-		       struct timeline_track_entry *e)
+		       struct timeline_track_n3 *e)
 {
   double value, ref_value;
-  struct jtrend_entry *entry;
+  struct jtrend_n3 *n3;
 
   struct jtrend *ctx = (void*)i;
-  struct timeline_track_entry *ref;
+  struct timeline_track_n3 *ref;
   
-  /* Get synced track_entry */
-  if(!(ref = timeline_slice_get_track_entry(e->slice, ctx->ref_track_uid)))
+  /* Get synced track_n3 */
+  if(!(ref = timeline_slice_get_track_n3(e->slice, ctx->ref_track_uid)))
     goto err;
   
   if(roc_compute(&ctx->roc, e, &value) != -1){
     /* FIXME : check return */
     roc_compute(&ctx->roc_ref, ref, &ref_value);
-    /* Alloc jentry & store in candle */
+    /* Alloc jn3 & store in candle */
     value = value - ref_value;
-    if(jtrend_entry_alloc(entry, i, value, ref_value))
-      timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
+    if(jtrend_n3_alloc(n3, i, value, ref_value))
+      timeline_track_n3_add_indicator_n3(e, __indicator_n3__(n3));
 
     return 0;
   }

@@ -32,11 +32,11 @@ static state_t state = STATE_NORMAL;
 
 static int feed(struct engine *e,
 		struct timeline *t,
-		struct timeline_entry *entry)
+		struct timeline_n3 *n3)
 {
   /* Step by step loop */
   static int level_buy = 0, level_sell = 0;
-  struct candle *c = (void*)entry;
+  struct candle *c = (void*)n3;
   
   /* Execute */
   if(candle_is_red(c)){

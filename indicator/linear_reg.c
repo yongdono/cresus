@@ -13,11 +13,11 @@
 #include "linear_reg.h"
 
 static int linear_reg_feed(struct indicator *i,
-			   struct timeline_track_entry *e)
+			   struct timeline_track_n3 *e)
 {  
-  struct linear_reg_entry *entry;
+  struct linear_reg_n3 *n3;
   struct linear_reg *ctx = (void*)i;
-  struct timeline_track_entry *prev;
+  struct timeline_track_n3 *prev;
   
   int n = ctx->period;
   int x = ctx->period;
@@ -40,16 +40,16 @@ static int linear_reg_feed(struct indicator *i,
     xxsum = xxsum + x * x;
   }
   
-  /* Prepare new entry */
+  /* Prepare new n3 */
   a = (n * xysum - xsum * ysum) / (n * xxsum - xsum * xsum);
   b = (ysum - a * xsum) / n;
   value = a * n + b; /* ax + b */
   
-  /* Create new entry */
-  if(linear_reg_entry_alloc(entry, i, value)){
-    timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
-    entry->a = a; /* For debug */
-    entry->b = b; /* For debug */
+  /* Create new n3 */
+  if(linear_reg_n3_alloc(n3, i, value)){
+    timeline_track_n3_add_indicator_n3(e, __indicator_n3__(n3));
+    n3->a = a; /* For debug */
+    n3->b = b; /* For debug */
     return 1;
   }
   

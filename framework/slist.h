@@ -17,8 +17,8 @@
 /* Exports */
 #define __slist_init__(ctx) slist_init(__slist__(ctx))
 #define __slist_release__(ctx) slist_release(__slist__(ctx))
-#define __slist_insert__(ctx, entry)                    \
-  slist_insert(__slist__(ctx), __slist__(entry))
+#define __slist_insert__(ctx, n3)                    \
+  slist_insert(__slist__(ctx), __slist__(n3))
 #define __slist_del__(ctx) slist_del(__slist__(ctx))
 /* Iteration */
 #define __slist_for_each__(head, ctx)                           \
@@ -47,10 +47,10 @@ static inline void slist_release(struct slist *ctx)
   ctx->next = NULL;
 }
 
-static inline void slist_insert(struct slist *ctx, struct slist *entry)
+static inline void slist_insert(struct slist *ctx, struct slist *n3)
 {
-  entry->next = ctx->next;
-  ctx->next = entry;
+  n3->next = ctx->next;
+  ctx->next = n3;
 }
 
 static inline void slist_del(struct slist *ctx)

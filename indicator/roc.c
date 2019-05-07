@@ -11,18 +11,18 @@
 
 #include "roc.h"
 
-static int roc_feed(struct indicator *i, struct timeline_track_entry *e)
+static int roc_feed(struct indicator *i, struct timeline_track_n3 *e)
 {
   struct roc *ctx = (void*)i;
   
   if(!i->is_empty){
     
     double value;
-    struct roc_entry *entry;
+    struct roc_n3 *n3;
     
     if(roc_compute(ctx, e, &value) != -1){
-      if(roc_entry_alloc(entry, i, value)){
-	timeline_track_entry_add_indicator_entry(e, __indicator_entry__(entry));
+      if(roc_n3_alloc(n3, i, value)){
+	timeline_track_n3_add_indicator_n3(e, __indicator_n3__(n3));
 	return 1;
       }
     }
@@ -42,10 +42,10 @@ void roc_reset(struct roc *ctx)
   _roc_reset_(__indicator__(ctx));
 }
 
-int roc_compute(struct roc *ctx, struct timeline_track_entry *e,
+int roc_compute(struct roc *ctx, struct timeline_track_n3 *e,
                 double *rvalue)
 {
-  struct timeline_track_entry *ref = __list_relative__(e, -(ctx->period));
+  struct timeline_track_n3 *ref = __list_relative__(e, -(ctx->period));
   if(ref != NULL){
     /* ROC formula :
      * ((candle[n] / candle[n - period]) - 1) * 100.0

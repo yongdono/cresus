@@ -23,37 +23,37 @@ typedef enum {
 
 /* Entries */
 
-#define zigzag_entry_alloc(ctx, parent, dir, value, count)	\
-  DEFINE_ALLOC(struct zigzag_entry, ctx,			\
-	       zigzag_entry_init, parent, dir, value, count)
-#define zigzag_entry_free(ctx)                  \
-  DEFINE_FREE(ctx, zigzag_entry_release)
+#define zigzag_n3_alloc(ctx, parent, dir, value, count)	\
+  DEFINE_ALLOC(struct zigzag_n3, ctx,			\
+	       zigzag_n3_init, parent, dir, value, count)
+#define zigzag_n3_free(ctx)                  \
+  DEFINE_FREE(ctx, zigzag_n3_release)
 
-struct zigzag_entry {
+struct zigzag_n3 {
   /* As always */
-  __inherits_from__(struct indicator_entry);
+  __inherits_from__(struct indicator_n3);
   /* Self */
   double value;
   zigzag_dir_t dir;
   int n_since_last_ref;
-  struct timeline_track_entry *ref;
+  struct timeline_track_n3 *ref;
 };
 
-static inline int zigzag_entry_init(struct zigzag_entry *ctx,
+static inline int zigzag_n3_init(struct zigzag_n3 *ctx,
 				    struct indicator *parent,
 				    zigzag_dir_t dir, double value,
 				    int count)
 {
-  __indicator_entry_init__(ctx, parent);
+  __indicator_n3_init__(ctx, parent);
   ctx->dir = dir;
   ctx->value = value;
   ctx->n_since_last_ref = count;
   return 0;
 }
 
-static inline void zigzag_entry_release(struct zigzag_entry *ctx)
+static inline void zigzag_n3_release(struct zigzag_n3 *ctx)
 {
-  __indicator_entry_release__(ctx);
+  __indicator_n3_release__(ctx);
 }
 
 /* Indicator */
@@ -68,15 +68,15 @@ struct zigzag {
   __inherits_from__(struct indicator);
   /* Params */
   double threshold;
-  input_entry_value_t value;
+  input_n3_value_t value;
   /* Internals */
   zigzag_dir_t dir;
   /* Some other stuff */
   int ref_count; /* Candles since base ref */
-  struct timeline_track_entry *ref, *base_ref;
+  struct timeline_track_n3 *ref, *base_ref;
 };
 
-int zigzag_init(struct zigzag *ctx, unique_id_t uid, double threshold, input_entry_value_t value);
+int zigzag_init(struct zigzag *ctx, unique_id_t uid, double threshold, input_n3_value_t value);
 void zigzag_release(struct zigzag *ctx);
 
 #endif

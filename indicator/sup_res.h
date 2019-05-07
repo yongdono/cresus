@@ -7,25 +7,25 @@
 #include "framework/alloc.h"
 #include "framework/indicator.h"
 
-struct sup_res_entry {
+struct sup_res_n3 {
   /* As always */
-  __inherits_from__(struct indicator_entry);
+  __inherits_from__(struct indicator_n3);
   /* Self */
   double value;
 };
 
-static inline int sup_res_entry_init(struct sup_res_entry *entry,
+static inline int sup_res_n3_init(struct sup_res_n3 *n3,
 				     struct indicator *parent,
 				     double value)
 {
-  __indicator_entry_init__(entry, parent);
-  entry->value = value;
+  __indicator_n3_init__(n3, parent);
+  n3->value = value;
   return 0;
 }
 
-static inline void sup_res_entry_release(struct sup_res_entry *entry)
+static inline void sup_res_n3_release(struct sup_res_n3 *n3)
 {
-  __indicator_entry_release__(entry);
+  __indicator_n3_release__(n3);
 }
 
 /* Indicator */

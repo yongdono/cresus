@@ -12,7 +12,7 @@
 #include "inwrap.h"
 #include "framework/verbose.h"
 
-static struct input_entry *inwrap_read(struct input *in)
+static struct input_n3 *inwrap_read(struct input *in)
 {
   struct inwrap *ctx = (void*)(in);
   switch(ctx->type){
