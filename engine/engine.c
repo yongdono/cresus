@@ -30,8 +30,8 @@ int engine_init(struct engine *ctx, struct timeline *t)
   ctx->max_drawdown = 0;
   ctx->transaction_fee = 0;
   /* Time boundaries */
-  ctx->start_time = TIME_MIN;
-  ctx->end_time = TIME_MAX;
+  ctx->start_time = TIME64_MIN;
+  ctx->end_time = TIME64_MAX;
   /* Misc */
   ctx->quiet = 0;
   /* Csv output */
@@ -104,7 +104,7 @@ static void engine_run_csv_output(struct engine *ctx,
                                   struct timeline_slice *slice)
 {
 #if 0
-  if(TIMECMP(slice->time, ctx->start_time, GR_DAY) >= 0){
+  if(TIME64CMP(slice->time, ctx->start_time, GR_DAY) >= 0){
     struct timeline_slice_entry *entry;
     __slist_for_each__(slice->slist_entries, entry){
       struct timeline_track_entry *c = entry->track_entry;
@@ -240,7 +240,7 @@ void engine_run(struct engine *ctx, engine_feed_ptr feed)
   __list_for_each__(&ctx->timeline->by_slice, slice){
     
     /* We MUST stop at end_time */
-    if(TIMECMP(slice->time, ctx->end_time, GR_DAY) > 0)
+    if(TIME64CMP(slice->time, ctx->end_time, GR_DAY) > 0)
       break;
 
     /* Positions management */
@@ -281,7 +281,7 @@ int engine_set_order(struct engine *ctx, position_t type,
   
   if(timeline_entry_current(ctx->timeline, &entry) != -1){
     /* Filter orders if needed */
-    if(TIMECMP(entry->time, ctx->start_time, GR_DAY) < 0)
+    if(TIME64CMP(entry->time, ctx->start_time, GR_DAY) < 0)
       goto err;
     
     if(position_alloc(p, type, req, value, cert)){

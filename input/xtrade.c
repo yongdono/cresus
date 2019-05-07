@@ -15,14 +15,14 @@
 
 #include "xtrade.h"
 #include "framework/verbose.h"
-#include "framework/time_info.h"
+#include "framework/time64.h"
 
-static time_info_t xtrade_time(struct xtrade *ctx,
+static time64_t xtrade_time(struct xtrade *ctx,
 			       const char *str)
 {
   int y, m, d;
   sscanf(str, "%d-%d-%d", &y, &m, &d);
-  return TIME_INIT(y, m, d, 0, 0, 0, 0);
+  return TIME64_INIT(y, m, d, 0, 0, 0, 0);
 }
 
 static struct input_entry *xtrade_read(struct input *in)
@@ -41,7 +41,7 @@ static struct input_entry *xtrade_read(struct input *in)
   double low = o->u.object.values[3].value->u.dbl;
   double high = o->u.object.values[4].value->u.dbl;
   
-  time_info_t time = xtrade_time(ctx, str);
+  time64_t time = xtrade_time(ctx, str);
   if(input_entry_alloc(entry, time, GR_DAY,
 		       open, close, high, low, 0.0))
     return entry;

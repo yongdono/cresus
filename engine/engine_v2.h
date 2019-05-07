@@ -10,15 +10,15 @@
 #define ENGINE_V2_H
 
 #include "framework/timeline.h"
-#include "framework/time_info.h"
+#include "framework/time64.h"
 
 #include "engine/common_opt.h"
 
 struct engine_v2 {
   struct timeline *timeline;
   /* Positions filter */
-  time_info_t start_time;
-  time_info_t end_time;
+  time64_t start_time;
+  time64_t end_time;
   /* Stats */
   double transaction_fee; /* Cost per transaction */
   /* CSV graph output */

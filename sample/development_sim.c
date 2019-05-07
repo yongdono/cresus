@@ -41,7 +41,7 @@ static int trend_set(trend_t trend) {
 
 
 static struct timeline *
-timeline_create(const char *filename, const char *name, time_info_t min,
+timeline_create(const char *filename, const char *name, time64_t min,
 		list_head_t(struct timeline_entry) *ref_index) {
 
   struct yahoo *yahoo;
@@ -51,7 +51,7 @@ timeline_create(const char *filename, const char *name, time_info_t min,
   struct jtrend *jtrend;
 
   /* TODO : Check return values */
-  yahoo_alloc(yahoo, filename, START_TIME, TIME_MAX); /* load everything */
+  yahoo_alloc(yahoo, filename, START_TIME, TIME64_MAX); /* load everything */
   timeline_alloc(timeline, name, __input__(yahoo));
   /* Indicators alloc */
   mobile_alloc(mobile, EMA, MOBILE_EMA, 30, CANDLE_CLOSE);
@@ -197,7 +197,7 @@ static int sim_feed(struct sim *s, struct cluster *c) {
 /* more final functions */
 
 static void add_timeline_to_cluster(struct cluster *c, const char *path,
-				    const char *name, time_info_t time) {
+				    const char *name, time64_t time) {
 
   struct timeline *sub;
   sub = timeline_create(path, name, time, &__timeline__(c)->list_entry);
@@ -226,10 +226,10 @@ int main(int argc, char **argv) {
   
   /* 01/01/2000 */
   struct yahoo *yahoo;
-  time_info_t time = START_TIME;
+  time64_t time = START_TIME;
   /* Load ref data */
-  yahoo_alloc(yahoo, "data/%5EFCHI.yahoo", START_TIME, TIME_MAX);
-  cluster_init(&cluster, "my cluster", __input__(yahoo), time, TIME_MAX);
+  yahoo_alloc(yahoo, "data/%5EFCHI.yahoo", START_TIME, TIME64_MAX);
+  cluster_init(&cluster, "my cluster", __input__(yahoo), time, TIME64_MAX);
   /* Init general roc indicator */
   roc_init(&roc, ROC, period, average);
   timeline_add_indicator(__timeline__(&cluster), __indicator__(&roc));

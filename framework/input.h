@@ -12,7 +12,7 @@
 #include <limits.h>
 
 #include "framework/alloc.h"
-#include "framework/time_info.h"
+#include "framework/time64.h"
 
 typedef enum {
   OPEN = 0, CLOSE = 1, HIGH = 2, LOW = 3, VOLUME = 4
@@ -44,13 +44,13 @@ typedef enum {
 
 struct input_entry {
   /* Time & data */
-  __implements__(time_info_interface);
+  __implements__(time64_interface);
   __implements__(input_entry_interface);
 };
 
 static inline int input_entry_init(struct input_entry *ctx,
-				   time_info_t time,
-				   time_gr_t g,
+				   time64_t time,
+				   time64_gr_t g,
 				   double open, double close,
 				   double high, double low,
 				   double volume)

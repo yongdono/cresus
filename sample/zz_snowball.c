@@ -84,14 +84,14 @@ static int feed(struct engine *e,
 }
 
 static struct timeline *
-timeline_create(const char *filename, time_info_t min)
+timeline_create(const char *filename, time64_t min)
 {
   struct yahoo *yahoo;
   struct zigzag *zigzag;
   struct timeline *timeline;
   
   /* TODO : Check return values */
-  yahoo_alloc(yahoo, filename, min, TIME_MAX); /* load everything */
+  yahoo_alloc(yahoo, filename, min, TIME64_MAX); /* load everything */
   timeline_alloc(timeline, "zz", __input__(yahoo));
   /* Indicators alloc */
   zigzag_alloc(zigzag, ZIGZAG, thres, CANDLE_CLOSE);

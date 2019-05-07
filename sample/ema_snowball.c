@@ -43,8 +43,8 @@ static int snowball_feed(struct engine *e,
   /* TODO : better management of this ? */
   struct candle *c = __timeline_entry_self__(entry);
   /* Every month we recompute the shares */
-  if(TIME_GET_MONTH(entry->time) != last_month){
-    last_month = TIME_GET_MONTH(entry->time);
+  if(TIME64_GET_MONTH(entry->time) != last_month){
+    last_month = TIME64_GET_MONTH(entry->time);
     e->amount += 500.0; /* Add 500€ to capital every month */
     amount += 500.0;
     share = e->amount / max; //e->amount / SIGMA(max);
@@ -72,14 +72,14 @@ static int snowball_feed(struct engine *e,
 }
 
 static struct timeline *
-timeline_create(const char *filename, const char *name, time_info_t min) {
+timeline_create(const char *filename, const char *name, time64_t min) {
   
   struct yahoo *yahoo;
   struct mobile *mobile;
   struct timeline *timeline;
   
   /* TODO : Check return values */
-  yahoo_alloc(yahoo, filename, min, TIME_MAX); /* load everything */
+  yahoo_alloc(yahoo, filename, min, TIME64_MAX); /* load everything */
   timeline_alloc(timeline, name, __input__(yahoo));
   /* Indicators alloc */
   mobile_alloc(mobile, EMA, MOBILE_EMA, average, CANDLE_CLOSE);

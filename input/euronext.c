@@ -15,14 +15,14 @@
 
 #include "euronext.h"
 #include "framework/verbose.h"
-#include "framework/time_info.h"
+#include "framework/time64.h"
 
-static time_info_t euronext_time(struct euronext *ctx,
+static time64_t euronext_time(struct euronext *ctx,
 				 const char *str)
 {
   int y, m, d;
   sscanf(str, "%d/%d/%d", &d, &m, &y);
-  return TIME_INIT(y, m, d, 0, 0, 0, 0);
+  return TIME64_INIT(y, m, d, 0, 0, 0, 0);
 }
 
 static double euronext_dbl(struct euronext *ctx, char *str)
@@ -59,7 +59,7 @@ static struct input_entry *euronext_read(struct input *in)
   char *slow = o->u.object.values[5].value->u.string.ptr;
   char *sclose = o->u.object.values[6].value->u.string.ptr;
   
-  time_info_t time = euronext_time(ctx, date);
+  time64_t time = euronext_time(ctx, date);
   double open = euronext_dbl(ctx, sopen);
   double high = euronext_dbl(ctx, shigh);
   double low = euronext_dbl(ctx, slow);

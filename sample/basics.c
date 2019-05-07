@@ -80,7 +80,7 @@ static struct timeline *timeline_create(const char *filename, const char *type)
   struct timeline *timeline;
   inwrap_t t = inwrap_t_from_str(type);
   
-  if(inwrap_alloc(inwrap, filename, t, TIME_MIN, TIME_MAX)){
+  if(inwrap_alloc(inwrap, filename, t, TIME64_MIN, TIME64_MAX)){
     if(timeline_alloc(timeline, "basics", __input__(inwrap))){
       struct mobile *m;
       /* Add a series of EMAs */

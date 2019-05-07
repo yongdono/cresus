@@ -44,7 +44,7 @@ static struct input_entry *mdgms_read(struct input *in)
   /* Increment */
   ctx->i++;
   
-  time_info_t time = time_info_epoch(t);
+  time64_t time = time64_epoch(t);
   if(input_entry_alloc(entry, time, GR_DAY,
 		       open, close, high, low, vol))
     return entry;

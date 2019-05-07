@@ -26,7 +26,7 @@ const char *timeline_track_entry_str_r(struct timeline_track_entry *ctx,
                                        char *buf)
 {
   sprintf(buf, "%s " input_entry_interface_fmt,
-          time_info2str(ctx->slice->time, GR_DAY), /* ! */
+          time64_str(ctx->slice->time, GR_DAY), /* ! */
           input_entry_interface_args(ctx));
   
   return buf;
@@ -53,13 +53,13 @@ timeline_slice_get_track_entry(struct timeline_slice *ctx,
  * Timeline object
  */
 static struct timeline_slice *
-timeline_get_slice(struct timeline *ctx, time_info_t time)
+timeline_get_slice(struct timeline *ctx, time64_t time)
 {
   struct timeline_slice *ptr;
   
   /* TODO : Remember last position ? */
   __list_for_each__(&ctx->by_slice, ptr){
-    time_info_t cmp = TIMECMP(ptr->time, time, GR_DAY); /* ! */
+    time64_t cmp = TIME64CMP(ptr->time, time, GR_DAY); /* ! */
     /* Slice already exists, we go out */
     if(!cmp){
       PR_DBG("timeline.c: slice already exists\n");
@@ -78,7 +78,7 @@ timeline_get_slice(struct timeline *ctx, time_info_t time)
   /* Slice doesn't exist, we create it */
   timeline_slice_alloc(ptr, time);
   __list_add_tail__(&ctx->by_slice, ptr);
-  PR_DBG("timeline.c: new slice at %s\n", time_info2str(time, GR_DAY));
+  PR_DBG("timeline.c: new slice at %s\n", time64_str(time, GR_DAY));
   
  out:
   return ptr;

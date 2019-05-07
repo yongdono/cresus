@@ -17,7 +17,7 @@ yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
 {
   struct input_entry *entry;
 
-  time_info_t time = 0;
+  time64_t time = 0;
   int year, month, day;
   double open = 0.0, close = 0.0;
   double high = 0.0, low = 0.0;
@@ -46,13 +46,13 @@ yahoo_v7_parse_entry(struct yahoo_v7 *ctx, char *str)
   sscanf(svol, "%lf", &volume);
 
   /* Dummy values for control */
-  TIME_SET_SECOND(time, 1);
-  TIME_SET_MINUTE(time, 30);
-  TIME_SET_HOUR(time, 17);
+  TIME64_SET_SECOND(time, 1);
+  TIME64_SET_MINUTE(time, 30);
+  TIME64_SET_HOUR(time, 17);
   
-  TIME_SET_DAY(time, day);
-  TIME_SET_MONTH(time, month);
-  TIME_SET_YEAR(time, year);
+  TIME64_SET_DAY(time, day);
+  TIME64_SET_MONTH(time, month);
+  TIME64_SET_YEAR(time, year);
 
   if(open != 0.0 && close != 0.0 && high != 0.0 && low != 0.0)
     if(input_entry_alloc(entry, time, GR_DAY,
@@ -74,7 +74,7 @@ static struct input_entry *yahoo_v7_read(struct input *in)
     /* Parse entry */
     if((entry = yahoo_v7_parse_entry(ctx, buf))){
       PR_DBG("%s %s loaded\n", ctx->filename,
-	     time_info2str_r(entry->time, entry->g, buf));
+	     time64_str_r(entry->time, entry->g, buf));
       /* We got a new candle */      
       return entry;
     }

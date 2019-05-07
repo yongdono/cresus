@@ -13,8 +13,8 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
   /* Timeline */
   ctx->timeline = t;
   /* Time */
-  ctx->start_time = TIME_MIN;
-  ctx->end_time = TIME_MAX;
+  ctx->start_time = TIME64_MIN;
+  ctx->end_time = TIME64_MAX;
   /* Fees */
   ctx->transaction_fee = 0;
   /* Output */
@@ -42,7 +42,7 @@ void engine_v2_run(struct engine_v2 *ctx, engine_v2_feed_ptr feed)
   struct timeline_slice *slice;
   __list_for_each__(&ctx->timeline->by_slice, slice){
     /* We MUST stop at end_time */
-    if(TIMECMP(slice->time, ctx->end_time, GR_DAY) > 0)
+    if(TIME64CMP(slice->time, ctx->end_time, GR_DAY) > 0)
       break;
 
     /* Run custom routines */

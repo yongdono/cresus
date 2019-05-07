@@ -63,7 +63,7 @@ static struct timeline *timeline_create(const char *filename)
   struct yahoo *yahoo;
   struct timeline *timeline;
   
-  if(yahoo_alloc(yahoo, filename, TIME_MIN, TIME_MAX)){
+  if(yahoo_alloc(yahoo, filename, TIME64_MIN, TIME64_MAX)){
     if(timeline_alloc(timeline, "roc", __input__(yahoo))){
       struct roc *roc;
       /* Add a ROC indicator */

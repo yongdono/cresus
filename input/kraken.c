@@ -15,7 +15,7 @@
 
 #include "kraken.h"
 #include "framework/verbose.h"
-#include "framework/time_info.h"
+#include "framework/time64.h"
 
 static double kraken_dbl(struct kraken *ctx, char *str)
 {
@@ -45,7 +45,7 @@ static struct input_entry *kraken_read(struct input *in)
   char *sclose = o->u.array.values[4]->u.string.ptr;
   char *svol = o->u.array.values[6]->u.string.ptr;
   
-  time_info_t time = time_info_epoch(date);
+  time64_t time = time64_epoch(date);
   double open = kraken_dbl(ctx, sopen);
   double high = kraken_dbl(ctx, shigh);
   double low = kraken_dbl(ctx, slow);

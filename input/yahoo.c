@@ -32,7 +32,7 @@ static int yahoo_load_entry(struct yahoo *ctx,
   char *str = buf;
   struct input_entry *entry = NULL;
   
-  time_info_t time = 0;
+  time64_t time = 0;
   int year, month, day;
   double open, close, high, low, volume;
   
@@ -62,13 +62,13 @@ static int yahoo_load_entry(struct yahoo *ctx,
   sscanf(svol, "%lf", &volume);
 
   /* Dummy values for control */
-  TIME_SET_SECOND(time, 1);
-  TIME_SET_MINUTE(time, 30);
-  TIME_SET_HOUR(time, 17);
+  TIME64_SET_SECOND(time, 1);
+  TIME64_SET_MINUTE(time, 30);
+  TIME64_SET_HOUR(time, 17);
   
-  TIME_SET_DAY(time, day);
-  TIME_SET_MONTH(time, month);
-  TIME_SET_YEAR(time, year);
+  TIME64_SET_DAY(time, day);
+  TIME64_SET_MONTH(time, month);
+  TIME64_SET_YEAR(time, year);
   
   /* Create candle (at last !) */
   if(input_entry_alloc(entry, time, GR_DAY,
@@ -76,7 +76,7 @@ static int yahoo_load_entry(struct yahoo *ctx,
     /* Candle is allocated & init */
     *ret = entry;
     PR_DBG("%s %.2d/%.2d/%.4d loaded\n", ctx->filename,
-           TIME_GET_MONTH(time), TIME_GET_DAY(time), TIME_GET_YEAR(time));
+           TIME64_GET_MONTH(time), TIME64_GET_DAY(time), TIME64_GET_YEAR(time));
     
     return 1;
   }

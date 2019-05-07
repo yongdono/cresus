@@ -142,13 +142,13 @@ timeline_slice_entry_init(struct timeline_slice_entry *ctx,
 struct timeline_slice {
   __inherits_from__(struct list);
   /* It's a time slice */
-  time_info_t time; /* No granularity required ? */
+  time64_t time; /* No granularity required ? */
   /* Containing one or more timeline_slices_entries */
   slist_head_t(struct timeline_slice_entry) slist_slice_entries;
 };
 
 static inline int
-timeline_slice_init(struct timeline_slice *ctx, time_info_t time)
+timeline_slice_init(struct timeline_slice *ctx, time64_t time)
 {
   __list_init__(ctx); /* super() */
   ctx->time = time;

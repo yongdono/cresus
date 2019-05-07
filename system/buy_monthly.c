@@ -31,6 +31,19 @@ static int occurrence = 1;
 #define UID_TRACK0        0
 #define UID_TRACK0_LOWEST 1
 
+static int feed2(struct engine_v2 *engine,
+                 struct timeline_slice *slice,
+                 struct timeline_slice_entry *slice_entry)
+{
+  
+}
+
+static int feed1(struct engine_v2 *engine,
+                 struct timeline_slice *slice,
+                 struct timeline_slice_entry *slice_entry)
+{
+}
+
 static int feed(struct engine_v2 *engine,
 		struct timeline_slice *slice)
 {
@@ -38,9 +51,8 @@ static int feed(struct engine_v2 *engine,
   static int last_month = -1;
 
   /* Execute */
-  int month = TIME_GET_MONTH(slice->time);
+  int month = TIME64_GET_MONTH(slice->time);
   if(month != last_month && !(month % occurrence)){
-    //engine_set_order(engine, BUY, amount, CASH, NULL);
     struct timeline_slice_entry *entry;
     __slist_for_each__(&slice->slist_slice_entries, entry){
       struct lowest_entry *lowest_entry = (struct lowest_entry*)

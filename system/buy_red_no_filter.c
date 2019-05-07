@@ -28,10 +28,10 @@ static int feed(struct engine *e,
 {
   /* Step by step loop */
   static int n = 0;
-  time_info_t time = VAL_YEAR(year_min);
+  time64_t time = VAL_YEAR(year_min);
   struct candle *c = __timeline_entry_self__(entry);
   
-  if(TIMECMP(entry->time, time, GR_YEAR) < 0)
+  if(TIME64CMP(entry->time, time, GR_YEAR) < 0)
     goto out;
   
   /* Execute */
@@ -52,7 +52,7 @@ static struct timeline *timeline_create(const char *filename, const char *type)
   struct timeline *timeline;
   inwrap_t t = inwrap_t_from_str(type);
   
-  if(inwrap_alloc(inwrap, filename, t, TIME_MIN, TIME_MAX)){
+  if(inwrap_alloc(inwrap, filename, t, TIME64_MIN, TIME64_MAX)){
     if(timeline_alloc(timeline, "buy_red_no_filter", __input__(inwrap))){
       /* Ok */
       return timeline;
