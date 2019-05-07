@@ -103,7 +103,7 @@ timeline_track_n3_get_indicator_n3(struct timeline_track_n3 *ctx,
   for(struct slist *__ptr__ =                                           \
         __slist__((ctx)->slist_indicator_n3s.next);                     \
       __ptr__ != NULL &&                                                \
-        (n3 = __indicator_n3__(__ptr__));                               \
+        (n3 = (struct indicator_n3*)(__ptr__));                         \
       __ptr__ = __ptr__->next)
 
 const char *timeline_track_n3_str(struct timeline_track_n3 *ctx);

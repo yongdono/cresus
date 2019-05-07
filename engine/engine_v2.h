@@ -26,12 +26,22 @@ struct engine_v2 {
 };
 
 /* External pointer to plugin */
-typedef int (*engine_v2_feed_ptr)(struct engine_v2*, struct timeline_slice*);
+typedef void (*engine_v2_feed_slice_ptr)(struct engine_v2*, struct timeline_slice*);
+typedef void (*engine_v2_feed_track_n3_ptr)(struct engine_v2*, struct timeline_slice*, struct timeline_track_n3*);
+typedef void (*engine_v2_feed_indicator_n3_ptr)(struct engine_v2*, struct timeline_track_n3*, struct indicator_n3*);
+typedef void (*engine_v2_post_slice_ptr)(struct engine_v2*, struct timeline_slice*);
+
+struct engine_v2_interface {
+  engine_v2_feed_slice_ptr feed_slice;
+  engine_v2_feed_track_n3_ptr feed_track_n3;
+  engine_v2_feed_indicator_n3_ptr feed_indicator_n3;
+  engine_v2_post_slice_ptr post_slice;
+};
 
 int engine_v2_init(struct engine_v2 *ctx, struct timeline *t);
 void engine_v2_release(struct engine_v2 *ctx);
 
 int engine_v2_set_common_opt(struct engine_v2 *ctx, struct common_opt *opt);
-void engine_v2_run(struct engine_v2 *ctx, engine_v2_feed_ptr feed);
+void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i);
 
 #endif

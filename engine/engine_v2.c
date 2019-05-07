@@ -37,15 +37,37 @@ int engine_v2_set_common_opt(struct engine_v2 *ctx, struct common_opt *opt)
   return 0;
 }
 
-void engine_v2_run(struct engine_v2 *ctx, engine_v2_feed_ptr feed)
+void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i)
 {
   struct timeline_slice *slice;
+  struct indicator_n3 *indicator_n3;
+  struct timeline_track_n3 *track_n3;
+
+  /* Run all slices */
   __list_for_each__(&ctx->timeline->by_slice, slice){
+    
     /* We MUST stop at end_time */
     if(TIME64CMP(slice->time, ctx->end_time, GR_DAY) > 0)
       break;
-
-    /* Run custom routines */
-    feed(ctx, slice);
+    
+    /* Run "new" slice */
+    if(i->feed_slice)
+      i->feed_slice(ctx, slice);
+    
+    /* Run "new" track */
+    timeline_slice_for_each_track_n3(slice, track_n3){
+      if(i->feed_track_n3)
+        i->feed_track_n3(ctx, slice, track_n3);
+      
+      /* Run "new" indicators */
+      timeline_track_n3_for_each_indicator_n3(track_n3, indicator_n3){
+        if(i->feed_indicator_n3)
+          i->feed_indicator_n3(ctx, track_n3, indicator_n3);
+      }
+    }
+    
+    /* Post-processing */
+    if(i->post_slice)
+      i->post_slice(ctx, slice);
   }
 }

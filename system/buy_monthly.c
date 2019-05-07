@@ -33,12 +33,12 @@ static int last_month = -1;
 #define UID_TRACK0_LOWEST 1
 
 /* For each indicator */
-static void feed2(struct engine_v2 *engine,
-                  struct timeline_track_n3 *track_n3,
-                  struct indicator_n3 *indicator_n3)
+static void feed_indicator_n3(struct engine_v2 *engine,
+                              struct timeline_track_n3 *track_n3,
+                              struct indicator_n3 *indicator_n3)
 {
   struct lowest_n3 *lowest_n3 = (void*)indicator_n3;
-  unique_id_t uid = __slist_by_uid__(indicator_n3)->uid;
+  unique_id_t uid = __slist_by_uid__(indicator_n3)->uid; /* FIXME : cast shouldn't exist */
   
   switch(uid){
   case UID_TRACK0_LOWEST:
@@ -48,40 +48,33 @@ static void feed2(struct engine_v2 *engine,
     break;
     
   default:
-    PR_ERR("feed2: unknown indicator uid %d\n", uid);
+    PR_ERR("feed_ndicator_n3: unknown indicator uid %d\n", uid);
     break;
   }
 }
 
 /* For each track */
-static void feed1(struct engine_v2 *engine,
-                  struct timeline_slice *slice,
-                  struct timeline_track_n3 *track_n3)
+static void feed_track_n3(struct engine_v2 *engine,
+                          struct timeline_slice *slice,
+                          struct timeline_track_n3 *track_n3)
 {
-  struct indicator_n3 *indicator_n3;
-  timeline_track_n3_for_each_indicator_n3(track_n3, indicator_n3)
-    feed2(engine, track_n3, indicator_n3);
-
-  /* For each track */
   int month = TIME64_GET_MONTH(slice->time);
-  if(month != last_month && !(month % occurrence)){
-    /* We can't get lowest here :( */
+  if(month != last_month && !(month % occurrence))
     PR_WARN("%s - BUY %d\n", timeline_track_n3_str(track_n3), amount);
-  }
 }
 
-/* For each slice */
-static int feed(struct engine_v2 *engine,
-		struct timeline_slice *slice)
-{
-  /* Execute by stages */
-  struct timeline_track_n3 *track_n3;
-  timeline_slice_for_each_track_n3(slice, track_n3)
-    feed1(engine, slice, track_n3);
-  
+/* After each slice */
+static void post_slice(struct engine_v2 *engine,
+                       struct timeline_slice *slice)
+{  
   last_month = TIME64_GET_MONTH(slice->time);
-  return 0;
 }
+
+static struct engine_v2_interface itf = {
+  .feed_track_n3 = feed_track_n3,
+  .feed_indicator_n3 = feed_indicator_n3,
+  .post_slice = post_slice,
+};
 
 static int timeline_create(struct timeline *t,
                            const char *filename,
@@ -145,7 +138,7 @@ int main(int argc, char **argv)
     engine_v2_init(&engine, &timeline);
     engine_v2_set_common_opt(&engine, &opt);
     /* Run */
-    engine_v2_run(&engine, feed);
+    engine_v2_run(&engine, &itf);
     
     /* Print some info */
     //engine_display_stats(&engine);
