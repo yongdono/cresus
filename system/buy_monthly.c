@@ -31,40 +31,58 @@ static int occurrence = 1;
 #define UID_TRACK0        0
 #define UID_TRACK0_LOWEST 1
 
-static int feed2(struct engine_v2 *engine,
-                 struct timeline_slice *slice,
-                 struct timeline_slice_n3 *slice_n3)
+/* For each indicator */
+static void feed2(struct engine_v2 *engine,
+                  struct timeline_track_n3 *track_n3,
+                  struct indicator_n3 *indicator_n3)
 {
+  struct lowest_n3 *lowest_n3 = (void*)indicator_n3;
+  unique_id_t uid = __slist_by_uid__(indicator_n3)->uid;
   
+  switch(uid){
+  case UID_TRACK0_LOWEST:
+    PR_INFO("feed2: %s (lowest %.2lf)\n",
+            timeline_track_n3_str(track_n3),
+            lowest_n3->value);
+    break;
+    
+  default:
+    PR_ERR("feed2: unknown indicator uid %d\n", uid);
+    break;
+  }
 }
 
-static int feed1(struct engine_v2 *engine,
-                 struct timeline_slice *slice,
-                 struct timeline_slice_n3 *slice_n3)
-{
-}
-
-static int feed(struct engine_v2 *engine,
-		struct timeline_slice *slice)
+/* For each track */
+static void feed1(struct engine_v2 *engine,
+                  struct timeline_slice *slice,
+                  struct timeline_track_n3 *track_n3)
 {
   /* Step by step loop */
   static int last_month = -1;
+  
+  struct indicator_n3 *indicator_n3;
+  timeline_track_n3_for_each_indicator_n3(track_n3, indicator_n3)
+    feed2(engine, track_n3, indicator_n3);
 
-  /* Execute */
+  /* For each track */
   int month = TIME64_GET_MONTH(slice->time);
   if(month != last_month && !(month % occurrence)){
-    struct timeline_track_n3 *track_n3;
-    timeline_slice_for_each_track_n3(slice, track_n3){
-      struct lowest_n3 *lowest_n3 = (struct lowest_n3*)
-	timeline_track_n3_get_indicator_n3(track_n3, UID_TRACK0_LOWEST);
-      /* Display message */
-      PR_WARN("%s - BUY %d (lowest %.2lf)\n",
-              timeline_track_n3_str(track_n3),
-              amount, lowest_n3->value);
-    }
+    /* We can't get lowest here :( */
+    PR_WARN("%s - BUY %d\n", timeline_track_n3_str(track_n3), amount);
   }
   
   last_month = month;
+}
+
+/* For each slice */
+static int feed(struct engine_v2 *engine,
+		struct timeline_slice *slice)
+{
+  /* Execute by stages */
+  struct timeline_track_n3 *track_n3;
+  timeline_slice_for_each_track_n3(slice, track_n3)
+    feed1(engine, slice, track_n3);
+  
   return 0;
 }
 

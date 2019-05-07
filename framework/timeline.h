@@ -86,7 +86,7 @@ static inline void
 timeline_track_n3_add_indicator_n3(struct timeline_track_n3 *ctx,
                                    struct indicator_n3 *indicator_n3)
 {
-  slist_insert(&ctx->slist_indicator_n3s, __slist__(indicator_n3));
+  __slist_insert__(&ctx->slist_indicator_n3s, indicator_n3);
 }
 
 static inline struct indicator_n3 *
@@ -94,9 +94,15 @@ timeline_track_n3_get_indicator_n3(struct timeline_track_n3 *ctx,
                                    unique_id_t indicator_uid)
 {
   return (struct indicator_n3*)
-    __slist_by_uid_find__(&ctx->slist_indicator_n3s,
-			  indicator_uid);
+    __slist_by_uid_find__(&ctx->slist_indicator_n3s, indicator_uid);
 }
+
+#define timeline_track_n3_for_each_indicator_n3(ctx, n3)                \
+  for(struct slist *__ptr__ =                                           \
+        __slist__((ctx)->slist_indicator_n3s.next);                     \
+      __ptr__ != NULL &&                                                \
+        (n3 = __indicator_n3__(__ptr__));                               \
+      __ptr__ = __ptr__->next)
 
 const char *timeline_track_n3_str(struct timeline_track_n3 *ctx);
 const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx, char *buf);
@@ -122,9 +128,8 @@ timeline_track_init(struct timeline_track *ctx, unique_id_t uid)
   return uid;
 }
 
-#define timeline_track_alloc(ctx, track_id)			\
-  DEFINE_ALLOC(struct timeline_track, ctx, timeline_track_init, \
-	       track_id)
+#define timeline_track_alloc(ctx, uid)                                  \
+  DEFINE_ALLOC(struct timeline_track, ctx, timeline_track_init, uid)
 
 static inline void
 timeline_track_add_indicator(struct timeline_track *ctx,
@@ -137,7 +142,7 @@ timeline_track_add_indicator(struct timeline_track *ctx,
  * Access by slice / indice / time
  */
 
-/* slice_n3 shloud never be accessed directly by user */
+/* /!\ slice_n3 should never be accessed directly by user /!\ */
 
 struct timeline_slice_n3 {
   __inherits_from__(struct slist);

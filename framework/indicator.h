@@ -71,10 +71,11 @@ void indicator_reset(struct indicator *ctx);
 
 struct indicator_n3 {
   __inherits_from__(struct slist_by_uid); /* Is that all ? */
+  /* TODO: Might be a godd idea to add a timeline_track_entry reference here */
 };
 
 static inline int indicator_n3_init(struct indicator_n3 *ctx,
-				       struct indicator *parent)
+                                    struct indicator *parent)
 {
   __slist_by_uid_init__(ctx, __slist_by_uid__(parent)->uid);
   return 0; /* alloc rulz */
