@@ -53,14 +53,13 @@ static int feed(struct engine_v2 *engine,
   /* Execute */
   int month = TIME64_GET_MONTH(slice->time);
   if(month != last_month && !(month % occurrence)){
-    struct timeline_slice_n3 *slice_n3;
-    __slist_for_each__(&slice->slist_slice_n3s, slice_n3){
+    struct timeline_track_n3 *track_n3;
+    timeline_slice_for_each_track_n3(slice, track_n3){
       struct lowest_n3 *lowest_n3 = (struct lowest_n3*)
-	timeline_track_n3_get_indicator_n3(slice_n3->track_n3,
-                                           UID_TRACK0_LOWEST);
-      
+	timeline_track_n3_get_indicator_n3(track_n3, UID_TRACK0_LOWEST);
+      /* Display message */
       PR_WARN("%s - BUY %d (lowest %.2lf)\n",
-              timeline_track_n3_str(slice_n3->track_n3),
+              timeline_track_n3_str(track_n3),
               amount, lowest_n3->value);
     }
   }

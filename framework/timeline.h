@@ -27,8 +27,8 @@
 
 /* Required for compilation */
 struct indicator;
-struct timeline_slice;
 struct indicator_n3;
+struct timeline_slice;
 
 /*
  * Data hierarchy
@@ -180,6 +180,11 @@ timeline_slice_init(struct timeline_slice *ctx, time64_t time)
 
 struct timeline_track_n3*
 timeline_slice_get_track_n3(struct timeline_slice *ctx, unique_id_t uid);
+#define timeline_slice_for_each_track_n3(ctx, n3)                       \
+  for(struct slist *__ptr__ = __slist__((ctx)->slist_slice_n3s.next);   \
+      __ptr__ != NULL &&                                                \
+        (n3 = ((struct timeline_slice_n3*)(__ptr__))->track_n3);        \
+      __ptr__ = __ptr__->next)
 
 /*
  * The final timeline object

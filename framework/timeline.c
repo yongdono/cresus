@@ -23,7 +23,7 @@ const char *timeline_track_n3_str(struct timeline_track_n3 *ctx)
 }
 
 const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx,
-                                       char *buf)
+                                    char *buf)
 {
   sprintf(buf, "%s " input_n3_interface_fmt,
           time64_str(ctx->slice->time, GR_DAY), /* ! */
@@ -37,7 +37,7 @@ const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx,
  */
 struct timeline_track_n3*
 timeline_slice_get_track_n3(struct timeline_slice *ctx,
-                               unique_id_t uid)
+                            unique_id_t uid)
 {
   struct timeline_slice_n3 *slice_n3;
   
