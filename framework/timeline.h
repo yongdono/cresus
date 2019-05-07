@@ -13,7 +13,6 @@
 #include "framework/alloc.h"
 #include "framework/slist.h"
 #include "framework/input.h"
-#include "framework/slist_by_uid.h"
 
 /*
  * Order of operation :
@@ -137,26 +136,25 @@ timeline_track_add_indicator(struct timeline_track *ctx,
 /*
  * Access by slice / indice / time
  */
+
+/* slice_n3 shloud never be accessed directly by user */
+
 struct timeline_slice_n3 {
-  /* Can be parsed either way ? */
-  __inherits_from__(struct slist_by_uid);
-  /* Should be easy to find (track_n3->track->uid ?) */
+  __inherits_from__(struct slist);
   struct timeline_track_n3 *track_n3;
 };
 
 static inline int
 timeline_slice_n3_init(struct timeline_slice_n3 *ctx,
-                       unique_id_t track_uid,
                        struct timeline_track_n3 *track_n3)
 {
-  __slist_by_uid_init__(ctx, track_uid); /* super() */
+  __slist_init__(ctx); /* super() */
   ctx->track_n3 = track_n3;
   return 0;
 }
 
-#define timeline_slice_n3_alloc(ctx, track_uid, track_n3)               \
-  DEFINE_ALLOC(struct timeline_slice_n3, ctx, timeline_slice_n3_init,   \
-               track_uid, track_n3)
+#define timeline_slice_n3_alloc(ctx, track_n3)                          \
+  DEFINE_ALLOC(struct timeline_slice_n3, ctx, timeline_slice_n3_init, track_n3)
 
 struct timeline_slice {
   __inherits_from__(struct list);

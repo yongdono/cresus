@@ -12,7 +12,6 @@
 #include "framework/types.h"
 #include "framework/slist.h"
 #include "framework/timeline.h"
-#include "framework/slist_by_uid.h"
 
 #define __indicator__(x) ((struct indicator*)(x))
 

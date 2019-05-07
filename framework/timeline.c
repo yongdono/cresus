@@ -40,13 +40,12 @@ timeline_slice_get_track_n3(struct timeline_slice *ctx,
                             unique_id_t uid)
 {
   struct timeline_slice_n3 *slice_n3;
+  __slist_for_each__(&ctx->slist_slice_n3s, slice_n3){
+    if(slice_n3->track_n3->track->uid == uid)
+      return slice_n3->track_n3;
+  }
   
-  if(!(slice_n3 = (struct timeline_slice_n3*)
-       __slist_by_uid_find__(&ctx->slist_slice_n3s, uid)))
-    return NULL;
-  
-  /* Finally get sync ref track n3 */
-  return slice_n3->track_n3;
+  return NULL;
 }
 
 /*
@@ -116,11 +115,11 @@ int timeline_add_track(struct timeline *ctx,
     if((slice = timeline_get_slice(ctx, input_n3->time)) != NULL){
       /* 3) Create track n3, register slice */
       PR_DBG("3) Create track n3, register slice\n");
-      timeline_track_n3_alloc(track_n3, input_n3, track, slice); /* ! */
+      timeline_track_n3_alloc(track_n3, input_n3, track, slice); /* TODO : check return */
       __list_add_tail__(&track->list_track_n3s, track_n3); /* FIXME : sort ? */
       /* 4) Create slice n3 & register track n3 */
       PR_DBG("4) Create slice n3 & register track n3\n");
-      timeline_slice_n3_alloc(slice_n3, track->uid, track_n3); /* ! */
+      timeline_slice_n3_alloc(slice_n3, track_n3); /* TODO : check return */
       __slist_insert__(&slice->slist_slice_n3s, slice_n3);
       PR_DBG("5) Back to 1\n");
     }
