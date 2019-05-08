@@ -149,23 +149,10 @@ timeline_track_add_indicator(struct timeline_track *ctx,
  */
 
 /* /!\ slice_n3 should never be accessed directly by user /!\ */
-
 struct timeline_slice_n3 {
   __inherits_from__(struct slist);
   struct timeline_track_n3 *track_n3;
 };
-
-static inline int
-timeline_slice_n3_init(struct timeline_slice_n3 *ctx,
-                       struct timeline_track_n3 *track_n3)
-{
-  __slist_init__(ctx); /* super() */
-  ctx->track_n3 = track_n3;
-  return 0;
-}
-
-#define timeline_slice_n3_alloc(ctx, track_n3)                          \
-  DEFINE_ALLOC(struct timeline_slice_n3, ctx, timeline_slice_n3_init, track_n3)
 
 struct timeline_slice {
   __inherits_from__(struct list);
@@ -189,6 +176,7 @@ timeline_slice_init(struct timeline_slice *ctx, time64_t time)
 
 struct timeline_track_n3*
 timeline_slice_get_track_n3(struct timeline_slice *ctx, unique_id_t uid);
+
 #define timeline_slice_for_each_track_n3(ctx, n3)                       \
   for(struct slist *__ptr__ = __slist__((ctx)->slist_slice_n3s.next);   \
       __ptr__ != NULL &&                                                \

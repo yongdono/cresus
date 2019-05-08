@@ -71,3 +71,44 @@ void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i)
       i->post_slice(ctx, slice);
   }
 }
+
+/* Real order struct */
+struct engine_v2_order {
+  __inherits_from__(struct slist);
+  engine_v2_order_t order;
+  engine_v2_order_by_t by;
+  double value;
+};
+
+static int engine_v2_order_init(struct engine_v2_order *ctx,
+				engine_v2_order_t order,
+				double value,
+				engine_v2_order_by_t by)
+{
+  __slist_init__(ctx); /* super() */
+  ctx->order = order;
+  ctx->value = value;
+  ctx->by = by;
+  return 0;
+}
+
+static void engine_v2_order_release(struct engine_v2_order *ctx)
+{
+  __slist_release__(ctx);
+}
+
+#define engine_v2_order_alloc(ctx, order, value, by)		\
+  DEFINE_ALLOC(struct engine_v2_order, ctx,			\
+	       engine_v2_order_init, order, value, by)
+#define engine_v2_order_free(ctx)		\
+  DEFINE_FREE(ctx, engine_v2_order_release)
+
+void engine_v2_set_order(struct engine_v2 *ctx,
+			 engine_v2_order_t order,
+			 double value,
+			 engine_v2_order_by_t by)
+{
+  struct engine_v2_order *o;
+  engine_v2_order_alloc(o, order, value, by);
+  __slist_insert__(&ctx->slist_orders, o);
+}

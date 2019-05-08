@@ -14,8 +14,15 @@
 
 #include "engine/common_opt.h"
 
+/* Engine v2 orders management */
+struct engine_v2_order; /* Don't use outside of this object */
+typedef enum { BUY, SELL } engine_v2_order_t;
+typedef enum { CASH, SHARES } engine_v2_order_by_t;
+
 struct engine_v2 {
   struct timeline *timeline;
+  /* Orders */
+  slist_head_t(struct engine_v2_order) slist_orders;
   /* Positions filter */
   time64_t start_time;
   time64_t end_time;

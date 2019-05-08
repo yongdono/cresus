@@ -34,8 +34,22 @@ const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx,
 }
 
 /*
- * Timeline slice object
+ * Timeline slice + n3 object
  */
+
+/* Slice n3 "private" functions */
+static int timeline_slice_n3_init(struct timeline_slice_n3 *ctx,
+				  struct timeline_track_n3 *track_n3)
+{
+  __slist_init__(ctx); /* super() */
+  ctx->track_n3 = track_n3;
+  return 0;
+}
+
+#define timeline_slice_n3_alloc(ctx, track_n3)                          \
+  DEFINE_ALLOC(struct timeline_slice_n3, ctx,				\
+	       timeline_slice_n3_init, track_n3)
+
 struct timeline_track_n3*
 timeline_slice_get_track_n3(struct timeline_slice *ctx,
                             unique_id_t uid)
@@ -125,6 +139,8 @@ int timeline_add_track(struct timeline *ctx,
       PR_DBG("5) Back to 1\n");
     }
   }
+
+  return 0;
 }
 
 int timeline_run_and_sync(struct timeline *ctx)

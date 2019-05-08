@@ -65,7 +65,7 @@ int linear_reg_init(struct linear_reg *ctx, unique_id_t uid, int period)
 {  
   /* Super */
   __indicator_init__(ctx, uid, linear_reg_feed, linear_reg_reset);
-  __indicator_set_string__(ctx, "%lr[%d]", period);
+  __indicator_set_string__(ctx, "linear_reg[%d]", period);
 
   ctx->period = period;
   return 0;
