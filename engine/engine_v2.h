@@ -31,7 +31,12 @@ struct engine_v2 {
   time64_t start_time;
   time64_t end_time;
   /* Stats */
-  double transaction_fee; /* Cost per transaction */
+  double spent; /* Total money spent */
+  double earned; /* Total money earned */
+  double fees; /* Total fees paid */
+  struct timeline_slice *last_slice;
+  /* Cost per transaction */
+  double transaction_fee;
   /* CSV graph output */
   int csv_output;
 };

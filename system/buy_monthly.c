@@ -42,9 +42,9 @@ static void feed_indicator_n3(struct engine_v2 *engine,
   
   switch(uid){
   case UID_TRACK0_LOWEST:
-    PR_INFO("%s (lowest %.2lf)\n",
-            timeline_track_n3_str(track_n3),
-            lowest_n3->value);
+    PR_DBG("%s (lowest %.2lf)\n",
+	   timeline_track_n3_str(track_n3),
+	   lowest_n3->value);
     break;
     
   default:

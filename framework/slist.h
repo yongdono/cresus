@@ -19,7 +19,8 @@
 #define __slist_release__(ctx) slist_release(__slist__(ctx))
 #define __slist_push__(ctx, n3)                    \
   slist_push(__slist__(ctx), __slist__(n3))
-#define __slist_pop__(ctx) slist_pop(__slist__(ctx))
+#define __slist_pop__(ctx, n3)			\
+  slist_pop(__slist__(ctx), (struct slist**)(n3))
 /* Iteration */
 #define __slist_for_each__(head, ctx)                           \
   for(struct slist *__ptr__ = __slist__(head)->next;            \
@@ -55,11 +56,12 @@ static inline void slist_push(struct slist *ctx, struct slist *n3)
   ctx->next = n3;
 }
 
-static inline struct slist* slist_pop(struct slist *ctx)
+static inline struct slist *slist_pop(struct slist *ctx,
+				      struct slist **n3)
 {
-  struct slist *n3 = ctx->next;
-  ctx->next = ctx->next->next;
-  return n3;
+  *n3 = ctx->next;
+  if(*n3) ctx->next = ctx->next->next;
+  return *n3;
 }
 
 #define slist_is_last(ctx) ((ctx)->next == NULL)

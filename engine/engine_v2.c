@@ -68,9 +68,13 @@ void engine_v2_position_release(struct engine_v2_position *ctx)
 }
 
 #define engine_v2_position_alloc(ctx, uid)				\
-  DEFINE_ALLOC(struct engine_v2_position, ctx, engine_v2_position_init, uid)
+  DEFINE_ALLOC(struct engine_v2_position, ctx,				\
+	       engine_v2_position_init, uid)
 #define engine_v2_position_free(ctx)					\
-  DEFINE_FREE(struct engine_v2_position, ctx, engine_v2_position_release)
+  DEFINE_FREE(ctx, engine_v2_position_release)
+
+#define engine_v2_position_uid(ctx)		\
+  __slist_by_uid__(ctx)->uid
 
 /*
  * Engine v2
@@ -88,6 +92,12 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
   /* Output */
   ctx->csv_output = 0;
 
+  /* Stats */
+  ctx->spent = 0.0;
+  ctx->earned = 0.0;
+  ctx->fees = 0.0;
+  ctx->last_slice = NULL;
+
   /* Init lists */
   list_head_init(&ctx->list_orders);
   slist_head_init(&ctx->slist_positions);
@@ -103,11 +113,43 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
   return 0;
 }
 
-void engine_v2_release(struct engine_v2 *ctx)
+static void engine_v2_display_stats(struct engine_v2 *ctx)
 {
+  double total = 0.0;
+  struct engine_v2_position *p;
+
+  /* Assets */
+  __slist_for_each__(&ctx->slist_positions, p){
+    struct timeline_track_n3 *track_n3 =
+      timeline_slice_get_track_n3(ctx->last_slice,
+				  engine_v2_position_uid(p));
+
+    double value = track_n3->close * p->shares;
+    total += value;
+    PR_STAT("%s assets value : %.2lf\n",
+	    track_n3->track->name, value);
+  }
+
+  /* Total */
+  PR_STAT("Total assets value : %.2lf\n", total);
+
+  /* Performance */
+  
 }
 
-int engine_v2_set_common_opt(struct engine_v2 *ctx, struct common_opt *opt)
+void engine_v2_release(struct engine_v2 *ctx)
+{
+  /* Display stats */
+  engine_v2_display_stats(ctx);
+  
+  /* Clean positions slist */
+  struct engine_v2_position *p;
+  while(__slist_pop__(&ctx->slist_positions, &p) != NULL)
+    engine_v2_position_free(p);
+}
+
+int engine_v2_set_common_opt(struct engine_v2 *ctx,
+			     struct common_opt *opt)
 {
   if(opt->start_time.set) ctx->start_time = opt->start_time.t;
   if(opt->end_time.set) ctx->end_time = opt->end_time.t;
@@ -117,15 +159,36 @@ int engine_v2_set_common_opt(struct engine_v2 *ctx, struct common_opt *opt)
   return 0;
 }
 
-void engine_v2_buy_cash(struct engine_v2 *ctx,
-			struct engine_v2_position *p,
-			struct timeline_track_n3 *track_n3,
-			double value)
+static void engine_v2_buy_cash(struct engine_v2 *ctx,
+			       struct engine_v2_position *p,
+			       struct timeline_track_n3 *track_n3,
+			       double value)
 {
   double n = value / track_n3->open;
   p->shares += n;
+
+  /* Stats */
+  ctx->spent += n;
+  ctx->fees += ctx->transaction_fee;
   
   PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
+	  timeline_track_n3_str(track_n3), n, value);
+}
+
+static void engine_v2_sell_cash(struct engine_v2 *ctx,
+				struct engine_v2_position *p,
+				struct timeline_track_n3 *track_n3,
+				double value)
+{
+  double n = value / track_n3->open;
+  n = MIN(n, p->shares);
+  p->shares -= n;
+
+  /* Stats */
+  ctx->earned += n;
+  ctx->fees += ctx->transaction_fee;
+  
+  PR_INFO("%s - Sell %.4lf securities for %.2lf CASH\n",
 	  timeline_track_n3_str(track_n3), n, value);
 }
 
@@ -139,7 +202,7 @@ static void engine_v2_run_orders(struct engine_v2 *ctx,
     if(order->track_uid != timeline_track_n3_track_uid(track_n3))
       continue;
     
-    /* Find track-releated position */
+    /* Find track-related position */
     struct engine_v2_position *p = (struct engine_v2_position*)
       __slist_by_uid_find__(&ctx->slist_positions, order->track_uid);
 
@@ -190,6 +253,9 @@ void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i)
     /* Post-processing */
     if(i->post_slice)
       i->post_slice(ctx, slice);
+
+    /* Remember last slice for stats */
+    ctx->last_slice = slice;
   }
 }
 
