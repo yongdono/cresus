@@ -89,7 +89,7 @@ static inline void
 timeline_track_n3_add_indicator_n3(struct timeline_track_n3 *ctx,
                                    struct indicator_n3 *indicator_n3)
 {
-  __slist_insert__(&ctx->slist_indicator_n3s, indicator_n3);
+  __slist_push__(&ctx->slist_indicator_n3s, indicator_n3);
 }
 
 static inline struct indicator_n3 *
@@ -142,7 +142,7 @@ static inline void
 timeline_track_add_indicator(struct timeline_track *ctx,
 			     struct indicator *indicator)
 {
-  __slist_insert__(&ctx->slist_indicators, indicator);
+  __slist_push__(&ctx->slist_indicators, indicator);
 }
 
 #define timeline_track_uid(ctx)			\

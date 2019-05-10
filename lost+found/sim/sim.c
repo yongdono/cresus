@@ -27,7 +27,7 @@ int sim_init(struct sim *s, struct cluster *c) {
   __slist_for_each__(&c->slist_timeline, t){
     struct sim_share *share;
     if(sim_share_alloc(share, t))
-      __slist_insert__(&s->slist_share, share);
+      __slist_push__(&s->slist_share, share);
   }
 
   /* Stat */

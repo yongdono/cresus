@@ -15,7 +15,7 @@
 
 /* Real order struct */
 struct engine_v2_order {
-  __inherits_from__(struct slist);
+  __inherits_from__(struct list);
   unique_id_t track_uid;
   engine_v2_order_t type;
   engine_v2_order_by_t by;
@@ -28,7 +28,7 @@ static int engine_v2_order_init(struct engine_v2_order *ctx,
 				double value,
 				engine_v2_order_by_t by)
 {
-  __slist_init__(ctx); /* super() */
+  __list_init__(ctx); /* super() */
   ctx->track_uid = track_uid;
   ctx->type = type;
   ctx->value = value;
@@ -38,7 +38,7 @@ static int engine_v2_order_init(struct engine_v2_order *ctx,
 
 static void engine_v2_order_release(struct engine_v2_order *ctx)
 {
-  __slist_release__(ctx);
+  __list_release__(ctx);
 }
 
 #define engine_v2_order_alloc(ctx, track_uid, type, value, by)		\
@@ -89,7 +89,7 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
   ctx->csv_output = 0;
 
   /* Init lists */
-  slist_head_init(&ctx->slist_orders);
+  list_head_init(&ctx->list_orders);
   slist_head_init(&ctx->slist_positions);
   
   /* Init positions slist */
@@ -97,7 +97,7 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
   __slist_for_each__(&t->by_track, track){
     struct engine_v2_position *p;
     engine_v2_position_alloc(p, timeline_track_uid(track));
-    __slist_insert__(&ctx->slist_positions, p);
+    __slist_push__(&ctx->slist_positions, p);
   }
   
   return 0;
@@ -132,23 +132,25 @@ void engine_v2_buy_cash(struct engine_v2 *ctx,
 static void engine_v2_run_orders(struct engine_v2 *ctx,
 				 struct timeline_track_n3 *track_n3)
 {
-  struct engine_v2_order *order;
-  __slist_for_each__(&ctx->slist_orders, order){ /* FIXME : safe? */
-    /* Ignore non-track related */
+  struct engine_v2_order *order, *safe;
+  __list_for_each_safe__(&ctx->list_orders, order, safe){
+    /* Ignore non-relevant orders
+     * (order might stay until data is available) */
     if(order->track_uid != timeline_track_n3_track_uid(track_n3))
       continue;
     
-    /* Run order here */
+    /* Find track-releated position */
     struct engine_v2_position *p = (struct engine_v2_position*)
       __slist_by_uid_find__(&ctx->slist_positions, order->track_uid);
 
+    /* Run order */
     switch(order->type){
     case BUY: engine_v2_buy_cash(ctx, p, track_n3, order->value); break;
     case SELL: break;
     }
     
     /* Remove executed order */
-    __slist_del__(order);
+    __list_del__(order);
     engine_v2_order_free(order);
   }
 }
@@ -201,6 +203,6 @@ int engine_v2_set_order(struct engine_v2 *ctx,
 			type, value, by);
   if(!order) return -1;
   
-  __slist_insert__(&ctx->slist_orders, order);
+  __list_add__(&ctx->list_orders, order);
   return 0;
 }

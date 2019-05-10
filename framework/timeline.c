@@ -121,7 +121,7 @@ int timeline_add_track(struct timeline *ctx,
   struct timeline_slice_n3 *slice_n3;
 
   /* 0) Add track to timeline */
-  __slist_insert__(&ctx->by_track, track);
+  __slist_push__(&ctx->by_track, track);
   
   /* 1) Read input */
   while((input_n3 = input_read(input)) != NULL){
@@ -135,7 +135,7 @@ int timeline_add_track(struct timeline *ctx,
       /* 4) Create slice n3 & register track n3 */
       PR_DBG("4) Create slice n3 & register track n3\n");
       timeline_slice_n3_alloc(slice_n3, track_n3); /* TODO : check return */
-      __slist_insert__(&slice->slist_slice_n3s, slice_n3);
+      __slist_push__(&slice->slist_slice_n3s, slice_n3);
       PR_DBG("5) Back to 1\n");
     }
   }

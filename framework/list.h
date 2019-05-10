@@ -34,10 +34,10 @@
       ctx = (void*)__list__(ctx)->prev)
 #define __list_for_each_safe__(head, ctx, safe)                         \
   for(ctx = (void*)__list__(head)->next,                                \
-	(ctx) && (safe = __list__(ctx)->next);                          \
+	(ctx) && (safe = (typeof(ctx))__list__(ctx)->next);		\
       (ctx) && !__list_is_head__(ctx);                                  \
       ctx = (void*)(safe),                                              \
-	(ctx) && (safe = __list__(ctx)->next))
+	(ctx) && (safe = (typeof(ctx))__list__(ctx)->next))
 #define __list_for_each_prev_safe__(head, ctx, safe)			\
   for(ctx = (void*)__list__(head)->prev,                                \
         (ctx) && (safe = __list__(ctx)->prev);                          \

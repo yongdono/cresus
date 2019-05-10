@@ -38,7 +38,7 @@ static void feed_indicator_n3(struct engine_v2 *engine,
                               struct indicator_n3 *indicator_n3)
 {
   struct lowest_n3 *lowest_n3 = (void*)indicator_n3;
-  unique_id_t uid = indicator_n3_uid(indicator_n3);
+  unique_id_t uid = indicator_n3_indicator_uid(indicator_n3);
   
   switch(uid){
   case UID_TRACK0_LOWEST:
@@ -61,7 +61,7 @@ static void feed_track_n3(struct engine_v2 *engine,
   int month = TIME64_GET_MONTH(slice->time);
   if(month != last_month && !(month % occurrence)){
     //PR_WARN("%s - BUY %d\n", timeline_track_n3_str(track_n3), amount);
-    engine_v2_set_order(engine, track_n3->track, BUY, 500.0 CASH);
+    engine_v2_set_order(engine, track_n3->track, BUY, 500.0, CASH);
   }
 }
 

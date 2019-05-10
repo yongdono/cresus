@@ -9,8 +9,8 @@
 #ifndef ENGINE_V2_H
 #define ENGINE_V2_H
 
-#include "framework/timeline.h"
 #include "framework/time64.h"
+#include "framework/timeline.h"
 
 #include "engine/common_opt.h"
 
@@ -25,7 +25,7 @@ struct engine_v2_position; /* Might not be useful out of this object */
 struct engine_v2 {
   struct timeline *timeline;
   /* Orders & more */
-  slist_head_t(struct engine_v2_order) slist_orders;
+  list_head_t(struct engine_v2_order) list_orders;
   slist_head_t(struct engine_v2_position) slist_positions;
   /* Positions filter */
   time64_t start_time;
