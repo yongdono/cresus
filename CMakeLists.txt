@@ -24,7 +24,6 @@ add_library(cresus SHARED
   $<TARGET_OBJECTS:input>
   )
 
-link_directories(./json-parser)
 target_link_libraries(cresus m jsonparser)
 
 # add_subdirectory(sample)

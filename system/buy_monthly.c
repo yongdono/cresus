@@ -59,8 +59,10 @@ static void feed_track_n3(struct engine_v2 *engine,
                           struct timeline_track_n3 *track_n3)
 {
   int month = TIME64_GET_MONTH(slice->time);
-  if(month != last_month && !(month % occurrence))
-    PR_WARN("%s - BUY %d\n", timeline_track_n3_str(track_n3), amount);
+  if(month != last_month && !(month % occurrence)){
+    //PR_WARN("%s - BUY %d\n", timeline_track_n3_str(track_n3), amount);
+    engine_v2_set_order(engine, track_n3->track, BUY, 500.0 CASH);
+  }
 }
 
 /* After each slice */

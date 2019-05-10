@@ -111,7 +111,7 @@ const char *timeline_track_n3_str(struct timeline_track_n3 *ctx);
 const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx, char *buf);
 
 #define timeline_track_n3_track_uid(ctx)	\
-  (__slist_by_uid__((ctx)->track)->uid)
+  timeline_track_uid((ctx)->track)
 
 struct timeline_track {
   /* It's a slist of lists */
@@ -146,7 +146,7 @@ timeline_track_add_indicator(struct timeline_track *ctx,
 }
 
 #define timeline_track_uid(ctx)			\
-  (__slist_by_uid__(ctx)->uid)
+  __slist_by_uid__(ctx)->uid
 
 /*
  * Access by slice / indice / time

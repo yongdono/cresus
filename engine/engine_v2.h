@@ -55,6 +55,6 @@ void engine_v2_release(struct engine_v2 *ctx);
 int engine_v2_set_common_opt(struct engine_v2 *ctx, struct common_opt *opt);
 void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i);
 
-int engine_v2_set_order(struct engine_v2 *ctx, unique_id_t track_uid, engine_v2_order_t type, double value, engine_v2_order_by_t by);
+int engine_v2_set_order(struct engine_v2 *ctx, struct timeline_track *track, engine_v2_order_t type, double value, engine_v2_order_by_t by);
 
 #endif

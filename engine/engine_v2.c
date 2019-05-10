@@ -7,6 +7,7 @@
  */
 
 #include "engine_v2.h"
+#include "framework/verbose.h"
 
 /*
  * Orders
@@ -71,21 +72,6 @@ void engine_v2_position_release(struct engine_v2_position *ctx)
 #define engine_v2_position_free(ctx)					\
   DEFINE_FREE(struct engine_v2_position, ctx, engine_v2_position_release)
 
-void engine_v2_position_buy_cash(struct engine_v2_position *ctx,
-				 struct timeline_track_n3 *track_n3,
-				 double value)
-{
-  double q = value / track_n3->open;
-  ctx->shares += q;
-}
-
-void engine_v2_position_buy_shares(struct engine_v2_position *ctx,
-				   struct timeline_track_n3 *track_n3,
-				   double value)
-{
-  ctx->shares += value;
-}
-
 /*
  * Engine v2
  */
@@ -131,6 +117,18 @@ int engine_v2_set_common_opt(struct engine_v2 *ctx, struct common_opt *opt)
   return 0;
 }
 
+void engine_v2_buy_cash(struct engine_v2 *ctx,
+			struct engine_v2_position *p,
+			struct timeline_track_n3 *track_n3,
+			double value)
+{
+  double n = value / track_n3->open;
+  p->shares += n;
+  
+  PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
+	  timeline_track_n3_str(track_n3), n, value);
+}
+
 static void engine_v2_run_orders(struct engine_v2 *ctx,
 				 struct timeline_track_n3 *track_n3)
 {
@@ -145,7 +143,7 @@ static void engine_v2_run_orders(struct engine_v2 *ctx,
       __slist_by_uid_find__(&ctx->slist_positions, order->track_uid);
 
     switch(order->type){
-    case BUY: engine_v2_position_buy_cash(p, track_n3, order->value); break;
+    case BUY: engine_v2_buy_cash(ctx, p, track_n3, order->value); break;
     case SELL: break;
     }
     
@@ -193,12 +191,14 @@ void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i)
   }
 }
 
-int engine_v2_set_order(struct engine_v2 *ctx, unique_id_t track_uid,
+int engine_v2_set_order(struct engine_v2 *ctx,
+			struct timeline_track *track,
 			engine_v2_order_t type, double value,
 			engine_v2_order_by_t by)
 {
   struct engine_v2_order *order;
-  engine_v2_order_alloc(order, track_uid, order->type, value, by);
+  engine_v2_order_alloc(order, timeline_track_uid(track),
+			type, value, by);
   if(!order) return -1;
   
   __slist_insert__(&ctx->slist_orders, order);

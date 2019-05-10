@@ -73,14 +73,16 @@ void indicator_reset(struct indicator *ctx);
   indicator_n3_release(__indicator_n3__(ctx))
 
 struct indicator_n3 {
-  __inherits_from__(struct slist_by_uid); /* Is that all ? */
-  /* TODO: Might be a godd idea to add a timeline_track_entry reference here */
+  __inherits_from__(struct slist);
+  struct indicator *indicator; /* parent */
+  /* TODO: Might be a good idea to add a timeline_track_entry reference here */
 };
 
 static inline int indicator_n3_init(struct indicator_n3 *ctx,
                                     struct indicator *parent)
 {
-  __slist_by_uid_init__(ctx, indicator_uid(parent));
+  __slist_init__(ctx);
+  ctx->indicator = parent;
   return 0; /* alloc rulz */
 }
 
@@ -89,7 +91,7 @@ static inline void indicator_n3_release(struct indicator_n3 *ctx)
   __slist_release__(ctx);
 }
 
-#define indicator_n3_uid(ctx)			\
-  __slist_by_uid__(ctx)->uid
+#define indicator_n3_indicator_uid(ctx)		\
+  indicator_uid(ctx->indicator)
 
 #endif /* defined(INDICATOR_H) */
