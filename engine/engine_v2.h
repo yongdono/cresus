@@ -19,10 +19,14 @@ struct engine_v2_order; /* Don't use outside of this object */
 typedef enum { BUY, SELL } engine_v2_order_t;
 typedef enum { CASH, SHARES } engine_v2_order_by_t;
 
+/* Engine v2 position management */
+struct engine_v2_position; /* Might not be useful out of this object */
+
 struct engine_v2 {
   struct timeline *timeline;
-  /* Orders */
+  /* Orders & more */
   slist_head_t(struct engine_v2_order) slist_orders;
+  slist_head_t(struct engine_v2_position) slist_positions;
   /* Positions filter */
   time64_t start_time;
   time64_t end_time;
@@ -50,5 +54,7 @@ void engine_v2_release(struct engine_v2 *ctx);
 
 int engine_v2_set_common_opt(struct engine_v2 *ctx, struct common_opt *opt);
 void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i);
+
+int engine_v2_set_order(struct engine_v2 *ctx, unique_id_t track_uid, engine_v2_order_t type, double value, engine_v2_order_by_t by);
 
 #endif

@@ -38,7 +38,7 @@ static void feed_indicator_n3(struct engine_v2 *engine,
                               struct indicator_n3 *indicator_n3)
 {
   struct lowest_n3 *lowest_n3 = (void*)indicator_n3;
-  unique_id_t uid = __slist_by_uid__(indicator_n3)->uid; /* FIXME : cast shouldn't exist */
+  unique_id_t uid = indicator_n3_uid(indicator_n3);
   
   switch(uid){
   case UID_TRACK0_LOWEST:

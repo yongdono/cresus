@@ -82,8 +82,16 @@ slist_by_uid_init(struct slist_by_uid *ctx, unique_id_t uid)
   return 0;
 }
 
+static inline void
+slist_by_uid_release(struct slist_by_uid *ctx)
+{
+  __slist_release__(ctx);
+}
+
 #define __slist_by_uid_init__(ctx, uid)         \
   slist_by_uid_init(__slist_by_uid__(ctx), uid)
+#define __slist_by_uid_release__(ctx)		\
+  slist_by_uid_release(__slist_by_uid__(ctx))
 
 static inline struct slist_by_uid *
 slist_by_uid_find(struct slist_by_uid *ctx, unique_id_t uid)

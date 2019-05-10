@@ -56,7 +56,7 @@ timeline_slice_get_track_n3(struct timeline_slice *ctx,
 {
   struct timeline_slice_n3 *slice_n3;
   __slist_for_each__(&ctx->slist_slice_n3s, slice_n3){
-    if(slice_n3->track_n3->track->uid == uid)
+    if(timeline_track_n3_track_uid(slice_n3->track_n3) == uid)
       return slice_n3->track_n3;
   }
   

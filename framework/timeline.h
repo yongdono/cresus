@@ -29,6 +29,7 @@
 /* Required for compilation */
 struct indicator;
 struct indicator_n3;
+struct timeline_track;
 struct timeline_slice;
 
 /*
@@ -109,12 +110,12 @@ timeline_track_n3_get_indicator_n3(struct timeline_track_n3 *ctx,
 const char *timeline_track_n3_str(struct timeline_track_n3 *ctx);
 const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx, char *buf);
 
+#define timeline_track_n3_track_uid(ctx)	\
+  (__slist_by_uid__((ctx)->track)->uid)
 
 struct timeline_track {
   /* It's a slist of lists */
   __inherits_from__(struct slist_by_uid);
-  /* Should have an unique id */
-  unique_id_t uid;
 #define TIMELINE_TRACK_NAME_MAX 64
   char name[TIMELINE_TRACK_NAME_MAX];
   /* Here's the beginning of the track */
@@ -143,6 +144,9 @@ timeline_track_add_indicator(struct timeline_track *ctx,
 {
   __slist_insert__(&ctx->slist_indicators, indicator);
 }
+
+#define timeline_track_uid(ctx)			\
+  (__slist_by_uid__(ctx)->uid)
 
 /*
  * Access by slice / indice / time

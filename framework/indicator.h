@@ -58,6 +58,9 @@ void indicator_release(struct indicator *ctx);
 int indicator_feed(struct indicator *ctx, struct timeline_track_n3 *e);
 void indicator_reset(struct indicator *ctx);
 
+#define indicator_uid(ctx)			\
+  __slist_by_uid__(ctx)->uid
+
 /*
  * Indicator n3 object
  */
@@ -77,7 +80,7 @@ struct indicator_n3 {
 static inline int indicator_n3_init(struct indicator_n3 *ctx,
                                     struct indicator *parent)
 {
-  __slist_by_uid_init__(ctx, __slist_by_uid__(parent)->uid);
+  __slist_by_uid_init__(ctx, indicator_uid(parent));
   return 0; /* alloc rulz */
 }
 
@@ -85,5 +88,8 @@ static inline void indicator_n3_release(struct indicator_n3 *ctx)
 {
   __slist_release__(ctx);
 }
+
+#define indicator_n3_uid(ctx)			\
+  __slist_by_uid__(ctx)->uid
 
 #endif /* defined(INDICATOR_H) */
