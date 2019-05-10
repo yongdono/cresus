@@ -52,13 +52,15 @@ static void engine_v2_order_release(struct engine_v2_order *ctx)
  */
 struct engine_v2_position {
   __inherits_from__(struct slist_by_uid);
-  double shares;
+  double shares, spent, earned;
 };
 
 int engine_v2_position_init(struct engine_v2_position *ctx, unique_id_t uid)
 {
   __slist_by_uid_init__(ctx, uid);
   ctx->shares = 0.0;
+  ctx->spent = 0.0;
+  ctx->earned = 0.0;
   return 0;
 }
 
@@ -115,8 +117,9 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
 
 static void engine_v2_display_stats(struct engine_v2 *ctx)
 {
-  double total = 0.0;
   struct engine_v2_position *p;
+  double total_value = 0.0;
+  double spent = 0.0, earned = 0.0;
 
   /* Assets */
   __slist_for_each__(&ctx->slist_positions, p){
@@ -124,17 +127,19 @@ static void engine_v2_display_stats(struct engine_v2 *ctx)
       timeline_slice_get_track_n3(ctx->last_slice,
 				  engine_v2_position_uid(p));
 
-    double value = track_n3->close * p->shares;
-    total += value;
-    PR_STAT("%s assets value : %.2lf\n",
-	    track_n3->track->name, value);
+    double assets_value = track_n3->close * p->shares;
+    total_value += assets_value;
+    spent += p->spent;
+    earned += p->earned;
+    /* Display stats & performance */
+    PR_STAT("%s assets value %.2lf, performance %.2lf\n",
+	    track_n3->track->name, assets_value,
+	    (assets_value / p->spent - 1.0) * 100.0);
   }
 
   /* Total */
-  PR_STAT("Total assets value : %.2lf\n", total);
-
-  /* Performance */
-  
+  PR_STAT("Total assets value %.2lf, performance %.2lf\n",
+	  total_value, (total_value / spent - 1.0) * 100.0);
 }
 
 void engine_v2_release(struct engine_v2 *ctx)
@@ -168,7 +173,7 @@ static void engine_v2_buy_cash(struct engine_v2 *ctx,
   p->shares += n;
 
   /* Stats */
-  ctx->spent += n;
+  p->spent += n;
   ctx->fees += ctx->transaction_fee;
   
   PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
@@ -185,7 +190,7 @@ static void engine_v2_sell_cash(struct engine_v2 *ctx,
   p->shares -= n;
 
   /* Stats */
-  ctx->earned += n;
+  p->earned += n;
   ctx->fees += ctx->transaction_fee;
   
   PR_INFO("%s - Sell %.4lf securities for %.2lf CASH\n",
