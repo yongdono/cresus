@@ -101,6 +101,10 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
   ctx->transaction_fee = 0;
   /* Output */
   ctx->csv_output = 0;
+
+  /* Init lists */
+  slist_head_init(&ctx->slist_orders);
+  slist_head_init(&ctx->slist_positions);
   
   /* Init positions slist */
   struct timeline_track *track;
