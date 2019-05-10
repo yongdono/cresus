@@ -107,7 +107,7 @@ static int timeline_create(struct timeline *t,
 
 int main(int argc, char **argv)
 {
-  VERBOSE_LEVEL(DBG);
+  VERBOSE_LEVEL(INFO);
   
   /*
    * Data

@@ -132,14 +132,14 @@ static void engine_v2_display_stats(struct engine_v2 *ctx)
     spent += p->spent;
     earned += p->earned;
     /* Display stats & performance */
-    PR_STAT("%s assets value %.2lf, performance %.2lf\n",
-	    track_n3->track->name, assets_value,
+    PR_STAT("%s assets value %.2lf, spent %.2lf, performance %.2lf%%\n",
+	    track_n3->track->name, assets_value, p->spent,
 	    (assets_value / p->spent - 1.0) * 100.0);
   }
 
   /* Total */
-  PR_STAT("Total assets value %.2lf, performance %.2lf\n",
-	  total_value, (total_value / spent - 1.0) * 100.0);
+  PR_STAT("Total assets value %.2lf, spent %.2lf, performance %.2lf%%\n",
+	  total_value, spent, (total_value / spent - 1.0) * 100.0);
 }
 
 void engine_v2_release(struct engine_v2 *ctx)
@@ -173,7 +173,7 @@ static void engine_v2_buy_cash(struct engine_v2 *ctx,
   p->shares += n;
 
   /* Stats */
-  p->spent += n;
+  p->spent += value;
   ctx->fees += ctx->transaction_fee;
   
   PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
@@ -190,7 +190,7 @@ static void engine_v2_sell_cash(struct engine_v2 *ctx,
   p->shares -= n;
 
   /* Stats */
-  p->earned += n;
+  p->earned += n * track_n3->open;
   ctx->fees += ctx->transaction_fee;
   
   PR_INFO("%s - Sell %.4lf securities for %.2lf CASH\n",
@@ -202,6 +202,10 @@ static void engine_v2_run_orders(struct engine_v2 *ctx,
 {
   struct engine_v2_order *order, *safe;
   __list_for_each_safe__(&ctx->list_orders, order, safe){
+    /* Filter orders */
+    if(TIME64CMP(track_n3->slice->time, ctx->start_time, GR_DAY) < 0)
+      goto next;
+    
     /* Ignore non-relevant orders
      * (order might stay until data is available) */
     if(order->track_uid != timeline_track_n3_track_uid(track_n3))
@@ -216,7 +220,8 @@ static void engine_v2_run_orders(struct engine_v2 *ctx,
     case BUY: engine_v2_buy_cash(ctx, p, track_n3, order->value); break;
     case SELL: break;
     }
-    
+
+  next:
     /* Remove executed order */
     __list_del__(order);
     engine_v2_order_free(order);

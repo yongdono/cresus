@@ -76,7 +76,7 @@ timeline_get_slice_anyway(struct timeline *ctx, time64_t time)
     time64_t cmp = TIME64CMP(ptr->time, time, GR_DAY); /* ! */
     /* Slice already exists, we go out */
     if(!cmp){
-      PR_DBG("timeline.c: slice already exists\n");
+      PR_WARN("timeline.c: slice already exists\n");
       goto out;
     }
     /* Slice is ahead, sort */
@@ -84,7 +84,7 @@ timeline_get_slice_anyway(struct timeline *ctx, time64_t time)
       struct timeline_slice *slice;
       timeline_slice_alloc(slice, time);
       __list_add__(ptr, slice);
-      PR_DBG("timeline.c: slice is missing, insertion\n");
+      PR_WARN("timeline.c: slice is missing, insertion\n");
       goto out;
     }
   }
@@ -92,7 +92,7 @@ timeline_get_slice_anyway(struct timeline *ctx, time64_t time)
   /* Slice doesn't exist, we create it */
   timeline_slice_alloc(ptr, time);
   __list_add_tail__(&ctx->by_slice, ptr);
-  PR_DBG("timeline.c: new slice at %s\n", time64_str(time, GR_DAY));
+  //PR_DBG("timeline.c: new slice at %s\n", time64_str(time, GR_DAY));
   
  out:
   return ptr;
@@ -126,17 +126,17 @@ int timeline_add_track(struct timeline *ctx,
   /* 1) Read input */
   while((input_n3 = input_read(input)) != NULL){
     /* 2) Create slice if necessary & sort it */
-    PR_DBG("2) Create slice if necessary & sort it\n");
+    //PR_DBG("2) Create slice if necessary & sort it\n");
     if((slice = timeline_get_slice_anyway(ctx, input_n3->time)) != NULL){
       /* 3) Create track n3, register slice */
-      PR_DBG("3) Create track n3, register slice\n");
+      //PR_DBG("3) Create track n3, register slice\n");
       timeline_track_n3_alloc(track_n3, input_n3, track, slice); /* TODO : check return */
       __list_add_tail__(&track->list_track_n3s, track_n3); /* FIXME : sort this */
       /* 4) Create slice n3 & register track n3 */
-      PR_DBG("4) Create slice n3 & register track n3\n");
+      //PR_DBG("4) Create slice n3 & register track n3\n");
       timeline_slice_n3_alloc(slice_n3, track_n3); /* TODO : check return */
       __slist_push__(&slice->slist_slice_n3s, slice_n3);
-      PR_DBG("5) Back to 1\n");
+      //PR_DBG("5) Back to 1\n");
     }
   }
 
