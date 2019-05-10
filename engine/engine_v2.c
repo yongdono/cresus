@@ -115,6 +115,9 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
   return 0;
 }
 
+#define engine_v2_perf_pcent(assets, spent, earned)	\
+  ((assets / (spent - earned) - 1.0) * 100.0)
+
 static void engine_v2_display_stats(struct engine_v2 *ctx)
 {
   struct engine_v2_position *p;
@@ -134,12 +137,13 @@ static void engine_v2_display_stats(struct engine_v2 *ctx)
     /* Display stats & performance */
     PR_STAT("%s assets value %.2lf, spent %.2lf, performance %.2lf%%\n",
 	    track_n3->track->name, assets_value, p->spent,
-	    (assets_value / p->spent - 1.0) * 100.0);
+	    engine_v2_perf_pcent(assets_value, p->spent, p->earned));
   }
 
   /* Total */
   PR_STAT("Total assets value %.2lf, spent %.2lf, performance %.2lf%%\n",
-	  total_value, spent, (total_value / spent - 1.0) * 100.0);
+	  total_value, spent,
+	  engine_v2_perf_pcent(total_value, spent, earned));
 }
 
 void engine_v2_release(struct engine_v2 *ctx)
