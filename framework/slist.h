@@ -80,6 +80,12 @@ struct slist_by_uid {
   unique_id_t uid;
 };
 
+/* basic slist_by_uid object */
+
+#define slist_by_uid_head_t(type) struct slist_by_uid
+#define slist_by_uid_head_init(head) slist_by_uid_init(head, 0)
+#define slist_by_uid_head_release(head) slist_by_uid_release(head)
+
 static inline int
 slist_by_uid_init(struct slist_by_uid *ctx, unique_id_t uid)
 {

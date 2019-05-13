@@ -92,13 +92,9 @@ timeline_track_n3_add_indicator_n3(struct timeline_track_n3 *ctx,
   __slist_push__(&ctx->slist_indicator_n3s, indicator_n3);
 }
 
-static inline struct indicator_n3 *
+struct indicator_n3 *
 timeline_track_n3_get_indicator_n3(struct timeline_track_n3 *ctx,
-                                   unique_id_t indicator_uid)
-{
-  return (struct indicator_n3*)
-    __slist_by_uid_find__(&ctx->slist_indicator_n3s, indicator_uid);
-}
+				   unique_id_t indicator_uid);
 
 #define timeline_track_n3_for_each_indicator_n3(ctx, n3)                \
   for(struct slist *__ptr__ =                                           \
@@ -121,22 +117,26 @@ struct timeline_track {
   /* Here's the beginning of the track */
   list_head_t(struct timeline_track_n3) list_track_n3s;
   /* The indicators we want to play on that particular track */
-  slist_head_t(struct indicator) slist_indicators;
+  slist_by_uid_head_t(struct indicator) slist_indicators;
+  /* User might want ot expand this object */
+  void *private;
 };
 
 static inline int
 timeline_track_init(struct timeline_track *ctx, unique_id_t uid,
-                    const char *name)
+                    const char *name, void *private)
 {
   __slist_by_uid_init__(ctx, uid); /* super() */
   strncpy(ctx->name, name, sizeof(ctx->name));
   list_head_init(&ctx->list_track_n3s);
-  slist_head_init(&ctx->slist_indicators);
+  slist_by_uid_head_init(&ctx->slist_indicators);
+  ctx->private = private;
   return uid;
 }
 
-#define timeline_track_alloc(ctx, uid, name)                            \
-  DEFINE_ALLOC(struct timeline_track, ctx, timeline_track_init, uid, name)
+#define timeline_track_alloc(ctx, uid, name, private)				\
+  DEFINE_ALLOC(struct timeline_track, ctx,				\
+	       timeline_track_init, uid, name, private)
 
 static inline void
 timeline_track_add_indicator(struct timeline_track *ctx,
@@ -193,7 +193,7 @@ timeline_slice_get_track_n3(struct timeline_slice *ctx, unique_id_t uid);
 
 struct timeline {
   list_head_t(struct timeline_slice) by_slice;
-  slist_head_t(struct timeline_track) by_track;
+  slist_by_uid_head_t(struct timeline_track) by_track;
 };
 
 /* Interfaces */

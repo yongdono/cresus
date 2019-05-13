@@ -30,7 +30,7 @@ yahoo_v7_parse_n3(struct yahoo_v7 *ctx, char *str)
   char *slo = strsep(&str, ",");
   char *sclose = strsep(&str, ",");
   char *adjclose = strsep(&str, ",");
-  char *svol = strsep(&str, ","); /* End */
+  char *svol = str; /* End */
 
   /* Check we got the right format */
   if(!stime || !sopen || !shi || !slo ||

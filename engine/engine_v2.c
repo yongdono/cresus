@@ -52,7 +52,7 @@ static void engine_v2_order_release(struct engine_v2_order *ctx)
  */
 struct engine_v2_position {
   __inherits_from__(struct slist_by_uid);
-  double shares, spent, earned;
+  double shares, spent, earned, fees;
 };
 
 int engine_v2_position_init(struct engine_v2_position *ctx, unique_id_t uid)
@@ -61,6 +61,7 @@ int engine_v2_position_init(struct engine_v2_position *ctx, unique_id_t uid)
   ctx->shares = 0.0;
   ctx->spent = 0.0;
   ctx->earned = 0.0;
+  ctx->fees = 0.0;
   return 0;
 }
 
@@ -115,14 +116,20 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
   return 0;
 }
 
-#define engine_v2_perf_pcent(assets, spent, earned)	\
-  ((assets / (spent - earned) - 1.0) * 100.0)
+#define engine_v2_performance_pcent(assets, spent, earned, fees)	\
+  (((assets + earned) / (spent + fees) - 1.0) * 100.0)
+
+#define engine_v2_print_stats(name, value, spent, earned, fees)		\
+  PR_STAT("%s total %.2lf assets %.2lf spent %.2lf earned %.2lf "	\
+	  "fees %.2lf performance %.2lf%%\n",				\
+	  name, earned + value, value, spent, earned, fees,		\
+	  engine_v2_performance_pcent(value, spent, earned, fees));
 
 static void engine_v2_display_stats(struct engine_v2 *ctx)
 {
   struct engine_v2_position *p;
   double total_value = 0.0;
-  double spent = 0.0, earned = 0.0;
+  double spent = 0.0, earned = 0.0, fees = 0.0;
 
   /* Assets */
   __slist_for_each__(&ctx->slist_positions, p){
@@ -134,22 +141,39 @@ static void engine_v2_display_stats(struct engine_v2 *ctx)
     total_value += assets_value;
     spent += p->spent;
     earned += p->earned;
+    fees += p->fees;
     /* Display stats & performance */
-    PR_STAT("%s assets value %.2lf, spent %.2lf, performance %.2lf%%\n",
-	    track_n3->track->name, assets_value, p->spent,
-	    engine_v2_perf_pcent(assets_value, p->spent, p->earned));
+    engine_v2_print_stats(track_n3->track->name, assets_value,
+			  p->spent, p->earned, p->fees); 
   }
 
   /* Total */
-  PR_STAT("Total assets value %.2lf, spent %.2lf, performance %.2lf%%\n",
-	  total_value, spent,
-	  engine_v2_perf_pcent(total_value, spent, earned));
+  engine_v2_print_stats("Total", total_value, spent, earned, fees);
+}
+
+static void
+engine_v2_display_pending_orders(struct engine_v2 *ctx)
+{
+  struct engine_v2_order *order;
+  __list_for_each__(&ctx->list_orders, order){
+    /* Find track name by uid */
+    struct timeline_track *track = (void*)
+      __slist_by_uid_find__(&ctx->timeline->by_track,
+			    order->track_uid);
+    
+    fprintf(stdout, "%s %s %.2lf\n",
+	    track->name, (order->type == BUY ? "buy" : "sell"),
+	    order->value);
+  }
 }
 
 void engine_v2_release(struct engine_v2 *ctx)
 {
   /* Display stats */
   engine_v2_display_stats(ctx);
+
+  /* Display pending orders */
+  engine_v2_display_pending_orders(ctx);
   
   /* Clean positions slist */
   struct engine_v2_position *p;
@@ -178,7 +202,7 @@ static void engine_v2_buy_cash(struct engine_v2 *ctx,
 
   /* Stats */
   p->spent += value;
-  ctx->fees += ctx->transaction_fee;
+  p->fees += ctx->transaction_fee;
   
   PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
 	  timeline_track_n3_str(track_n3), n, value);
@@ -195,7 +219,7 @@ static void engine_v2_sell_cash(struct engine_v2 *ctx,
 
   /* Stats */
   p->earned += n * track_n3->open;
-  ctx->fees += ctx->transaction_fee;
+  p->fees += ctx->transaction_fee;
   
   PR_INFO("%s - Sell %.4lf securities for %.2lf CASH\n",
 	  timeline_track_n3_str(track_n3), n, value);
@@ -222,7 +246,7 @@ static void engine_v2_run_orders(struct engine_v2 *ctx,
     /* Run order */
     switch(order->type){
     case BUY: engine_v2_buy_cash(ctx, p, track_n3, order->value); break;
-    case SELL: break;
+    case SELL: engine_v2_sell_cash(ctx, p, track_n3, order->value); break;
     }
 
   next:
@@ -239,11 +263,14 @@ void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i)
   struct timeline_track_n3 *track_n3;
 
   /* Run all slices */
-  __list_for_each__(&ctx->timeline->by_slice, slice){
-    
+  __list_for_each__(&ctx->timeline->by_slice, slice){    
     /* We MUST stop at end_time */
     if(TIME64CMP(slice->time, ctx->end_time, GR_DAY) > 0)
       break;
+
+    /* Debug */
+    PR_DBG("engine_v2.c: playing slice #%s\n",
+	   time64_str(slice->time, GR_DAY));
     
     /* Run "new" slice */
     if(i->feed_slice)

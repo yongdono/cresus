@@ -89,7 +89,7 @@ static int timeline_create(struct timeline *t,
   if((input = input_wrapper_create(filename, type))){
     /* Create tracks */
     struct timeline_track *track0;
-    timeline_track_alloc(track0, 0, filename);
+    timeline_track_alloc(track0, 0, filename, NULL);
     /* Create indicators */
     struct lowest *lowest;
     lowest_alloc(lowest, UID_TRACK0_LOWEST, 50);

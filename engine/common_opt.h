@@ -25,7 +25,7 @@ struct common_opt_tuple {
   { (tuple)->set = 1;                            \
     (tuple)->type = (val); };
 
-#define COMMON_OPTSTRING "cf:o:vF:S:E:"
+#define COMMON_OPTSTRING "cf:o:qvF:S:E:"
 /*
  * -c enable csv output (for gnuplot)
  * -f <transaction fee>
