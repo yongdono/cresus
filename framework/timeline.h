@@ -108,6 +108,8 @@ const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx, char *buf);
 
 #define timeline_track_n3_track_uid(ctx)	\
   timeline_track_uid((ctx)->track)
+#define timeline_track_n3_track_private(ctx)    \
+  (void*)(ctx)->track->private
 
 struct timeline_track {
   /* It's a slist of lists */
