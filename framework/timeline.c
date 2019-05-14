@@ -46,7 +46,6 @@ timeline_track_n3_get_indicator_n3(struct timeline_track_n3 *ctx,
   return NULL;
 }
 
-
 /*
  * Timeline slice + n3 object
  */

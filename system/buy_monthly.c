@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <getopt.h>
 #include <math.h>
+#include <libgen.h>
 
 #include "engine/engine_v2.h"
 #include "engine/common_opt.h"
@@ -61,7 +62,7 @@ static void feed_track_n3(struct engine_v2 *engine,
   int month = TIME64_GET_MONTH(slice->time);
   if(month != last_month && !(month % occurrence)){
     //PR_WARN("%s - BUY %d\n", timeline_track_n3_str(track_n3), amount);
-    engine_v2_set_order(engine, track_n3->track, BUY, 500.0, CASH);
+    engine_v2_set_order(engine, track_n3->track, BUY, 500.0, CASH, 0);
   }
 }
 
@@ -79,8 +80,9 @@ static struct engine_v2_interface itf = {
 };
 
 static int timeline_create(struct timeline *t,
-                           const char *filename,
-                           const char *type)
+                           char *filename,
+                           const char *type,
+                           unique_id_t track_uid)
 {
   /*
    * Data
@@ -88,17 +90,14 @@ static int timeline_create(struct timeline *t,
   struct input *input;
   if((input = input_wrapper_create(filename, type))){
     /* Create tracks */
-    struct timeline_track *track0;
-    timeline_track_alloc(track0, 0, filename, NULL);
+    struct timeline_track *track;
+    timeline_track_alloc(track, track_uid, basename(filename), NULL);
     /* Create indicators */
     struct lowest *lowest;
     lowest_alloc(lowest, UID_TRACK0_LOWEST, 50);
-    timeline_track_add_indicator(track0, __indicator__(lowest));
+    timeline_track_add_indicator(track, __indicator__(lowest));
     /* Add to timeline */
-    timeline_init(t);
-    timeline_add_track(t, track0, input);
-    /* Execute timeline */
-    timeline_run_and_sync(t);
+    timeline_add_track(t, track, input);
     return 0;
   }
   
@@ -112,7 +111,7 @@ int main(int argc, char **argv)
   /*
    * Data
    */
-  int c;
+  int c, n = 0;
   char *filename;
   
   struct common_opt opt;
@@ -135,19 +134,21 @@ int main(int argc, char **argv)
   filename = argv[optind];
   if(opt.fixed_amount.set) amount = opt.fixed_amount.i;
   if(!opt.input_type.set) goto usage;
+
+  /* Prepare timeline */
+  timeline_init(&timeline);
+  while((filename = argv[optind++]))
+    timeline_create(&timeline, filename, opt.input_type.s, n++);
   
-  if(!(timeline_create(&timeline, filename, opt.input_type.s))){
-    engine_v2_init(&engine, &timeline);
-    engine_v2_set_common_opt(&engine, &opt);
-    /* Run */
-    engine_v2_run(&engine, &itf);
-    
-    /* Print some info */
-    //engine_display_stats(&engine);
-    
-    /* TODO : Don't forget to release everything */
-    engine_v2_release(&engine);
-  }
+  /* Execute timeline */
+  timeline_run_and_sync(&timeline);
+  /* Start engine */
+  engine_v2_init(&engine, &timeline);
+  engine_v2_set_common_opt(&engine, &opt);
+  /* Run */
+  engine_v2_run(&engine, &itf);    
+  /* TODO : Don't forget to release everything */
+  engine_v2_release(&engine);
   
   return 0;
 

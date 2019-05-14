@@ -20,19 +20,22 @@ struct engine_v2_order {
   engine_v2_order_t type;
   engine_v2_order_by_t by;
   double value;
+  int level; /* For info */
 };
 
 static int engine_v2_order_init(struct engine_v2_order *ctx,
 				unique_id_t track_uid,
 				engine_v2_order_t type,
 				double value,
-				engine_v2_order_by_t by)
+				engine_v2_order_by_t by,
+                                int level)
 {
   __list_init__(ctx); /* super() */
   ctx->track_uid = track_uid;
   ctx->type = type;
   ctx->value = value;
   ctx->by = by;
+  ctx->level = level;
   return 0;
 }
 
@@ -41,9 +44,9 @@ static void engine_v2_order_release(struct engine_v2_order *ctx)
   __list_release__(ctx);
 }
 
-#define engine_v2_order_alloc(ctx, track_uid, type, value, by)		\
+#define engine_v2_order_alloc(ctx, track_uid, type, value, by, level)   \
   DEFINE_ALLOC(struct engine_v2_order, ctx,				\
-	       engine_v2_order_init, track_uid, type, value, by)
+	       engine_v2_order_init, track_uid, type, value, by, level)
 #define engine_v2_order_free(ctx)		\
   DEFINE_FREE(ctx, engine_v2_order_release)
 
@@ -161,9 +164,9 @@ engine_v2_display_pending_orders(struct engine_v2 *ctx)
       __slist_by_uid_find__(&ctx->timeline->by_track,
 			    order->track_uid);
     
-    fprintf(stdout, "%s %s %.2lf\n",
+    fprintf(stdout, "%s %s %.2lf %d\n",
 	    track->name, (order->type == BUY ? "buy" : "sell"),
-	    order->value);
+	    order->value, order->level);
   }
 }
 
@@ -303,11 +306,12 @@ void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i)
 int engine_v2_set_order(struct engine_v2 *ctx,
 			struct timeline_track *track,
 			engine_v2_order_t type, double value,
-			engine_v2_order_by_t by)
+			engine_v2_order_by_t by,
+                        int level)
 {
   struct engine_v2_order *order;
   engine_v2_order_alloc(order, timeline_track_uid(track),
-			type, value, by);
+			type, value, by, level);
   if(!order) return -1;
   
   __list_add__(&ctx->list_orders, order);
