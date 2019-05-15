@@ -54,13 +54,13 @@ static void engine_v2_order_release(struct engine_v2_order *ctx)
  * Positions
  */
 struct engine_v2_position {
-  __inherits_from__(struct slist_by_uid);
+  __inherits_from__(struct slist_uid);
   double shares, spent, earned, fees;
 };
 
 int engine_v2_position_init(struct engine_v2_position *ctx, unique_id_t uid)
 {
-  __slist_by_uid_init__(ctx, uid);
+  __slist_uid_init__(ctx, uid);
   ctx->shares = 0.0;
   ctx->spent = 0.0;
   ctx->earned = 0.0;
@@ -70,17 +70,14 @@ int engine_v2_position_init(struct engine_v2_position *ctx, unique_id_t uid)
 
 void engine_v2_position_release(struct engine_v2_position *ctx)
 {
-  __slist_by_uid_release__(ctx);
+  __slist_uid_release__(ctx);
 }
 
-#define engine_v2_position_alloc(ctx, uid)				\
-  DEFINE_ALLOC(struct engine_v2_position, ctx,				\
+#define engine_v2_position_alloc(ctx, uid)      \
+  DEFINE_ALLOC(struct engine_v2_position, ctx,  \
 	       engine_v2_position_init, uid)
-#define engine_v2_position_free(ctx)					\
+#define engine_v2_position_free(ctx)            \
   DEFINE_FREE(ctx, engine_v2_position_release)
-
-#define engine_v2_position_uid(ctx)		\
-  __slist_by_uid__(ctx)->uid
 
 /*
  * Engine v2
@@ -106,17 +103,21 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
 
   /* Init lists */
   list_head_init(&ctx->list_orders);
-  slist_head_init(&ctx->slist_positions);
+  slist_uid_head_init(&ctx->slist_uid_positions);
   
   /* Init positions slist */
   struct timeline_track *track;
   __slist_for_each__(&t->by_track, track){
     struct engine_v2_position *p;
-    engine_v2_position_alloc(p, timeline_track_uid(track));
-    __slist_push__(&ctx->slist_positions, p);
+    __try__(!engine_v2_position_alloc(p, __slist_uid_uid__(track)), err);
+    __slist_push__(&ctx->slist_uid_positions, p);
   }
   
   return 0;
+  
+ __catch__(err):
+  PR_WARN("%s: can't allocate positions\n", __FUNCTION__);
+  return -1;
 }
 
 #define engine_v2_performance_pcent(assets, spent, earned, fees)	\
@@ -130,16 +131,16 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
 
 static void engine_v2_display_stats(struct engine_v2 *ctx)
 {
-  struct engine_v2_position *p;
   double total_value = 0.0;
   double spent = 0.0, earned = 0.0, fees = 0.0;
 
   /* Assets */
-  __slist_for_each__(&ctx->slist_positions, p){
+  struct engine_v2_position *p;
+  __slist_for_each__(&ctx->slist_uid_positions, p){
     struct timeline_track_n3 *track_n3 =
       timeline_slice_get_track_n3(ctx->last_slice,
-				  engine_v2_position_uid(p));
-
+				  __slist_uid_uid__(p));
+    
     double assets_value = track_n3->close * p->shares;
     total_value += assets_value;
     spent += p->spent;
@@ -161,8 +162,8 @@ engine_v2_display_pending_orders(struct engine_v2 *ctx)
   __list_for_each__(&ctx->list_orders, order){
     /* Find track name by uid */
     struct timeline_track *track = (void*)
-      __slist_by_uid_find__(&ctx->timeline->by_track,
-			    order->track_uid);
+      __slist_uid_find__(&ctx->timeline->by_track,
+                         order->track_uid);
     
     fprintf(stdout, "%s %s %.2lf %d\n",
 	    track->name, (order->type == BUY ? "buy" : "sell"),
@@ -180,7 +181,7 @@ void engine_v2_release(struct engine_v2 *ctx)
   
   /* Clean positions slist */
   struct engine_v2_position *p;
-  while(__slist_pop__(&ctx->slist_positions, &p) != NULL)
+  while(__slist_pop__(&ctx->slist_uid_positions, &p) != NULL)
     engine_v2_position_free(p);
 }
 
@@ -244,7 +245,7 @@ static void engine_v2_run_orders(struct engine_v2 *ctx,
     
     /* Find track-related position */
     struct engine_v2_position *p = (struct engine_v2_position*)
-      __slist_by_uid_find__(&ctx->slist_positions, order->track_uid);
+      __slist_uid_find__(&ctx->slist_uid_positions, order->track_uid);
 
     /* Run order */
     switch(order->type){
@@ -310,7 +311,7 @@ int engine_v2_set_order(struct engine_v2 *ctx,
                         int level)
 {
   struct engine_v2_order *order;
-  engine_v2_order_alloc(order, timeline_track_uid(track),
+  engine_v2_order_alloc(order, __slist_uid_uid__(track),
 			type, value, by, level);
   if(!order) return -1;
   

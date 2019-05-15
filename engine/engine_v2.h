@@ -26,7 +26,7 @@ struct engine_v2 {
   struct timeline *timeline;
   /* Orders & more */
   list_head_t(struct engine_v2_order) list_orders;
-  slist_head_t(struct engine_v2_position) slist_positions;
+  slist_uid_head_t(struct engine_v2_position) slist_uid_positions;
   /* Positions filter */
   time64_t start_time;
   time64_t end_time;

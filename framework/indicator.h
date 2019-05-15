@@ -23,7 +23,6 @@
 
 /* Inherited accessors */
 #define __indicator_str__(ctx) __indicator__(ctx)->str
-#define __indicator_uid__(ctx) __slist_by_uid__(ctx)->uid
 
 /* Set methods */
 #define __indicator_set_string__(ctx, fmt, ...)                         \
@@ -40,8 +39,8 @@ typedef int (*indicator_feed_ptr)(struct indicator*, struct timeline_track_n3*);
 typedef void (*indicator_reset_ptr)(struct indicator*);
 
 struct indicator {
-  /* Inherits from slist_by_uid */
-  __inherits_from__(struct slist_by_uid);
+  /* Inherits from slist_uid */
+  __inherits_from__(struct slist_uid);
   /* Fn pointers */
   indicator_feed_ptr feed;
   indicator_reset_ptr reset;
@@ -71,7 +70,7 @@ void indicator_reset(struct indicator *ctx);
 
 /* Inherited accessors */
 #define __indicator_n3_indicator_uid__(ctx)             \
-  __indicator_uid__(__indicator_n3__(ctx)->indicator)
+  __slist_uid_uid__(__indicator_n3__(ctx)->indicator)
 
 struct indicator_n3 {
   __inherits_from__(struct slist);
@@ -93,6 +92,6 @@ static inline void indicator_n3_release(struct indicator_n3 *ctx)
 
 /* Accessors */
 #define indicator_n3_indicator_uid(ctx)         \
-  __indicator_uid__((ctx)->indicator)
+  __slist_uid_uid__((ctx)->indicator)
 
 #endif /* defined(INDICATOR_H) */

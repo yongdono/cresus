@@ -107,19 +107,19 @@ const char *timeline_track_n3_str(struct timeline_track_n3 *ctx);
 const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx, char *buf);
 
 #define timeline_track_n3_track_uid(ctx)	\
-  timeline_track_uid((ctx)->track)
+  __slist_uid_uid__((ctx)->track)
 #define timeline_track_n3_track_private(ctx)    \
   (void*)(ctx)->track->private
 
 struct timeline_track {
   /* It's a slist of lists */
-  __inherits_from__(struct slist_by_uid);
+  __inherits_from__(struct slist_uid);
 #define TIMELINE_TRACK_NAME_MAX 64
   char name[TIMELINE_TRACK_NAME_MAX];
   /* Here's the beginning of the track */
   list_head_t(struct timeline_track_n3) list_track_n3s;
   /* The indicators we want to play on that particular track */
-  slist_by_uid_head_t(struct indicator) slist_indicators;
+  slist_uid_head_t(struct indicator) slist_uid_indicators;
   /* User might want ot expand this object */
   void *private;
 };
@@ -128,10 +128,10 @@ static inline int
 timeline_track_init(struct timeline_track *ctx, unique_id_t uid,
                     const char *name, void *private)
 {
-  __slist_by_uid_init__(ctx, uid); /* super() */
+  __slist_uid_init__(ctx, uid); /* super() */
   strncpy(ctx->name, name, sizeof(ctx->name));
   list_head_init(&ctx->list_track_n3s);
-  slist_by_uid_head_init(&ctx->slist_indicators);
+  slist_uid_head_init(&ctx->slist_uid_indicators);
   ctx->private = private;
   return uid;
 }
@@ -144,11 +144,8 @@ static inline void
 timeline_track_add_indicator(struct timeline_track *ctx,
 			     struct indicator *indicator)
 {
-  __slist_push__(&ctx->slist_indicators, indicator);
+  __slist_push__(&ctx->slist_uid_indicators, indicator);
 }
-
-#define timeline_track_uid(ctx)			\
-  __slist_by_uid__(ctx)->uid
 
 /*
  * Access by slice / indice / time
@@ -195,7 +192,7 @@ timeline_slice_get_track_n3(struct timeline_slice *ctx, unique_id_t uid);
 
 struct timeline {
   list_head_t(struct timeline_slice) by_slice;
-  slist_by_uid_head_t(struct timeline_track) by_track;
+  slist_uid_head_t(struct timeline_track) by_track;
 };
 
 /* Interfaces */

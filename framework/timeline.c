@@ -124,14 +124,14 @@ timeline_get_slice_anyway(struct timeline *ctx, time64_t time)
 int timeline_init(struct timeline *ctx)
 {
   list_head_init(&ctx->by_slice);
-  slist_by_uid_head_init(&ctx->by_track);
+  slist_uid_head_init(&ctx->by_track);
   return 0;
 }
 
 void timeline_release(struct timeline *ctx)
 {
   list_head_release(&ctx->by_slice);
-  slist_by_uid_head_release(&ctx->by_track);
+  slist_uid_head_release(&ctx->by_track);
 }
 
 int timeline_add_track(struct timeline *ctx,
@@ -179,7 +179,7 @@ int timeline_run_and_sync(struct timeline *ctx)
     __list_for_each__(&track->list_track_n3s, track_n3){
       /* On each track_n3, run all indicators */
       struct indicator *indicator;
-      __slist_for_each__(&track->slist_indicators, indicator)
+      __slist_for_each__(&track->slist_uid_indicators, indicator)
 	indicator_feed(indicator, track_n3);
     }
   }
