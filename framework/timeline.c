@@ -8,17 +8,17 @@
 
 #include <stdio.h>
 
+#include "framework/types.h"
 #include "framework/verbose.h"
 #include "framework/timeline.h"
 #include "framework/indicator.h"
-
-static char buf[256];
 
 /*
  * Timeline track entry object
  */
 const char *timeline_track_n3_str(struct timeline_track_n3 *ctx)
 {
+  static char buf[256];
   return timeline_track_n3_str_r(ctx, buf);
 }
 
@@ -37,12 +37,12 @@ struct indicator_n3 *
 timeline_track_n3_get_indicator_n3(struct timeline_track_n3 *ctx,
                                    unique_id_t indicator_uid)
 {
-  struct indicator_n3 *indicator_n3;
-  __slist_for_each__(&ctx->slist_indicator_n3s, indicator_n3){
-    if(indicator_n3_indicator_uid(indicator_n3) == indicator_uid)
-      return indicator_n3;
+  struct indicator_n3 *ptr;
+  __slist_for_each__(&ctx->slist_indicator_n3s, ptr){
+    if(indicator_n3_indicator_uid(ptr) == indicator_uid)
+      return ptr;
   }
-
+  
   return NULL;
 }
 
@@ -84,9 +84,8 @@ timeline_get_slice_anyway(struct timeline *ctx, time64_t time)
 {
   struct timeline_slice *ptr;
   
-  /* TODO : Remember last position ? */
   __list_for_each__(&ctx->by_slice, ptr){
-    time64_t cmp = TIME64CMP(ptr->time, time, GR_DAY); /* ! */
+    time64_t cmp = TIME64CMP(ptr->time, time, GR_DAY);
     /* Slice already exists, we go out */
     if(!cmp){
       PR_DBG("timeline.c: slice already exists\n");
@@ -94,24 +93,32 @@ timeline_get_slice_anyway(struct timeline *ctx, time64_t time)
     }
     /* Slice is ahead, sort */
     if(cmp > 0){
-      char buf0[12], buf1[12];
-      struct timeline_slice *slice;
-      timeline_slice_alloc(slice, time);
-      __list_add_tail__(ptr, slice);
+      struct timeline_slice *ahead = ptr;
+      __try__(!timeline_slice_alloc(ptr, time), err);
+      __list_add_tail__(ahead, ptr); /* Insert before */
+      /* Debug */
+      static char buf0[12], buf1[12];
       PR_DBG("timeline.c: slice %s is missing, insertion before %s\n",
 	     time64_str_r(time, GR_DAY, buf0),
-	     time64_str_r(ptr->time, GR_DAY, buf1));
+	     time64_str_r(ahead->time, GR_DAY, buf1));
+      /* Jump outside anyway */
       goto out;
     }
   }
   
   /* Slice doesn't exist, we create it */
-  timeline_slice_alloc(ptr, time);
+  __try__(!timeline_slice_alloc(ptr, time), err);
   __list_add_tail__(&ctx->by_slice, ptr);
-  //PR_DBG("timeline.c: new slice at %s\n", time64_str(time, GR_DAY));
+  
+  /* Debug */
+  PR_DBG("timeline.c: new slice at %s\n", time64_str(time, GR_DAY));
   
  out:
   return ptr;
+
+ __catch__(err):
+  PR_ERR("%s: can't allocate slice object\n", __FUNCTION__);
+  return NULL;
 }
 
 int timeline_init(struct timeline *ctx)
@@ -146,17 +153,20 @@ int timeline_add_track(struct timeline *ctx,
     if((slice = timeline_get_slice_anyway(ctx, input_n3->time)) != NULL){
       /* 3) Create track n3, register slice */
       PR_DBG("3) Create track n3, register slice\n");
-      timeline_track_n3_alloc(track_n3, input_n3, track, slice); /* TODO : check return */
+      __try__(!timeline_track_n3_alloc(track_n3, input_n3, track, slice), err);
       __list_add_tail__(&track->list_track_n3s, track_n3); /* FIXME : sort this */
       /* 4) Create slice n3 & register track n3 */
       PR_DBG("4) Create slice n3 & register track n3\n");
-      timeline_slice_n3_alloc(slice_n3, track_n3); /* TODO : check return */
+      __try__(!timeline_slice_n3_alloc(slice_n3, track_n3), err);
       __slist_push__(&slice->slist_slice_n3s, slice_n3);
       PR_DBG("5) Back to 1\n");
     }
   }
 
   return 0;
+
+ __catch__(err):
+  return -1;
 }
 
 int timeline_run_and_sync(struct timeline *ctx)

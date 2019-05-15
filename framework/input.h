@@ -85,8 +85,7 @@ static inline void input_n3_release(struct input_n3 *ctx)
 #define __input_read__(ctx) input_read(__input__(ctx))
 
 /* Typedefs */
-struct input; /* FIXME : find another way */
-
+struct input;
 typedef struct input_n3 *(*input_read_ptr)(struct input *ctx);
 
 struct input {

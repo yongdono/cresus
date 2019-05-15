@@ -26,7 +26,7 @@ int indicator_init(struct indicator *ctx,
 
 void indicator_release(struct indicator *ctx)
 {
-  //__slist_release__(ctx);
+  __slist_by_uid_release__(ctx);
   ctx->feed = NULL;
 }
 

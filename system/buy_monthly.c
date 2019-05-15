@@ -100,12 +100,12 @@ static int timeline_create(struct timeline *t,
     /* Create tracks */
     struct buy_monthly *ctx;
     struct timeline_track *track;
-    __try__(buy_monthly_alloc(ctx) < 0, err);
-    __try__(timeline_track_alloc(track, track_uid,
-                                 basename(filename), ctx) < 0, err);
+    __try__(!buy_monthly_alloc(ctx), err);
+    __try__(!timeline_track_alloc(track, track_uid,
+                                  basename(filename), ctx), err);
     /* Create indicators */
     struct lowest *lowest;
-    __try__(lowest_alloc(lowest, UID_LOWEST, 50) < 0, err);
+    __try__(!lowest_alloc(lowest, UID_LOWEST, 50), err);
     timeline_track_add_indicator(track, __indicator__(lowest));
     /* Add to timeline */
     timeline_add_track(t, track, input);
@@ -157,9 +157,11 @@ int main(int argc, char **argv)
   engine_v2_init(&engine, &timeline);
   engine_v2_set_common_opt(&engine, &opt);
   /* Run */
-  engine_v2_run(&engine, &itf);    
-  /* TODO : Don't forget to release everything */
+  engine_v2_run(&engine, &itf);
+  
+  /* Release engine & more */
   engine_v2_release(&engine);
+  timeline_release(&timeline);
   
   return 0;
 
