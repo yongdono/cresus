@@ -130,8 +130,8 @@ int main(int argc, char **argv)
   struct engine_v2 engine;
   struct timeline timeline;
 
-  if(argc < 2)
-    goto usage;
+  /* Check arguments */
+  __try__(argc < 2, usage);
 
   /* Options */
   common_opt_init(&opt, "m:");
@@ -143,8 +143,8 @@ int main(int argc, char **argv)
   }
   
   /* Command line params */
-  if(opt.fixed_amount.set) amount = opt.fixed_amount.i;
   __try__(!opt.input_type.set, usage);
+  if(opt.fixed_amount.set) amount = opt.fixed_amount.i;
 
   /* Prepare timeline */
   timeline_init(&timeline);
@@ -166,6 +166,6 @@ int main(int argc, char **argv)
   return 0;
 
  __catch__(usage):
-  fprintf(stdout, "Usage: %s -o type filename\n", argv[0]);
+  fprintf(stdout, "Usage: %s -o type filename [-m occurrence]\n", argv[0]);
   return -1;
 }
