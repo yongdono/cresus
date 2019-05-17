@@ -219,10 +219,12 @@ static void engine_v2_sell_cash(struct engine_v2 *ctx,
 {
   double n = value / track_n3->open;
   n = MIN(n, p->shares);
+  /* Correct parameters */
+  value = n * track_n3->open;
   p->shares -= n;
-
+  
   /* Stats */
-  p->earned += n * track_n3->open;
+  p->earned += value;
   p->fees += ctx->transaction_fee;
   
   PR_INFO("%s - Sell %.4lf securities for %.2lf CASH\n",

@@ -102,13 +102,13 @@ int main(int argc, char **argv)
   __try__(argc < 2, usage);
 
   /* Options */
-  common_opt_init(&opt, "m");
+  common_opt_init(&opt, "m:");
   while((c = common_opt_getopt(&opt, argc, argv)) != -1){
     switch(c){
     case 'm': month = atoi(optarg); break;
     default: break;
     }
-  };
+  }
   
   /* Command line params */
   __try__(!opt.input_type.set, usage);
