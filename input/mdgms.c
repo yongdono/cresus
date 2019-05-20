@@ -46,8 +46,7 @@ static struct input_n3 *mdgms_read(struct input *in)
   ctx->i++;
   
   time64_t time = time64_epoch(t);
-  if(input_n3_alloc(n3, time, GR_DAY,
-		       open, close, high, low, vol))
+  if(input_n3_alloc(n3, time, open, close, high, low, vol))
     return n3;
   
  __catch__(err):

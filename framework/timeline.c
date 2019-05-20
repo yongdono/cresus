@@ -27,7 +27,7 @@ const char *timeline_track_n3_str_r(struct timeline_track_n3 *ctx,
 {
   sprintf(buf, "%s: %s " input_n3_interface_fmt,
           ctx->track->name,
-          time64_str(ctx->slice->time, GR_DAY), /* ! */
+          time64_str(ctx->time, GR_DAY), /* ! */
           input_n3_interface_args(ctx));
   
   return buf;
@@ -44,6 +44,37 @@ timeline_track_n3_get_indicator_n3(struct timeline_track_n3 *ctx,
   }
   
   return NULL;
+}
+
+static int timeline_track_add_track_n3(struct timeline_track *ctx,
+                                       struct timeline_track_n3 *track_n3)
+{
+  struct timeline_track_n3 *ptr;
+  
+  __list_for_each_prev__(&ctx->list_track_n3s, ptr){
+    /* Compare */
+    time64_t c = TIME64CMP(ptr->time, track_n3->time, GR_DAY);
+    /* ptr already exists */
+    if(!c){
+      PR_WARN("timeline.c: %s track_n3 already exists ! Discard...\n",
+              time64_str(track_n3->time, GR_DAY));
+      return -1;
+    }
+    /* ptr is ahead, sort */
+    if(c < 0){
+      __list_add__(ptr, track_n3);
+      /* Debug */
+      static char buf0[12], buf1[12];
+      PR_DBG("timeline.c: %s inserted after %s\n",
+             time64_str_r(track_n3->time, GR_DAY, buf0),
+             time64_str_r(ptr->time, GR_DAY, buf1));
+      return 0;
+    }
+  }
+  
+  /* Something's wrong or no n3s yet */
+  __list_add_tail__(&ctx->list_track_n3s, track_n3);
+  return -1;
 }
 
 /*
@@ -138,8 +169,8 @@ int timeline_add_track(struct timeline *ctx,
 		       struct timeline_track *track,
 		       struct input *input)
 {
-  struct timeline_slice *slice;
   struct input_n3 *input_n3;
+  struct timeline_slice *slice;
   struct timeline_track_n3 *track_n3;
   struct timeline_slice_n3 *slice_n3;
 
@@ -154,7 +185,7 @@ int timeline_add_track(struct timeline *ctx,
       /* 3) Create track n3, register slice */
       PR_DBG("3) Create track n3, register slice\n");
       __try__(!timeline_track_n3_alloc(track_n3, input_n3, track, slice), err);
-      __list_add_tail__(&track->list_track_n3s, track_n3); /* FIXME : sort this */
+      timeline_track_add_track_n3(track, track_n3);
       /* 4) Create slice n3 & register track n3 */
       PR_DBG("4) Create slice n3 & register track n3\n");
       __try__(!timeline_slice_n3_alloc(slice_n3, track_n3), err);
