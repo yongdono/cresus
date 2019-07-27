@@ -14,57 +14,79 @@
 #include <stdio.h>
 #include <getopt.h>
 #include <math.h>
+#include <libgen.h>
 
-#include "input/inwrap.h"
-#include "engine/engine.h"
+#include "engine/engine_v2.h"
+#include "engine/common_opt.h"
+
 #include "framework/verbose.h"
+#include "framework/timeline.h"
+
+#include "input/input_wrapper.h"
 
 static int amount = 250;
-static int current_month = -1;
-time_info_t year_min = TIME_INIT(1900, 1, 1, 0, 0, 0, 0);
+static int month = 5; /* Defautl : sell in May. June seems better :/ */
 
-/* Stats */
-static int quiet = 0;
+struct sell_in_may {
+  int cur_month;
+};
 
-static int feed(struct engine *e,
-		struct timeline *t,
-		struct timeline_entry *entry)
+static int sell_in_may_init(struct sell_in_may *ctx)
 {
-  /* Step by step loop */
-  time_info_t time = VAL_YEAR(year_min);
-  struct candle *c = __timeline_entry_self__(entry);
-
-#define MONTH 6 /* June seems to work better */
-  
-  /* Execute */
-  int month = TIME_GET_MONTH(entry->time);
-  if(month != current_month){
-    if(month != MONTH) engine_set_order(e, BUY, amount, CASH, NULL);
-    else engine_set_order(e, SELL, CASH, 100000, NULL); /* FIXME */
-  }
-  
-  current_month = month;
+  ctx->cur_month = -1;
   return 0;
 }
 
-static struct timeline *timeline_create(const char *filename,
-					const char *type)
+#define sell_in_may_alloc(ctx)                                  \
+  DEFINE_ALLOC(struct sell_in_may, ctx, sell_in_may_init)
+
+static void feed_track_n3(struct engine_v2 *engine,
+                          struct timeline_slice *slice,
+                          struct timeline_track_n3 *track_n3)
 {
-  /*
-   * Data
-   */
-  struct inwrap *inwrap;
-  struct timeline *timeline;
-  inwrap_t t = inwrap_t_from_str(type);
+  struct engine_v2_order *order;
+  int cur_month = TIME64_GET_MONTH(slice->time);
+  unique_id_t uid = __slist_uid_uid__(track_n3->track);
+  struct sell_in_may *ctx = timeline_track_n3_track_private(track_n3);
   
-  if(inwrap_alloc(inwrap, filename, t)){
-    if(timeline_alloc(timeline, "sell_in_may", __input__(inwrap))){
-      /* Ok */
-      return timeline;
+  if(cur_month != ctx->cur_month){
+    if(cur_month != month){
+      engine_v2_order_alloc(order, uid, BUY, amount, CASH);
+      engine_v2_set_order(engine, order);
+    }else{
+      /* FIXME: create a SELL_ALL order ? */
+      engine_v2_order_alloc(order, uid, SELL, INT_MAX, CASH);
+      engine_v2_set_order(engine, order);
     }
   }
   
-  return NULL;
+  ctx->cur_month = cur_month;
+}
+
+static struct engine_v2_interface itf = {
+  .feed_track_n3 = feed_track_n3
+};
+
+static int timeline_create(struct timeline *t,
+                           char *filename,
+                           const char *type,
+                           unique_id_t track_uid)
+{
+  struct input *input;
+  if((input = input_wrapper_create(filename, type))){
+    /* Create tracks */
+    struct sell_in_may *ctx;
+    struct timeline_track *track;
+    __try__(!sell_in_may_alloc(ctx), err);
+    __try__(!timeline_track_alloc(track, track_uid,
+                                  basename(filename), ctx), err);
+    /* Add to timeline */
+    timeline_add_track(t, track, input);
+    return 0;
+  }
+
+ __catch__(err):
+  return -1;
 }
 
 int main(int argc, char **argv)
@@ -74,48 +96,49 @@ int main(int argc, char **argv)
   /*
    * Data
    */
-  int c;
-  char *filename, *type;
+  int c, n = 0;
+  char *filename;
   
-  struct timeline *t;
-  struct engine engine;
+  struct common_opt opt;
+  struct engine_v2 engine;
+  struct timeline timeline;
 
-  if(argc < 2){
-    fprintf(stdout, "Usage: %s -o type filename\n", argv[0]);
-    return -1;
-  }
+  /* Check arguments */
+  __try__(argc < 2, usage);
 
-  while((c = getopt(argc, argv, "o:n:F:q")) != -1){
+  /* Options */
+  common_opt_init(&opt, "m:");
+  while((c = common_opt_getopt(&opt, argc, argv)) != -1){
     switch(c){
-    case 'o': type = optarg; break;
-    case 'n': year_min = VAL_YEAR(atoi(optarg)); break;
-    case 'F': amount = atoi(optarg); break;
-    case 'q': quiet = 1; break;
-    default:
-      PR_ERR("Unknown option %c\n", c);
-      return -1;
+    case 'm': month = atoi(optarg); break;
+    default: break;
     }
   }
-
-  /* Filename is only real param */
-  filename = argv[optind];
   
-  if((t = timeline_create(filename, type))){
-    engine_init(&engine, t);
-    /* Options */
-    engine_set_transaction_fee(&engine, 2.50);
-    engine_set_quiet(&engine, quiet);
-    engine_set_start_time(&engine, year_min);
+  /* Command line params */
+  __try__(!opt.input_type.set, usage);
+  if(opt.fixed_amount.set) amount = opt.fixed_amount.i;
 
-    /* Run */
-    engine_run(&engine, feed);
-    
-    /* Print some info */
-    engine_display_stats(&engine);
-    
-    /* TODO : Don't forget to release everything */
-    engine_release(&engine);
-  }
+  /* Prepare timeline */
+  timeline_init(&timeline);
+  while((filename = argv[optind++]))
+    timeline_create(&timeline, filename, opt.input_type.s, n++);
+
+  /* Execute timeline */
+  timeline_run_and_sync(&timeline);
+  /* Start engine */
+  engine_v2_init(&engine, &timeline);
+  engine_v2_set_common_opt(&engine, &opt);
+  /* Run */
+  engine_v2_run(&engine, &itf);
+  
+  /* Release engine & more */
+  engine_v2_release(&engine);
+  timeline_release(&timeline);
   
   return 0;
+  
+ __catch__(usage):
+  fprintf(stdout, "Usage: %s -o type filename [-m month]\n", argv[0]);
+  return -1;
 }

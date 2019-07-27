@@ -9,7 +9,7 @@
 #ifndef COMMON_OPT_H
 #define COMMON_OPT_H
 
-#include "time_info.h"
+#include "framework/time64.h"
 
 struct common_opt_tuple {
   int set;
@@ -17,7 +17,7 @@ struct common_opt_tuple {
     int i;
     char *s;
     double d;
-    time_info_t t;
+    time64_t t;
   };
 };
 
@@ -25,7 +25,7 @@ struct common_opt_tuple {
   { (tuple)->set = 1;                            \
     (tuple)->type = (val); };
 
-#define COMMON_OPTSTRING "cf:o:vF:S:E:"
+#define COMMON_OPTSTRING "cf:o:qvF:S:E:"
 /*
  * -c enable csv output (for gnuplot)
  * -f <transaction fee>

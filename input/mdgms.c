@@ -13,16 +13,16 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "mdgms.h"
-#include "engine/candle.h"
+#include "input/mdgms.h"
+#include "framework/types.h"
 #include "framework/verbose.h"
 
-static struct timeline_entry *mdgms_read(struct input *in)
+static struct input_n3 *mdgms_read(struct input *in)
 {
-  struct candle *c;
-  struct mdgms *ctx = __input_self__(in);
-  
-  /* TODO: check !!! */
+  struct input_n3 *n3;
+  struct mdgms *ctx = (void*)in;
+
+  /* Values */
   json_value *ts = ctx->value->u.object.values[0].value;
   json_value *op = ctx->value->u.object.values[1].value;
   json_value *hi = ctx->value->u.object.values[2].value;
@@ -30,11 +30,11 @@ static struct timeline_entry *mdgms_read(struct input *in)
   json_value *cl = ctx->value->u.object.values[4].value;
   json_value *vl = ctx->value->u.object.values[5].value;
   
-  /* Check for EOF */
-  if(ctx->i >= ts->u.array.length)
-    goto err;
+  /* Check */
+  __try__(!ts || !op || !hi || !lo || !cl || !vl, err); /* Parse error */
+  __try__(ctx->i >= ts->u.array.length, err); /* EOF */
   
-  /* ! */
+  /* How to check ? */
   time_t t = ts->u.array.values[ctx->i]->u.integer;
   double open = op->u.array.values[ctx->i]->u.dbl;
   double high = hi->u.array.values[ctx->i]->u.dbl;
@@ -45,12 +45,11 @@ static struct timeline_entry *mdgms_read(struct input *in)
   /* Increment */
   ctx->i++;
   
-  time_info_t time = time_info_epoch(t);
-  if(candle_alloc(c, time, GRANULARITY_DAY,
-                  open, close, high, low, vol))
-    return __timeline_entry__(c);
+  time64_t time = time64_epoch(t);
+  if(input_n3_alloc(n3, time, open, close, high, low, vol))
+    return n3;
   
- err:
+ __catch__(err):
   return NULL;
 }
 
@@ -60,8 +59,8 @@ int mdgms_init(struct mdgms *ctx, const char *filename)
   size_t size;
   struct stat stat;
 
-  /* super */
-  __input_super__(ctx, mdgms_read);
+  /* init */
+  __input_init__(ctx, mdgms_read);
   
   /* internals */
   ctx->i = 0;
