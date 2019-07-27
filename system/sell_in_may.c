@@ -44,15 +44,20 @@ static void feed_track_n3(struct engine_v2 *engine,
                           struct timeline_slice *slice,
                           struct timeline_track_n3 *track_n3)
 {
+  struct engine_v2_order *order;
   int cur_month = TIME64_GET_MONTH(slice->time);
+  unique_id_t uid = __slist_uid_uid__(track_n3->track);
   struct sell_in_may *ctx = timeline_track_n3_track_private(track_n3);
   
   if(cur_month != ctx->cur_month){
-    if(cur_month != month)
-      engine_v2_set_order(engine, track_n3->track, BUY, amount, CASH, 0);
-    else
-      /* FIXME */
-      engine_v2_set_order(engine, track_n3->track, SELL, INT_MAX, CASH, 0);
+    if(cur_month != month){
+      engine_v2_order_alloc(order, uid, BUY, amount, CASH);
+      engine_v2_set_order(engine, order);
+    }else{
+      /* FIXME: create a SELL_ALL order ? */
+      engine_v2_order_alloc(order, uid, SELL, INT_MAX, CASH);
+      engine_v2_set_order(engine, order);
+    }
   }
   
   ctx->cur_month = cur_month;
