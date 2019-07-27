@@ -10,76 +10,6 @@
 #include "framework/verbose.h"
 
 /*
- * Orders
- */
-
-/* Real order struct */
-struct engine_v2_order {
-  __inherits_from__(struct list);
-  unique_id_t track_uid;
-  engine_v2_order_t type;
-  engine_v2_order_by_t by;
-  double value;
-  int level; /* For info */
-};
-
-static int engine_v2_order_init(struct engine_v2_order *ctx,
-				unique_id_t track_uid,
-				engine_v2_order_t type,
-				double value,
-				engine_v2_order_by_t by,
-                                int level)
-{
-  __list_init__(ctx); /* super() */
-  ctx->track_uid = track_uid;
-  ctx->type = type;
-  ctx->value = value;
-  ctx->by = by;
-  ctx->level = level;
-  return 0;
-}
-
-static void engine_v2_order_release(struct engine_v2_order *ctx)
-{
-  __list_release__(ctx);
-}
-
-#define engine_v2_order_alloc(ctx, track_uid, type, value, by, level)   \
-  DEFINE_ALLOC(struct engine_v2_order, ctx,				\
-	       engine_v2_order_init, track_uid, type, value, by, level)
-#define engine_v2_order_free(ctx)		\
-  DEFINE_FREE(ctx, engine_v2_order_release)
-
-/* 
- * Positions
- */
-struct engine_v2_position {
-  __inherits_from__(struct slist_uid);
-  double shares, spent, earned, fees;
-};
-
-int engine_v2_position_init(struct engine_v2_position *ctx, unique_id_t uid)
-{
-  __slist_uid_init__(ctx, uid);
-  ctx->shares = 0.0;
-  ctx->spent = 0.0;
-  ctx->earned = 0.0;
-  ctx->fees = 0.0;
-  return 0;
-}
-
-void engine_v2_position_release(struct engine_v2_position *ctx)
-{
-  __slist_uid_release__(ctx);
-}
-
-#define engine_v2_position_alloc(ctx, uid)      \
-  DEFINE_ALLOC(struct engine_v2_position, ctx,  \
-	       engine_v2_position_init, uid)
-#define engine_v2_position_free(ctx)            \
-  DEFINE_FREE(ctx, engine_v2_position_release)
-
-/*
  * Engine v2
  */
 
@@ -103,22 +33,16 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
 
   /* Init lists */
   list_head_init(&ctx->list_orders);
-  slist_uid_head_init(&ctx->slist_uid_positions);
-  
-  /* Init positions slist */
-  struct timeline_track *track;
-  __slist_for_each__(&t->by_track, track){
-    struct engine_v2_position *p;
-    __try__(!engine_v2_position_alloc(p, __slist_uid_uid__(track)), err);
-    __slist_push__(&ctx->slist_uid_positions, p);
-  }
+
+  /* Portfolio */
+  portfolio_init(&ctx->portfolio);
   
   return 0;
-  
- __catch__(err):
-  PR_WARN("%s: can't allocate positions\n", __FUNCTION__);
-  return -1;
 }
+
+/*
+ * Stats. TODO : put somewhere else
+ */
 
 #define engine_v2_performance_pcent(assets, spent, earned, fees)	\
   (((assets + earned) / (spent + fees) - 1.0) * 100.0)
@@ -132,27 +56,20 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
 static void engine_v2_display_stats(struct engine_v2 *ctx)
 {
   double total_value = 0.0;
-  double spent = 0.0, earned = 0.0, fees = 0.0;
-
-  /* Assets */
-  struct engine_v2_position *p;
-  __slist_for_each__(&ctx->slist_uid_positions, p){
+  
+  /* Portfolio */
+  struct portfolio_n3 *pos;
+  __list_for_each__(&ctx->portfolio.list_portfolio_n3s, pos){
     struct timeline_track_n3 *track_n3 =
-      timeline_slice_get_track_n3(ctx->last_slice,
-				  __slist_uid_uid__(p));
+      timeline_slice_get_track_n3(ctx->last_slice, pos->uid);
     
-    double assets_value = track_n3->close * p->shares;
-    total_value += assets_value;
-    spent += p->spent;
-    earned += p->earned;
-    fees += p->fees;
-    /* Display stats & performance */
-    engine_v2_print_stats(track_n3->track->name, assets_value,
-			  p->spent, p->earned, p->fees); 
+    portfolio_n3_pr_stat(pos, track_n3->close);
+    total_value += portfolio_n3_total_value(pos, track_n3->close);
   }
-
+  
   /* Total */
-  engine_v2_print_stats("Total", total_value, spent, earned, fees);
+  engine_v2_print_stats("Total", total_value, ctx->spent,
+			ctx->earned, ctx->fees);
 }
 
 static void
@@ -179,10 +96,8 @@ void engine_v2_release(struct engine_v2 *ctx)
   /* Display pending orders */
   engine_v2_display_pending_orders(ctx);
   
-  /* Clean positions slist */
-  struct engine_v2_position *p;
-  while(__slist_pop__(&ctx->slist_uid_positions, &p) != NULL)
-    engine_v2_position_free(p);
+  /* Clean portfolio */
+  portfolio_release(&ctx->portfolio);
 }
 
 int engine_v2_set_common_opt(struct engine_v2 *ctx,
@@ -197,38 +112,50 @@ int engine_v2_set_common_opt(struct engine_v2 *ctx,
 }
 
 static void engine_v2_buy_cash(struct engine_v2 *ctx,
-			       struct engine_v2_position *p,
 			       struct timeline_track_n3 *track_n3,
-			       double value)
+			       struct engine_v2_order *order)
 {
-  double n = value / track_n3->open;
-  p->shares += n;
-
+  /* Convert CASH to shares */
+  double shares = engine_v2_order_shares(order, track_n3->open);
+  
+  /* Portfolio */
+  if(order->funding > 0)
+    portfolio_add_leveraged(&ctx->portfolio,
+			    track_n3->track->name, order->track_uid,
+			    shares, track_n3->open, order->funding,
+			    order->ratio, order->stoploss);
+  else
+    portfolio_add(&ctx->portfolio,
+		  track_n3->track->name, order->track_uid,
+		  shares, track_n3->open);
+  
   /* Stats */
-  p->spent += value;
-  p->fees += ctx->transaction_fee;
+  ctx->spent += order->value;
+  ctx->fees += ctx->transaction_fee;
   
   PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
-	  timeline_track_n3_str(track_n3), n, value);
+	  timeline_track_n3_str(track_n3), shares, order->value);
 }
 
 static void engine_v2_sell_cash(struct engine_v2 *ctx,
-				struct engine_v2_position *p,
 				struct timeline_track_n3 *track_n3,
-				double value)
+				struct engine_v2_order *order)
 {
-  double n = value / track_n3->open;
-  n = MIN(n, p->shares);
-  /* Correct parameters */
-  value = n * track_n3->open;
-  p->shares -= n;
+  /* Convert CASH to shares */
+  double shares = engine_v2_order_shares(order, track_n3->open);
+  
+  /* Portfolio */
+  order->value = portfolio_sub(&ctx->portfolio,
+			       track_n3->track->name,
+			       order->track_uid,
+			       shares, track_n3->open);
   
   /* Stats */
-  p->earned += value;
-  p->fees += ctx->transaction_fee;
+  ctx->earned += order->value;
+  ctx->fees += ctx->transaction_fee;
   
   PR_INFO("%s - Sell %.4lf securities for %.2lf CASH\n",
-	  timeline_track_n3_str(track_n3), n, value);
+	  timeline_track_n3_str(track_n3), shares, order->value);
 }
 
 static void engine_v2_run_orders(struct engine_v2 *ctx,
@@ -245,14 +172,10 @@ static void engine_v2_run_orders(struct engine_v2 *ctx,
     if(order->track_uid != timeline_track_n3_track_uid(track_n3))
       continue;
     
-    /* Find track-related position */
-    struct engine_v2_position *p = (struct engine_v2_position*)
-      __slist_uid_find__(&ctx->slist_uid_positions, order->track_uid);
-
     /* Run order */
     switch(order->type){
-    case BUY: engine_v2_buy_cash(ctx, p, track_n3, order->value); break;
-    case SELL: engine_v2_sell_cash(ctx, p, track_n3, order->value); break;
+    case BUY: engine_v2_buy_cash(ctx, track_n3, order); break;
+    case SELL: engine_v2_sell_cash(ctx, track_n3, order); break;
     }
 
   next:
@@ -262,7 +185,8 @@ static void engine_v2_run_orders(struct engine_v2 *ctx,
   }
 }
 
-void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i)
+void engine_v2_run(struct engine_v2 *ctx,
+		   struct engine_v2_interface *i)
 {
   struct timeline_slice *slice;
   struct indicator_n3 *indicator_n3;
@@ -286,6 +210,8 @@ void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i)
     timeline_slice_for_each_track_n3(slice, track_n3){
       /* Run pending orders */
       engine_v2_run_orders(ctx, track_n3);
+      /* Run portfolio */
+      portfolio_run(&ctx->portfolio, track_n3->low); /* FIXME */
       
       if(i->feed_track_n3)
         i->feed_track_n3(ctx, slice, track_n3);
@@ -307,16 +233,8 @@ void engine_v2_run(struct engine_v2 *ctx, struct engine_v2_interface *i)
 }
 
 int engine_v2_set_order(struct engine_v2 *ctx,
-			struct timeline_track *track,
-			engine_v2_order_t type, double value,
-			engine_v2_order_by_t by,
-                        int level)
+			struct engine_v2_order *order)
 {
-  struct engine_v2_order *order;
-  engine_v2_order_alloc(order, __slist_uid_uid__(track),
-			type, value, by, level);
-  if(!order) return -1;
-  
   __list_add__(&ctx->list_orders, order);
   return 0;
 }

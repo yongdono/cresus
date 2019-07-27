@@ -5,6 +5,5 @@ project(cresus)
 add_library(engine OBJECT
   common_opt.c
   engine_v2.c
-#  order.c
-#  position.c
+  portfolio.c
   )

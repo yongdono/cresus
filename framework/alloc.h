@@ -27,4 +27,8 @@ static inline void *free_null(void *ptr)
   return NULL;
 }
 
+static inline void release_dummy(void *ptr)
+{
+}
+
 #endif

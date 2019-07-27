@@ -92,6 +92,18 @@ timeline_track_n3_add_indicator_n3(struct timeline_track_n3 *ctx,
   __slist_push__(&ctx->slist_indicator_n3s, indicator_n3);
 }
 
+static inline struct timeline_track_n3 *
+timeline_track_n3_prev(struct timeline_track_n3 *ctx, int n)
+{
+  while(n--){
+    /* Beware : if not enough data, will send 1st one again & again */
+    if(!list_is_head(__list__(ctx)->prev))
+      ctx = (void*)__list__(ctx)->prev;
+  }
+
+  return ctx;
+}
+
 struct indicator_n3 *
 timeline_track_n3_get_indicator_n3(struct timeline_track_n3 *ctx,
 				   unique_id_t indicator_uid);
