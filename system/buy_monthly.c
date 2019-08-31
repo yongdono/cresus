@@ -71,14 +71,11 @@ static void feed_track_n3(struct engine_v2 *engine,
                           struct timeline_track_n3 *track_n3)
 {
   int month = TIME64_GET_MONTH(slice->time);
-  unique_id_t uid = __slist_uid_uid__(track_n3->track);
   struct buy_monthly *ctx = timeline_track_n3_track_private(track_n3);
   
   if(month != ctx->last_month && !(month % occurrence)){
     //PR_WARN("%s - BUY %d\n", timeline_track_n3_str(track_n3), amount);
-    struct engine_v2_order *order;
-    engine_v2_order_alloc(order, uid, BUY, 500.0, CASH);
-    engine_v2_set_order(engine, order);
+    engine_v2_set_order(engine, track_n3->track, BUY, 500.0, CASH, 0);
   }
 
   /* Update ctx */

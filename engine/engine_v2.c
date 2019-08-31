@@ -60,8 +60,12 @@ static void engine_v2_display_stats(struct engine_v2 *ctx)
   /* Portfolio */
   struct portfolio_n3 *pos;
   __list_for_each__(&ctx->portfolio.list_portfolio_n3s, pos){
-    struct timeline_track_n3 *track_n3 =
-      timeline_slice_get_track_n3(ctx->last_slice, pos->uid);
+    /* Find track by uid */
+    struct timeline_track *track = (void*)
+      __slist_uid_find__(&ctx->timeline->by_track, pos->uid);
+    /* Get last track n3 */
+    struct timeline_track_n3 *track_n3 = (void*)
+      track->list_track_n3s.prev;
     
     portfolio_n3_pr_stat(pos, track_n3->close);
     total_value += portfolio_n3_total_value(pos, track_n3->close);
@@ -81,9 +85,13 @@ engine_v2_display_pending_orders(struct engine_v2 *ctx)
     struct timeline_track *track = (void*)
       __slist_uid_find__(&ctx->timeline->by_track,
                          order->track_uid);
+    /* Get last track n3 */
+    struct timeline_track_n3 *track_n3 = (void*)
+      track->list_track_n3s.prev;
     
-    fprintf(stdout, "%s %s %.2lf %d\n",
-	    track->name, (order->type == BUY ? "buy" : "sell"),
+    fprintf(stdout, "%s %.2lf %s %.2lf %d\n",
+	    track->name, track_n3->close,
+	    (order->type == BUY ? "buy" : "sell"),
 	    order->value, order->level);
   }
 }

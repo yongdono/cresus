@@ -84,7 +84,7 @@ engine_v2_order_set_leverage(struct engine_v2_order *ctx,
 }
 
 /* Shortcuts */
-#define engine_v2_set_order_turbo(ctx, funding, ratio)		\
+#define engine_v2_order_set_turbo(ctx, funding, ratio)		\
   engine_v2_order_set_leverage(ctx, funding, ratio, funding)
 #define engine_v2_order_shares(ctx, price)	\
   ((ctx)->value / ((price) - (ctx)->funding))
