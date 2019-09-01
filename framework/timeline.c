@@ -56,8 +56,8 @@ static int timeline_track_add_track_n3(struct timeline_track *ctx,
     time64_t c = TIME64CMP(ptr->time, track_n3->time, GR_DAY);
     /* ptr already exists */
     if(!c){
-      PR_WARN("timeline.c: %s track_n3 already exists ! Discard...\n",
-              time64_str(track_n3->time, GR_DAY));
+      PR_WARN("timeline.c: %s %s track_n3 already exists ! Discard...\n",
+              ctx->name, time64_str(track_n3->time, GR_DAY));
       return -1;
     }
     /* ptr is ahead, sort */
@@ -185,11 +185,12 @@ int timeline_add_track(struct timeline *ctx,
       /* 3) Create track n3, register slice */
       PR_DBG("3) Create track n3, register slice\n");
       __try__(!timeline_track_n3_alloc(track_n3, input_n3, track, slice), err);
-      timeline_track_add_track_n3(track, track_n3);
+      __try__(timeline_track_add_track_n3(track, track_n3) < 0, next);
       /* 4) Create slice n3 & register track n3 */
       PR_DBG("4) Create slice n3 & register track n3\n");
       __try__(!timeline_slice_n3_alloc(slice_n3, track_n3), err);
       __slist_push__(&slice->slist_slice_n3s, slice_n3);
+    __catch__(next):
       PR_DBG("5) Back to 1\n");
     }
   }
