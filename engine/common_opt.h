@@ -54,5 +54,6 @@ int common_opt_init(struct common_opt *ctx, const char *optstring);
 void common_opt_release(struct common_opt *ctx);
 
 int common_opt_getopt(struct common_opt *ctx, int argc, char **argv);
+int common_opt_getopt_linear(struct common_opt *ctx, int arc, char **argv, char **optarg);
 
 #endif

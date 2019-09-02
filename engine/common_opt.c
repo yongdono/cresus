@@ -83,3 +83,43 @@ int common_opt_getopt(struct common_opt *ctx, int argc, char **argv)
   
   return c;
 }
+
+int common_opt_getopt_linear(struct common_opt *ctx,
+			     int argc, char **argv,
+			     char **optarg)
+{
+  static int index = 0; /* FIXME */
+  if(++index == argc) return -1;
+
+  if(*argv[index] == '-'){
+    int c = argv[index][1];
+    if(!(*optarg = &argv[index][2]))
+      *optarg = argv[++index];
+    
+    switch(c){
+    case 'f':
+      sscanf(*optarg, "%lf", &ctx->transaction_fee.d);
+      ctx->transaction_fee.set = 1;
+      break;
+      
+    case 'F':
+      COMMON_OPT_SET(&ctx->fixed_amount, i, atoi(*optarg));
+      break;
+      
+    case 'S':
+      COMMON_OPT_SET(&ctx->start_time, t,
+		     common_opt_time64(ctx, *optarg));
+      break;
+      
+    case 'E':
+      COMMON_OPT_SET(&ctx->end_time, t,
+		     common_opt_time64(ctx, *optarg));
+      break;
+    }
+    
+    return c;
+  }
+
+  *optarg = argv[index];
+  return '-';
+}
