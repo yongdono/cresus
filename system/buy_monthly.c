@@ -71,11 +71,14 @@ static void feed_track_n3(struct engine_v2 *engine,
                           struct timeline_track_n3 *track_n3)
 {
   int month = TIME64_GET_MONTH(slice->time);
+  unique_id_t uid = __slist_uid_uid__(track_n3->track);
   struct buy_monthly *ctx = timeline_track_n3_track_private(track_n3);
   
   if(month != ctx->last_month && !(month % occurrence)){
     //PR_WARN("%s - BUY %d\n", timeline_track_n3_str(track_n3), amount);
-    engine_v2_set_order(engine, track_n3->track, BUY, 500.0, CASH, 0);
+    struct engine_v2_order *order;
+    engine_v2_order_alloc(order, uid, BUY, 500.0, CASH);
+    engine_v2_set_order(engine, order);
   }
 
   /* Update ctx */
@@ -87,16 +90,14 @@ static struct engine_v2_interface itf = {
   .feed_indicator_n3 = feed_indicator_n3
 };
 
-static int timeline_create(struct timeline *t,
-                           char *filename,
-                           const char *type,
+static int timeline_create(struct timeline *t, char *filename,
                            unique_id_t track_uid)
 {
   /*
    * Data
    */
   struct input *input;
-  if((input = input_wrapper_create(filename, type))){
+  if((input = input_wrapper_create_by_ext(filename))){
     /* Create tracks */
     struct buy_monthly *ctx;
     struct timeline_track *track;
@@ -124,8 +125,8 @@ int main(int argc, char **argv)
    * Data
    */
   int c, n = 0;
-  char *filename;
-  
+  char *optarg;
+
   struct common_opt opt;
   struct engine_v2 engine;
   struct timeline timeline;
@@ -134,22 +135,16 @@ int main(int argc, char **argv)
   __try__(argc < 2, usage);
 
   /* Options */
+  timeline_init(&timeline);
   common_opt_init(&opt, "m:");
-  while((c = common_opt_getopt(&opt, argc, argv)) != -1){
+  
+  while((c = common_opt_getopt_linear(&opt, argc, argv, &optarg)) != -1){
     switch(c){
     case 'm': occurrence = atoi(optarg); break;
-    default: break;
+    case 'F': amount = atoi(optarg); break;
+    case '-': timeline_create(&timeline, optarg, n++); break;
     }
   }
-  
-  /* Command line params */
-  __try__(!opt.input_type.set, usage);
-  if(opt.fixed_amount.set) amount = opt.fixed_amount.i;
-
-  /* Prepare timeline */
-  timeline_init(&timeline);
-  while((filename = argv[optind++]))
-    timeline_create(&timeline, filename, opt.input_type.s, n++);
   
   /* Execute timeline */
   timeline_run_and_sync(&timeline);

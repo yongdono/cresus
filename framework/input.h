@@ -31,7 +31,7 @@ typedef enum {
     (a)->close = (b)->close;                            \
     (a)->high = (b)->high;                              \
     (a)->low = (b)->low;                                \
-    (a)->volume = (b)->volume; })
+    (a)->volume = (b)->volume;})
 
 #define input_n3_interface_fmt                  \
   "o%.2f c%.2f h%.2f l%.2f v%.0f"

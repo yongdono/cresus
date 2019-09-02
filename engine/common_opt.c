@@ -93,7 +93,7 @@ int common_opt_getopt_linear(struct common_opt *ctx,
 
   if(*argv[index] == '-'){
     int c = argv[index][1];
-    if(!(*optarg = &argv[index][2]))
+    if(!*(*optarg = &argv[index][2]))
       *optarg = argv[++index];
     
     switch(c){

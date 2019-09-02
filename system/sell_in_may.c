@@ -44,15 +44,20 @@ static void feed_track_n3(struct engine_v2 *engine,
                           struct timeline_slice *slice,
                           struct timeline_track_n3 *track_n3)
 {
+  struct engine_v2_order *order;
   int cur_month = TIME64_GET_MONTH(slice->time);
+  unique_id_t uid = __slist_uid_uid__(track_n3->track);
   struct sell_in_may *ctx = timeline_track_n3_track_private(track_n3);
   
   if(cur_month != ctx->cur_month){
-    if(cur_month != month)
-      engine_v2_set_order(engine, track_n3->track, BUY, amount, CASH, 0);
-    else
-      /* FIXME */
-      engine_v2_set_order(engine, track_n3->track, SELL, INT_MAX, CASH, 0);
+    if(cur_month != month){
+      engine_v2_order_alloc(order, uid, BUY, amount, CASH);
+      engine_v2_set_order(engine, order);
+    }else{
+      /* FIXME: create a SELL_ALL order ? */
+      engine_v2_order_alloc(order, uid, SELL, INT_MAX, CASH);
+      engine_v2_set_order(engine, order);
+    }
   }
   
   ctx->cur_month = cur_month;
@@ -64,11 +69,10 @@ static struct engine_v2_interface itf = {
 
 static int timeline_create(struct timeline *t,
                            char *filename,
-                           const char *type,
                            unique_id_t track_uid)
 {
   struct input *input;
-  if((input = input_wrapper_create(filename, type))){
+  if((input = input_wrapper_create_by_ext(filename))){
     /* Create tracks */
     struct sell_in_may *ctx;
     struct timeline_track *track;
@@ -92,7 +96,7 @@ int main(int argc, char **argv)
    * Data
    */
   int c, n = 0;
-  char *filename;
+  char *optarg;
   
   struct common_opt opt;
   struct engine_v2 engine;
@@ -102,23 +106,17 @@ int main(int argc, char **argv)
   __try__(argc < 2, usage);
 
   /* Options */
+  timeline_init(&timeline);
   common_opt_init(&opt, "m:");
-  while((c = common_opt_getopt(&opt, argc, argv)) != -1){
+  
+  while((c = common_opt_getopt_linear(&opt, argc, argv, &optarg)) != -1){
     switch(c){
     case 'm': month = atoi(optarg); break;
-    default: break;
+    case 'F': amount = atoi(optarg); break;
+    case '-': timeline_create(&timeline, optarg, n++);
     }
   }
   
-  /* Command line params */
-  __try__(!opt.input_type.set, usage);
-  if(opt.fixed_amount.set) amount = opt.fixed_amount.i;
-
-  /* Prepare timeline */
-  timeline_init(&timeline);
-  while((filename = argv[optind++]))
-    timeline_create(&timeline, filename, opt.input_type.s, n++);
-
   /* Execute timeline */
   timeline_run_and_sync(&timeline);
   /* Start engine */
