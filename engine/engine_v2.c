@@ -20,8 +20,6 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
   /* Time */
   ctx->start_time = TIME64_MIN;
   ctx->end_time = TIME64_MAX;
-  /* Fees */
-  ctx->transaction_fee = 0;
   /* Output */
   ctx->csv_output = 0;
 
@@ -113,7 +111,6 @@ int engine_v2_set_common_opt(struct engine_v2 *ctx,
 {
   if(opt->start_time.set) ctx->start_time = opt->start_time.t;
   if(opt->end_time.set) ctx->end_time = opt->end_time.t;
-  if(opt->transaction_fee.set) ctx->transaction_fee = opt->transaction_fee.d;
   if(opt->csv_output.set) ctx->csv_output = opt->csv_output.i;
   
   return 0;
@@ -139,7 +136,7 @@ static void engine_v2_buy_cash(struct engine_v2 *ctx,
   
   /* Stats */
   ctx->spent += order->value;
-  ctx->fees += ctx->transaction_fee;
+  ctx->fees += track_n3->track->transaction_fee;
   
   PR_INFO("%s - Buy %.4lf securities for %.2lf CASH\n",
 	  timeline_track_n3_str(track_n3), shares, order->value);
@@ -160,7 +157,7 @@ static void engine_v2_sell_cash(struct engine_v2 *ctx,
   
   /* Stats */
   ctx->earned += order->value;
-  ctx->fees += ctx->transaction_fee;
+  ctx->fees += track_n3->track->transaction_fee;
   
   PR_INFO("%s - Sell %.4lf securities for %.2lf CASH\n",
 	  timeline_track_n3_str(track_n3), shares, order->value);

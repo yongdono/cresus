@@ -107,8 +107,6 @@ struct engine_v2 {
   struct timeline_slice *last_slice;
   /* Portfolio */
   struct portfolio portfolio;
-  /* Cost per transaction */
-  double transaction_fee;
   /* CSV graph output */
   int csv_output;
 };

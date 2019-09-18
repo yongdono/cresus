@@ -132,6 +132,8 @@ struct timeline_track {
   list_head_t(struct timeline_track_n3) list_track_n3s;
   /* The indicators we want to play on that particular track */
   slist_uid_head_t(struct indicator) slist_uid_indicators;
+  /* Fee depends on track, not engine */
+  double transaction_fee;
   /* User might want ot expand this object */
   void *private;
 };
@@ -144,11 +146,12 @@ timeline_track_init(struct timeline_track *ctx, unique_id_t uid,
   strncpy(ctx->name, name, sizeof(ctx->name));
   list_head_init(&ctx->list_track_n3s);
   slist_uid_head_init(&ctx->slist_uid_indicators);
+  ctx->transaction_fee = 0;
   ctx->private = private;
   return uid;
 }
 
-#define timeline_track_alloc(ctx, uid, name, private)				\
+#define timeline_track_alloc(ctx, uid, name, private)			\
   DEFINE_ALLOC(struct timeline_track, ctx,				\
 	       timeline_track_init, uid, name, private)
 
@@ -158,6 +161,9 @@ timeline_track_add_indicator(struct timeline_track *ctx,
 {
   __slist_push__(&ctx->slist_uid_indicators, indicator);
 }
+
+#define timeline_track_set_fee(ctx, fee)	\
+  (ctx)->transaction_fee = fee;
 
 /*
  * Access by slice / indice / time
