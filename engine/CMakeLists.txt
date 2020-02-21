@@ -7,3 +7,7 @@ add_library(engine OBJECT
   engine_v2.c
   portfolio.c
   )
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/engine
+        DESTINATION include/cresus
+        FILES_MATCHING PATTERN "*.h")

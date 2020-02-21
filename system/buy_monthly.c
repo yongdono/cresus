@@ -161,6 +161,6 @@ int main(int argc, char **argv)
   return 0;
 
  __catch__(usage):
-  fprintf(stdout, "Usage: %s -o type filename [-m occurrence]\n", argv[0]);
+  fprintf(stderr, "Usage: %s -o type filename [-m occurrence]\n", argv[0]);
   return -1;
 }

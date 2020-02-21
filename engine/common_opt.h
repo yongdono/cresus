@@ -36,6 +36,9 @@ struct common_opt_tuple {
  * -S <start time> (format : YYYY-MM-DD)
  * -E <end time> (format : YYYY-MM-DD)
  */
+#define COMMON_OPT_USAGE \
+  "[-c] [-f fee] [-q] [-v] [-F fixed_amount] " \
+  "[-S start_time (YYYY-MM-DD)] [-E end_time (YYYY-MM-DD)]"
 
 struct common_opt {
   /* Internals */
