@@ -153,7 +153,7 @@ int engine_v2_set_common_opt(struct engine_v2 *ctx,
   if(opt->end_time.set) ctx->end_time = opt->end_time.t;
   if(opt->csv_output.set){
     if((ctx->csv_output = open(opt->csv_output.s,
-			       O_CREAT|O_WRONLY)) != -1)
+			       O_CREAT|O_WRONLY|O_TRUNC)) != -1)
       dprintf(ctx->csv_output,
 	      "date, invested, spent, earned, gain/loss, index\n");
   }

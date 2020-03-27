@@ -105,6 +105,10 @@ int common_opt_getopt_linear(struct common_opt *ctx,
       sscanf(*optarg, "%lf", &ctx->transaction_fee.d);
       ctx->transaction_fee.set = 1;
       break;
+
+    case 'v':
+      VERBOSE_LEVEL(DBG);
+      break;
       
     case 'F':
       COMMON_OPT_SET(&ctx->fixed_amount, i, atoi(*optarg));
