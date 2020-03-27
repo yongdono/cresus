@@ -97,7 +97,7 @@ portfolio_n3_set_leveraged(struct portfolio_n3 *ctx,
 
 static inline void
 portfolio_n3_pr_stat(struct portfolio_n3 *ctx,
-			   double price)
+		     double price)
 {
   PR_STAT("%s [price] %.2lf [cost price] %.2lf [cost] %.2lf "
 	  "[+/-] %.2lf [total] %.2lf [performance] %.2lf%%\n",

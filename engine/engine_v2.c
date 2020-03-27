@@ -9,6 +9,10 @@
 #include "engine_v2.h"
 #include "framework/verbose.h"
 
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
 /*
  * Engine v2
  */
@@ -21,7 +25,7 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
   ctx->start_time = TIME64_MIN;
   ctx->end_time = TIME64_MAX;
   /* Output */
-  ctx->csv_output = 0;
+  ctx->csv_output = -1;
 
   /* Stats */
   ctx->spent = 0.0;
@@ -51,6 +55,40 @@ int engine_v2_init(struct engine_v2 *ctx, struct timeline *t)
 	  name, earned + value, value, spent, earned, fees,		\
 	  engine_v2_performance_pcent(value, spent, earned, fees));
 
+static double
+engine_v2_total_value(struct engine_v2 *ctx,
+		      struct timeline_slice *slice)
+{
+  double total_value = 0.0;
+  
+  /* Portfolio */
+  struct portfolio_n3 *pos;
+  __list_for_each__(&ctx->portfolio.list_portfolio_n3s, pos){
+    /* Find track_n3 by uid */
+    struct timeline_track_n3 *track_n3 =
+      timeline_slice_get_track_n3(slice, pos->uid);
+    
+    /* Compute total value */
+    total_value += portfolio_n3_total_value(pos, track_n3->close);
+  }
+  
+  return total_value;
+}
+
+static void engine_v2_csv_output(struct engine_v2 *ctx,
+				 struct timeline_slice *slice)
+{
+  double value;
+  if((value = engine_v2_total_value(ctx, slice)) != 0.0){
+    double gainloss = value - (ctx->spent + ctx->earned);
+    dprintf(ctx->csv_output,
+	    "%s, %.2lf, %.2lf, %.2lf, %.2lf, %.2lf\n",
+	    time64_str(slice->time, GR_DAY), value,
+	    ctx->spent, ctx->earned, gainloss,
+	    gainloss / (ctx->spent + ctx->earned));
+  }
+}
+
 static void engine_v2_display_stats(struct engine_v2 *ctx)
 {
   double total_value = 0.0;
@@ -58,13 +96,11 @@ static void engine_v2_display_stats(struct engine_v2 *ctx)
   /* Portfolio */
   struct portfolio_n3 *pos;
   __list_for_each__(&ctx->portfolio.list_portfolio_n3s, pos){
-    /* Find track by uid */
-    struct timeline_track *track = (void*)
-      __slist_uid_find__(&ctx->timeline->by_track, pos->uid);
-    /* Get last track n3 */
-    struct timeline_track_n3 *track_n3 = (void*)
-      track->list_track_n3s.prev;
+    /* Find track_n3 by uid */
+    struct timeline_track_n3 *track_n3 =
+      timeline_slice_get_track_n3(ctx->last_slice, pos->uid);
     
+    /* Display track stats */
     portfolio_n3_pr_stat(pos, track_n3->close);
     total_value += portfolio_n3_total_value(pos, track_n3->close);
   }
@@ -104,6 +140,10 @@ void engine_v2_release(struct engine_v2 *ctx)
   
   /* Clean portfolio */
   portfolio_release(&ctx->portfolio);
+
+  /* Close csv */
+  if(ctx->csv_output != -1)
+    close(ctx->csv_output);
 }
 
 int engine_v2_set_common_opt(struct engine_v2 *ctx,
@@ -111,7 +151,12 @@ int engine_v2_set_common_opt(struct engine_v2 *ctx,
 {
   if(opt->start_time.set) ctx->start_time = opt->start_time.t;
   if(opt->end_time.set) ctx->end_time = opt->end_time.t;
-  if(opt->csv_output.set) ctx->csv_output = opt->csv_output.i;
+  if(opt->csv_output.set){
+    if((ctx->csv_output = open(opt->csv_output.s,
+			       O_CREAT|O_WRONLY)) != -1)
+      dprintf(ctx->csv_output,
+	      "date, invested, spent, earned, gain/loss, index\n");
+  }
   
   return 0;
 }
@@ -231,6 +276,10 @@ void engine_v2_run(struct engine_v2 *ctx,
     /* Post-processing */
     if(i->post_slice)
       i->post_slice(ctx, slice);
+
+    /* Csv output */
+    if(ctx->csv_output != -1)
+      engine_v2_csv_output(ctx, slice);
 
     /* Remember last slice for stats */
     ctx->last_slice = slice;

@@ -42,7 +42,7 @@ int common_opt_getopt(struct common_opt *ctx, int argc, char **argv)
   
   switch((c = getopt(argc, argv, ctx->optstring))){
   case 'c':
-    COMMON_OPT_SET(&ctx->csv_output, i, 1);
+    COMMON_OPT_SET(&ctx->csv_output, s, optarg);
     break;
 
   case 'f':
@@ -97,6 +97,10 @@ int common_opt_getopt_linear(struct common_opt *ctx,
       *optarg = argv[++index];
     
     switch(c){
+    case 'c':
+      COMMON_OPT_SET(&ctx->csv_output, s, *optarg);
+      break;
+    
     case 'f':
       sscanf(*optarg, "%lf", &ctx->transaction_fee.d);
       ctx->transaction_fee.set = 1;
