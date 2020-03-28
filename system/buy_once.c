@@ -12,8 +12,6 @@
  */
 
 #include <stdio.h>
-#include <getopt.h>
-#include <math.h>
 #include <libgen.h>
 
 #include "engine/engine_v2.h"
@@ -23,10 +21,7 @@
 #include "framework/timeline.h"
 #include "input/input_wrapper.h"
 
-#include "indicator/lowest.h"
-
 static int amount = 500;
-static int occurrence = 1;
 
 struct buy_once {
   int once;
@@ -48,7 +43,7 @@ static void feed_track_n3(struct engine_v2 *engine,
 {
   unique_id_t uid = __slist_uid_uid__(track_n3->track);
   struct buy_once *ctx = timeline_track_n3_track_private(track_n3);
-  
+
   if(!ctx->once){
     struct engine_v2_order *order;
     engine_v2_order_alloc(order, uid, BUY, amount, CASH);
@@ -104,14 +99,12 @@ int main(int argc, char **argv)
   __try__(argc < 2, usage);
 
   /* Options */
-  timeline_init(&timeline);
-  
-  while((c = common_opt_getopt_linear(&opt, argc, argv, &optarg)) != -1){
-    switch(c){
-    case 'F': amount = atoi(optarg); break;
-    case '-': timeline_create(&timeline, optarg, n++); break;
-    }
-  }
+  timeline_init(&timeline); 
+  while((c = common_opt_getopt_linear(&opt, argc, argv, &optarg)) != -1)
+    if(c == '-') timeline_create(&timeline, optarg, n++);
+  /* Fixed amount opt */
+  if(opt.fixed_amount.set)
+    amount = opt.fixed_amount.i;
   
   /* Execute timeline data */
   timeline_run_and_sync(&timeline);

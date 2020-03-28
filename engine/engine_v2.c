@@ -78,15 +78,15 @@ engine_v2_total_value(struct engine_v2 *ctx,
 static void engine_v2_csv_output(struct engine_v2 *ctx,
 				 struct timeline_slice *slice)
 {
-  double value;
-  if((value = engine_v2_total_value(ctx, slice)) != 0.0){
-    double gainloss = value - (ctx->spent + ctx->earned);
-    dprintf(ctx->csv_output,
-	    "%s, %.2lf, %.2lf, %.2lf, %.2lf, %.2lf\n",
-	    time64_str(slice->time, GR_DAY), value,
-	    ctx->spent, ctx->earned, gainloss,
-	    gainloss / (ctx->spent + ctx->earned));
-  }
+  double value = engine_v2_total_value(ctx, slice);
+  double balance = (ctx->spent + ctx->earned);
+  double gainloss = value - balance;
+  double index = balance != 0.0 ? (gainloss / balance) : 0.0;
+  
+  dprintf(ctx->csv_output,
+	  "%s, %.2lf, %.2lf, %.2lf, %.2lf, %.2lf\n",
+	  time64_str(slice->time, GR_DAY), value,
+	  ctx->spent, ctx->earned, gainloss, index);
 }
 
 static void engine_v2_display_stats(struct engine_v2 *ctx)
@@ -153,7 +153,8 @@ int engine_v2_set_common_opt(struct engine_v2 *ctx,
   if(opt->end_time.set) ctx->end_time = opt->end_time.t;
   if(opt->csv_output.set){
     if((ctx->csv_output = open(opt->csv_output.s,
-			       O_CREAT|O_WRONLY|O_TRUNC)) != -1)
+			       O_WRONLY|O_CREAT|O_TRUNC,
+			       S_IWUSR|S_IRUSR)) != -1)
       dprintf(ctx->csv_output,
 	      "date, invested, spent, earned, gain/loss, index\n");
   }
@@ -213,10 +214,6 @@ static void engine_v2_run_orders(struct engine_v2 *ctx,
 {
   struct engine_v2_order *order, *safe;
   __list_for_each_safe__(&ctx->list_orders, order, safe){
-    /* Filter orders */
-    if(TIME64CMP(track_n3->slice->time, ctx->start_time, GR_DAY) < 0)
-      goto next;
-    
     /* Ignore non-relevant orders
      * (order might stay until data is available) */
     if(order->track_uid != timeline_track_n3_track_uid(track_n3))
@@ -227,20 +224,71 @@ static void engine_v2_run_orders(struct engine_v2 *ctx,
     case BUY: engine_v2_buy_cash(ctx, track_n3, order); break;
     case SELL: engine_v2_sell_cash(ctx, track_n3, order); break;
     }
-
-  next:
+    
     /* Remove executed order */
     __list_del__(order);
     engine_v2_order_free(order);
   }
 }
 
+static void engine_run_before_start(struct engine_v2 *ctx,
+				    struct timeline_slice *slice,
+				    struct engine_v2_interface *i)
+{
+  struct indicator_n3 *indicator_n3;
+  struct timeline_track_n3 *track_n3;
+  
+  /* Run "new" track */
+  timeline_slice_for_each_track_n3(slice, track_n3){
+    /* Run "new" indicators */
+    timeline_track_n3_for_each_indicator_n3(track_n3, indicator_n3){
+      if(i->feed_indicator_n3)
+	i->feed_indicator_n3(ctx, track_n3, indicator_n3);
+    }
+  }
+}
+
+static void engine_run_after_start(struct engine_v2 *ctx,
+				   struct timeline_slice *slice,
+				   struct engine_v2_interface *i)
+{
+  struct indicator_n3 *indicator_n3;
+  struct timeline_track_n3 *track_n3;
+  
+  /* Run "new" slice */
+  if(i->feed_slice)
+    i->feed_slice(ctx, slice);
+  
+  /* Run "new" track */
+  timeline_slice_for_each_track_n3(slice, track_n3){
+    /* Run pending orders */
+    engine_v2_run_orders(ctx, track_n3);
+    /* Run portfolio */
+    portfolio_run(&ctx->portfolio, track_n3->low); /* FIXME */
+    
+    if(i->feed_track_n3)
+      i->feed_track_n3(ctx, slice, track_n3);
+    
+    /* Run "new" indicators */
+    timeline_track_n3_for_each_indicator_n3(track_n3, indicator_n3){
+      if(i->feed_indicator_n3)
+	i->feed_indicator_n3(ctx, track_n3, indicator_n3);
+    }
+  }
+  
+  /* Post-processing */
+  if(i->post_slice)
+    i->post_slice(ctx, slice);
+  
+  /* Csv output */
+  if(ctx->csv_output != -1)
+    engine_v2_csv_output(ctx, slice);
+}
+
 void engine_v2_run(struct engine_v2 *ctx,
 		   struct engine_v2_interface *i)
 {
   struct timeline_slice *slice;
-  struct indicator_n3 *indicator_n3;
-  struct timeline_track_n3 *track_n3;
 
   /* Run all slices */
   __list_for_each__(&ctx->timeline->by_slice, slice){    
@@ -251,36 +299,13 @@ void engine_v2_run(struct engine_v2 *ctx,
     /* Debug */
     PR_DBG("engine_v2.c: playing slice #%s\n",
 	   time64_str(slice->time, GR_DAY));
-    
-    /* Run "new" slice */
-    if(i->feed_slice)
-      i->feed_slice(ctx, slice);
-    
-    /* Run "new" track */
-    timeline_slice_for_each_track_n3(slice, track_n3){
-      /* Run pending orders */
-      engine_v2_run_orders(ctx, track_n3);
-      /* Run portfolio */
-      portfolio_run(&ctx->portfolio, track_n3->low); /* FIXME */
-      
-      if(i->feed_track_n3)
-        i->feed_track_n3(ctx, slice, track_n3);
-      
-      /* Run "new" indicators */
-      timeline_track_n3_for_each_indicator_n3(track_n3, indicator_n3){
-        if(i->feed_indicator_n3)
-          i->feed_indicator_n3(ctx, track_n3, indicator_n3);
-      }
-    }
-    
-    /* Post-processing */
-    if(i->post_slice)
-      i->post_slice(ctx, slice);
 
-    /* Csv output */
-    if(ctx->csv_output != -1)
-      engine_v2_csv_output(ctx, slice);
-
+    /* Run in two-state mode */
+    if(TIME64CMP(slice->time, ctx->start_time, GR_DAY) < 0)
+      engine_run_before_start(ctx, slice, i);
+    else
+      engine_run_after_start(ctx, slice, i);
+    
     /* Remember last slice for stats */
     ctx->last_slice = slice;
   }
